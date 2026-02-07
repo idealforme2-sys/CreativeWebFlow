@@ -60,22 +60,18 @@ const Hero = () => {
                 </div>
 
                 {/* Main Heading - Rotating Word with FlipText */}
-                <div className="overflow-hidden">
+                <div className="overflow-visible py-4"> {/* Changed to visible and added padding to prevent clipping */}
                     <motion.div
                         initial={{ y: 120 }}
                         animate={{ y: 0 }}
                         transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.85] font-black tracking-[-0.04em]">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto]">
-                                <AnimatePresence mode="wait">
-                                    <FlipText
-                                        words={rotatingWords}
-                                        duration={2500}
-                                        className="inline-block"
-                                    />
-                                </AnimatePresence>
-                            </span>
+                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.95] font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto]">
+                            <FlipText
+                                words={rotatingWords}
+                                duration={2500}
+                                className="inline-block"
+                            />
                         </h1>
                     </motion.div>
                 </div>
@@ -87,7 +83,7 @@ const Hero = () => {
                         animate={{ y: 0 }}
                         transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.85] font-black tracking-[-0.04em]">
+                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.95] font-black tracking-[-0.04em]">
                             <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/40">
                                 EXPERIENCES
                             </span>
@@ -100,11 +96,11 @@ const Hero = () => {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9, duration: 0.8 }}
-                    className="mt-14 text-xl md:text-3xl font-semibold"
+                    className="mt-14 text-xl md:text-3xl font-semibold text-balance"
                 >
-                    <span className="text-gray-400">Transforming brands with </span>
-                    <LineShadowText shadowColor="rgba(6, 182, 212, 0.4)" className="text-white italic">
-                        digital excellence
+                    <span className="text-white/60">Converting visitors into </span>
+                    <LineShadowText shadowColor="rgba(6, 182, 212, 0.5)" className="text-white italic px-2">
+                        paying customers
                     </LineShadowText>
                 </motion.div>
 
@@ -117,7 +113,7 @@ const Hero = () => {
                 >
                     <RainbowButton onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}>
                         <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.15em]">
-                            Explore Our Work
+                            Explore Our Showcase
                             <motion.span
                                 animate={{ x: [0, 5, 0] }}
                                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -162,25 +158,25 @@ const Hero = () => {
                 transition={{ delay: 1.3 }}
                 className="absolute bottom-32 w-full pointer-events-none"
             >
-                <ScrollVelocityContainer className="text-[8vw] md:text-[6vw] font-black tracking-[-0.02em] text-white/[0.03]">
-                    <ScrollVelocityRow baseVelocity={15} direction={1}>
-                        <span className="flex items-center gap-8">
+                <ScrollVelocityContainer className="text-[6vw] md:text-[5vw] font-black tracking-[-0.02em] text-white/[0.04]">
+                    <ScrollVelocityRow baseVelocity={12} direction={1}>
+                        <span className="flex items-center gap-12">
                             <span>DIGITAL EXCELLENCE</span>
-                            <span className="text-cyan-500/20">✦</span>
+                            <span className="text-cyan-500/30 font-light opacity-50 italic">✦</span>
                             <span>BRAND STRATEGY</span>
-                            <span className="text-purple-500/20">✦</span>
-                            <span>WEB DEVELOPMENT</span>
-                            <span className="text-pink-500/20">✦</span>
+                            <span className="text-purple-500/30 font-light opacity-50 italic">✦</span>
+                            <span>IMMERSIVE WEB</span>
+                            <span className="text-pink-500/30 font-light opacity-50 italic">✦</span>
                         </span>
                     </ScrollVelocityRow>
-                    <ScrollVelocityRow baseVelocity={15} direction={-1}>
-                        <span className="flex items-center gap-8">
+                    <ScrollVelocityRow baseVelocity={12} direction={-1}>
+                        <span className="flex items-center gap-12">
                             <span>UI/UX DESIGN</span>
-                            <span className="text-pink-500/20">✦</span>
+                            <span className="text-pink-500/30 font-light opacity-50 italic">✦</span>
                             <span>CREATIVE DIRECTION</span>
-                            <span className="text-cyan-500/20">✦</span>
-                            <span>DIGITAL MARKETING</span>
-                            <span className="text-purple-500/20">✦</span>
+                            <span className="text-cyan-500/30 font-light opacity-50 italic">✦</span>
+                            <span>FUTURE SCALE</span>
+                            <span className="text-purple-500/30 font-light opacity-50 italic">✦</span>
                         </span>
                     </ScrollVelocityRow>
                 </ScrollVelocityContainer>

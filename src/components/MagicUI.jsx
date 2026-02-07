@@ -1,7 +1,7 @@
 // Magic UI Components - Premium text effects and buttons
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Highlighter - Underline or highlight text with animated effect
 export const Highlighter = ({ children, action = 'highlight', color = '#FF9800', className = '' }) => {
@@ -62,15 +62,17 @@ export const WordRotate = ({ words = [], className = '', duration = 2500 }) => {
 
     return (
         <span className={`inline-block ${className}`}>
-            <motion.span
-                key={currentIndex}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                {words[currentIndex]}
-            </motion.span>
+            <AnimatePresence mode="wait">
+                <motion.span
+                    key={currentIndex}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    {words[currentIndex]}
+                </motion.span>
+            </AnimatePresence>
         </span>
     );
 };
@@ -276,30 +278,49 @@ export const ScrollVelocityRow = ({ children, baseVelocity = 20, direction = 1, 
     const [scrollVelocity, setScrollVelocity] = useState(0);
     const lastScrollY = useRef(0);
     const animationRef = useRef(null);
+    const scrollTimeout = useRef(null);
 
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            const velocity = (currentScrollY - lastScrollY.current) * 0.5;
+            const velocity = (currentScrollY - lastScrollY.current) * 0.05;
             setScrollVelocity(velocity);
             lastScrollY.current = currentScrollY;
+
+            // Decaying velocity after scroll stops
+            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+            scrollTimeout.current = setTimeout(() => {
+                setScrollVelocity(0);
+            }, 100);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+        };
     }, []);
 
     useEffect(() => {
         const animate = () => {
-            const speed = (baseVelocity + Math.abs(scrollVelocity)) * direction * 0.02;
+            // Speed calculation with scroll influence
+            const speed = (baseVelocity + Math.abs(scrollVelocity) * 50) * direction * 0.005;
+
             setOffset(prev => {
-                const newOffset = prev + speed;
-                // Reset when we've scrolled one full width
-                if (Math.abs(newOffset) >= 100) {
-                    return 0;
+                let nextOffset = prev + speed;
+
+                // For a 6-item track, each item is 16.66%
+                // We want to loop every 2 items (one pair) = 33.33%
+                const loopPoint = 33.33;
+
+                if (direction === -1) {
+                    if (nextOffset <= -loopPoint) return 0;
+                } else {
+                    if (nextOffset >= 0) return -loopPoint;
                 }
-                return newOffset;
+                return nextOffset;
             });
+
             animationRef.current = requestAnimationFrame(animate);
         };
 
@@ -310,16 +331,14 @@ export const ScrollVelocityRow = ({ children, baseVelocity = 20, direction = 1, 
     return (
         <div className={`flex whitespace-nowrap ${className}`}>
             <motion.div
-                className="flex gap-8"
+                className="flex gap-16 items-center"
                 style={{ x: `${offset}%` }}
             >
-                {/* Repeat content for seamless loop */}
-                <span className="flex-shrink-0">{children}</span>
-                <span className="flex-shrink-0 opacity-50">{children}</span>
-                <span className="flex-shrink-0">{children}</span>
-                <span className="flex-shrink-0 opacity-50">{children}</span>
-                <span className="flex-shrink-0">{children}</span>
-                <span className="flex-shrink-0 opacity-50">{children}</span>
+                {[...Array(6)].map((_, i) => (
+                    <span key={i} className={`flex-shrink-0 ${i % 2 === 1 ? 'opacity-20' : ''}`}>
+                        {children}
+                    </span>
+                ))}
             </motion.div>
         </div>
     );
@@ -338,22 +357,22 @@ export const FlipText = ({ words = [], className = '', duration = 3000 }) => {
 
     return (
         <span className={`inline-block relative overflow-hidden ${className}`}>
-            <motion.span
-                key={currentIndex}
-                initial={{ rotateX: 90, opacity: 0, y: 50 }}
-                animate={{ rotateX: 0, opacity: 1, y: 0 }}
-                exit={{ rotateX: -90, opacity: 0, y: -50 }}
-                transition={{
-                    duration: 0.8,
-                    ease: [0.16, 1, 0.3, 1],
-                    type: "spring",
-                    stiffness: 100
-                }}
-                className="block"
-                style={{ transformStyle: 'preserve-3d' }}
-            >
-                {words[currentIndex]}
-            </motion.span>
+            <AnimatePresence mode="wait">
+                <motion.span
+                    key={currentIndex}
+                    initial={{ y: "100%", opacity: 0, rotateX: 90 }}
+                    animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                    exit={{ y: "-100%", opacity: 0, rotateX: -90 }}
+                    transition={{
+                        duration: 1,
+                        ease: [0.16, 1, 0.3, 1]
+                    }}
+                    className="block"
+                    style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
+                >
+                    {words[currentIndex]}
+                </motion.span>
+            </AnimatePresence>
         </span>
     );
 };
