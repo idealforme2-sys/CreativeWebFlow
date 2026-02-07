@@ -260,3 +260,162 @@ export const GradientText = ({ children, className = '' }) => {
         </span>
     );
 };
+
+// ScrollVelocityContainer - Container for velocity-based scroll animations
+export const ScrollVelocityContainer = ({ children, className = '' }) => {
+    return (
+        <div className={`relative w-full overflow-hidden ${className}`}>
+            {children}
+        </div>
+    );
+};
+
+// ScrollVelocityRow - Individual row with velocity-based scroll animation
+export const ScrollVelocityRow = ({ children, baseVelocity = 20, direction = 1, className = '' }) => {
+    const [offset, setOffset] = useState(0);
+    const [scrollVelocity, setScrollVelocity] = useState(0);
+    const lastScrollY = useRef(0);
+    const animationRef = useRef(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            const velocity = (currentScrollY - lastScrollY.current) * 0.5;
+            setScrollVelocity(velocity);
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const animate = () => {
+            const speed = (baseVelocity + Math.abs(scrollVelocity)) * direction * 0.02;
+            setOffset(prev => {
+                const newOffset = prev + speed;
+                // Reset when we've scrolled one full width
+                if (Math.abs(newOffset) >= 100) {
+                    return 0;
+                }
+                return newOffset;
+            });
+            animationRef.current = requestAnimationFrame(animate);
+        };
+
+        animationRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(animationRef.current);
+    }, [baseVelocity, direction, scrollVelocity]);
+
+    return (
+        <div className={`flex whitespace-nowrap ${className}`}>
+            <motion.div
+                className="flex gap-8"
+                style={{ x: `${offset}%` }}
+            >
+                {/* Repeat content for seamless loop */}
+                <span className="flex-shrink-0">{children}</span>
+                <span className="flex-shrink-0 opacity-50">{children}</span>
+                <span className="flex-shrink-0">{children}</span>
+                <span className="flex-shrink-0 opacity-50">{children}</span>
+                <span className="flex-shrink-0">{children}</span>
+                <span className="flex-shrink-0 opacity-50">{children}</span>
+            </motion.div>
+        </div>
+    );
+};
+
+// FlipText - Text that flips through words with 3D effect
+export const FlipText = ({ words = [], className = '', duration = 3000 }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % words.length);
+        }, duration);
+        return () => clearInterval(interval);
+    }, [words.length, duration]);
+
+    return (
+        <span className={`inline-block relative overflow-hidden ${className}`}>
+            <motion.span
+                key={currentIndex}
+                initial={{ rotateX: 90, opacity: 0, y: 50 }}
+                animate={{ rotateX: 0, opacity: 1, y: 0 }}
+                exit={{ rotateX: -90, opacity: 0, y: -50 }}
+                transition={{
+                    duration: 0.8,
+                    ease: [0.16, 1, 0.3, 1],
+                    type: "spring",
+                    stiffness: 100
+                }}
+                className="block"
+                style={{ transformStyle: 'preserve-3d' }}
+            >
+                {words[currentIndex]}
+            </motion.span>
+        </span>
+    );
+};
+
+// TypewriterText - Text that types out character by character
+export const TypewriterText = ({ words = [], className = '', typeSpeed = 100, deleteSpeed = 50, delayBetween = 2000 }) => {
+    const [currentWordIndex, setCurrentWordIndex] = useState(0);
+    const [currentText, setCurrentText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+        const currentWord = words[currentWordIndex];
+
+        const timeout = setTimeout(() => {
+            if (!isDeleting) {
+                if (currentText.length < currentWord.length) {
+                    setCurrentText(currentWord.slice(0, currentText.length + 1));
+                } else {
+                    setTimeout(() => setIsDeleting(true), delayBetween);
+                }
+            } else {
+                if (currentText.length > 0) {
+                    setCurrentText(currentText.slice(0, -1));
+                } else {
+                    setIsDeleting(false);
+                    setCurrentWordIndex((prev) => (prev + 1) % words.length);
+                }
+            }
+        }, isDeleting ? deleteSpeed : typeSpeed);
+
+        return () => clearTimeout(timeout);
+    }, [currentText, isDeleting, currentWordIndex, words, typeSpeed, deleteSpeed, delayBetween]);
+
+    return (
+        <span className={className}>
+            {currentText}
+            <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+                className="inline-block w-[3px] h-[1em] bg-current ml-1 align-middle"
+            />
+        </span>
+    );
+};
+
+// GlitchText - Text with glitch effect
+export const GlitchText = ({ children, className = '' }) => {
+    return (
+        <span className={`relative inline-block ${className}`}>
+            <span className="relative z-10">{children}</span>
+            <span
+                className="absolute top-0 left-0 text-cyan-400 z-0 animate-glitch-1"
+                style={{ clipPath: 'inset(0 0 50% 0)' }}
+            >
+                {children}
+            </span>
+            <span
+                className="absolute top-0 left-0 text-pink-400 z-0 animate-glitch-2"
+                style={{ clipPath: 'inset(50% 0 0 0)' }}
+            >
+                {children}
+            </span>
+        </span>
+    );
+};
