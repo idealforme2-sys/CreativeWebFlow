@@ -344,31 +344,34 @@ export const ScrollVelocityRow = ({ children, baseVelocity = 20, direction = 1, 
     );
 };
 
-// FlipText - Text that flips through words with 3D effect
+// FlipText - Text that flips through words with smooth vertical animation
 export const FlipText = ({ words = [], className = '', duration = 3000 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
+        if (words.length <= 1) return;
+
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % words.length);
         }, duration);
         return () => clearInterval(interval);
     }, [words.length, duration]);
 
+    if (words.length === 0) return null;
+
     return (
-        <span className={`inline-block relative overflow-hidden ${className}`}>
+        <span className={`inline-block relative ${className}`} style={{ height: '1.2em' }}>
             <AnimatePresence mode="wait">
                 <motion.span
                     key={currentIndex}
-                    initial={{ y: "100%", opacity: 0, rotateX: 90 }}
-                    animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                    exit={{ y: "-100%", opacity: 0, rotateX: -90 }}
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -50, opacity: 0 }}
                     transition={{
-                        duration: 1,
-                        ease: [0.16, 1, 0.3, 1]
+                        y: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                        opacity: { duration: 0.3 }
                     }}
-                    className="block"
-                    style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
+                    className="absolute inset-0 flex items-center justify-center"
                 >
                     {words[currentIndex]}
                 </motion.span>

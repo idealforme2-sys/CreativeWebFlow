@@ -1,21 +1,17 @@
 import React from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import TechHUD from './TechHUD';
 import {
     FlipText,
     LineShadowText,
-    RainbowButton,
-    GradientText,
-    ScrollVelocityContainer,
-    ScrollVelocityRow,
-    GlitchText
+    RainbowButton
 } from './MagicUI';
 
 const Hero = () => {
     const { scrollY } = useScroll();
-    const y = useTransform(scrollY, [0, 800], [0, 300]);
-    const opacity = useTransform(scrollY, [0, 600], [1, 0]);
-    const scale = useTransform(scrollY, [0, 600], [1, 0.9]);
+    // Parallax effect for the background content only, not the CTA buttons
+    const bgY = useTransform(scrollY, [0, 800], [0, 200]);
+    const headingOpacity = useTransform(scrollY, [0, 400], [1, 0]);
 
     // Premium rotating words for the hero
     const rotatingWords = ['LEGENDARY', 'STUNNING', 'POWERFUL', 'ICONIC', 'PREMIUM'];
@@ -24,15 +20,14 @@ const Hero = () => {
         <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-20">
             <TechHUD />
 
-            <motion.div
-                style={{ y, opacity, scale }}
-                className="relative z-10 text-center px-6 max-w-7xl"
-            >
+            {/* Hero Content - with parallax fade for headings only */}
+            <div className="relative z-10 text-center px-6 max-w-7xl">
                 {/* Status Badge */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.8 }}
+                    style={{ y: bgY, opacity: headingOpacity }}
                     className="inline-flex items-center gap-3 px-5 py-2.5 mb-12 border border-white/10 rounded-full bg-white/5 backdrop-blur-md"
                 >
                     <span className="relative flex h-2.5 w-2.5">
@@ -45,7 +40,10 @@ const Hero = () => {
                 </motion.div>
 
                 {/* Main Heading - WE CREATE */}
-                <div className="overflow-hidden mb-2">
+                <motion.div
+                    className="overflow-hidden mb-2"
+                    style={{ y: bgY, opacity: headingOpacity }}
+                >
                     <motion.div
                         initial={{ y: 120 }}
                         animate={{ y: 0 }}
@@ -57,41 +55,46 @@ const Hero = () => {
                             </span>
                         </h1>
                     </motion.div>
-                </div>
+                </motion.div>
 
                 {/* Main Heading - Rotating Word with FlipText */}
-                <div className="overflow-visible py-4"> {/* Changed to visible and added padding to prevent clipping */}
+                <motion.div
+                    className="overflow-hidden py-2"
+                    style={{ y: bgY, opacity: headingOpacity }}
+                >
                     <motion.div
                         initial={{ y: 120 }}
                         animate={{ y: 0 }}
                         transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.95] font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto]">
+                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[1] font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto]">
                             <FlipText
                                 words={rotatingWords}
                                 duration={2500}
-                                className="inline-block"
                             />
                         </h1>
                     </motion.div>
-                </div>
+                </motion.div>
 
                 {/* Main Heading - EXPERIENCES */}
-                <div className="overflow-hidden mt-2">
+                <motion.div
+                    className="overflow-hidden mt-2"
+                    style={{ y: bgY, opacity: headingOpacity }}
+                >
                     <motion.div
                         initial={{ y: 120 }}
                         animate={{ y: 0 }}
                         transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.95] font-black tracking-[-0.04em]">
+                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[1] font-black tracking-[-0.04em]">
                             <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/40">
                                 EXPERIENCES
                             </span>
                         </h1>
                     </motion.div>
-                </div>
+                </motion.div>
 
-                {/* Premium LineShadowText CTA */}
+                {/* Premium LineShadowText CTA - DOES NOT FADE */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -104,7 +107,7 @@ const Hero = () => {
                     </LineShadowText>
                 </motion.div>
 
-                {/* CTA Buttons with Premium RainbowButton */}
+                {/* CTA Buttons - DOES NOT FADE */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -138,7 +141,7 @@ const Hero = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.5 }}
-                    className="absolute bottom-8 left-1/2 -translate-x-1/2"
+                    className="mt-16"
                 >
                     <motion.div
                         animate={{ y: [0, 12, 0] }}
@@ -149,38 +152,7 @@ const Hero = () => {
                         <div className="w-px h-16 bg-gradient-to-b from-white/30 to-transparent" />
                     </motion.div>
                 </motion.div>
-            </motion.div>
-
-            {/* Premium ScrollVelocity Marquee */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.3 }}
-                className="absolute bottom-32 w-full pointer-events-none"
-            >
-                <ScrollVelocityContainer className="text-[6vw] md:text-[5vw] font-black tracking-[-0.02em] text-white/[0.04]">
-                    <ScrollVelocityRow baseVelocity={12} direction={1}>
-                        <span className="flex items-center gap-12">
-                            <span>DIGITAL EXCELLENCE</span>
-                            <span className="text-cyan-500/30 font-light opacity-50 italic">✦</span>
-                            <span>BRAND STRATEGY</span>
-                            <span className="text-purple-500/30 font-light opacity-50 italic">✦</span>
-                            <span>IMMERSIVE WEB</span>
-                            <span className="text-pink-500/30 font-light opacity-50 italic">✦</span>
-                        </span>
-                    </ScrollVelocityRow>
-                    <ScrollVelocityRow baseVelocity={12} direction={-1}>
-                        <span className="flex items-center gap-12">
-                            <span>UI/UX DESIGN</span>
-                            <span className="text-pink-500/30 font-light opacity-50 italic">✦</span>
-                            <span>CREATIVE DIRECTION</span>
-                            <span className="text-cyan-500/30 font-light opacity-50 italic">✦</span>
-                            <span>FUTURE SCALE</span>
-                            <span className="text-purple-500/30 font-light opacity-50 italic">✦</span>
-                        </span>
-                    </ScrollVelocityRow>
-                </ScrollVelocityContainer>
-            </motion.div>
+            </div>
 
             {/* Decorative Bottom Fade */}
             <div className="absolute bottom-0 w-full h-48 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
