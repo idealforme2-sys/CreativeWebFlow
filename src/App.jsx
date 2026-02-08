@@ -6,9 +6,7 @@ import Lenis from 'lenis';
 import WebGLBackground from './components/WebGLBackground';
 import DigitalRain from './components/DigitalRain';
 import CustomCursor from './components/CustomCursor';
-import StatusHUD from './components/StatusHUD';
 import Preloader from './components/Preloader';
-import InSiteSpaceGame, { GameTriggerButton } from './components/InSiteSpaceGame';
 
 // Section Components
 import Navbar from './components/Navbar';
@@ -16,28 +14,22 @@ import Hero from './components/Hero';
 import InfiniteMarquee from './components/InfiniteMarquee';
 import WhoWeHelp from './components/WhoWeHelp';
 import AboutSection from './components/AboutSection';
+import ProcessSection from './components/ProcessSection';
 import WebDevSection from './components/WebDevSection';
 import AppDevSection from './components/AppDevSection';
 import MarketingSection from './components/MarketingSection';
-import ProcessSection from './components/ProcessSection';
-import ShaderFeatureCards from './components/ShaderFeatureCards';
 import WorkSection from './components/WorkSection';
-import WheelGallery from './components/WheelGallery';
-import StackedCarousel from './components/StackedCarousel';
 import WhyChooseUs from './components/WhyChooseUs';
-import ExperienceSection from './components/ExperienceSection';
-import StackSection from './components/StackSection';
 import MissionSection from './components/MissionSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 
 function App() {
     const [loading, setLoading] = useState(true);
-    const [gameActive, setGameActive] = useState(false);
 
     // Initialize Lenis smooth scrolling
     useEffect(() => {
-        if (loading || gameActive) return;
+        if (loading) return;
 
         const lenis = new Lenis({
             duration: 1.2,
@@ -59,23 +51,12 @@ function App() {
         return () => {
             lenis.destroy();
         };
-    }, [loading, gameActive]);
+    }, [loading]);
 
     return (
         <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-x-hidden">
             {/* Custom Cursor */}
             <CustomCursor />
-
-            {/* Status HUD (bottom right) */}
-            <StatusHUD />
-
-            {/* In-Site Space Game - Plays on top of website */}
-            <InSiteSpaceGame isActive={gameActive} onClose={() => setGameActive(false)} />
-
-            {/* Game Trigger Button */}
-            {!loading && !gameActive && (
-                <GameTriggerButton onClick={() => setGameActive(true)} />
-            )}
 
             {/* Preloader */}
             <AnimatePresence mode="wait">
@@ -104,47 +85,32 @@ function App() {
                             {/* Marquee Transition */}
                             <InfiniteMarquee />
 
-                            {/* Who We Help Section - NEW */}
+                            {/* Who We Help */}
                             <WhoWeHelp />
 
-                            {/* About Section */}
+                            {/* About Us */}
                             <AboutSection />
 
-                            {/* Our Process Section - NEW */}
+                            {/* Our Process */}
                             <ProcessSection />
 
-                            {/* Services Sections */}
+                            {/* Services */}
                             <div id="services">
                                 <WebDevSection />
                                 <AppDevSection />
                                 <MarketingSection />
                             </div>
 
-                            {/* Shader Feature Cards */}
-                            <ShaderFeatureCards />
-
-                            {/* Work/Portfolio Section */}
+                            {/* Portfolio */}
                             <WorkSection />
 
-                            {/* Wheel Gallery */}
-                            <WheelGallery />
-
-                            {/* DesignStudio-style Stacked Carousel */}
-                            <StackedCarousel />
-
-                            {/* Why Choose Us Section - NEW */}
+                            {/* Why Choose Us */}
                             <WhyChooseUs />
 
-                            {/* MagicUI Demonstration Section */}
-                            <ExperienceSection />
-
-                            {/* Tech Stack Section */}
-                            <StackSection />
-
-                            {/* Mission Section */}
+                            {/* Our Mission */}
                             <MissionSection />
 
-                            {/* Contact Section */}
+                            {/* Contact */}
                             <ContactSection />
 
                             {/* Footer */}
