@@ -50,15 +50,23 @@ const ContactSection = () => {
                             <>
                                 Let's{' '}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-                                    Work Together
+                                    Grow Your Business
                                 </span>
                             </>
                         }
-                        subtitle="Have a project in mind? We'd love to hear from you. Send us a message and let's create something amazing."
+                        subtitle="Not sure what you need? That's okay — tell us about your business and we'll guide you."
                         align="center"
                         className="mb-16"
                     />
                 </RevealOnScroll>
+
+                {/* Limited Availability Badge */}
+                <div className="flex justify-center mb-12">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.05]">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-sm text-white/60">We take on a limited number of projects to ensure quality</span>
+                    </div>
+                </div>
 
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
                     {/* Contact Form */}

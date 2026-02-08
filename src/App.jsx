@@ -14,14 +14,17 @@ import InSiteSpaceGame, { GameTriggerButton } from './components/InSiteSpaceGame
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import InfiniteMarquee from './components/InfiniteMarquee';
+import WhoWeHelp from './components/WhoWeHelp';
 import AboutSection from './components/AboutSection';
 import WebDevSection from './components/WebDevSection';
 import AppDevSection from './components/AppDevSection';
 import MarketingSection from './components/MarketingSection';
+import ProcessSection from './components/ProcessSection';
 import ShaderFeatureCards from './components/ShaderFeatureCards';
 import WorkSection from './components/WorkSection';
 import WheelGallery from './components/WheelGallery';
 import StackedCarousel from './components/StackedCarousel';
+import WhyChooseUs from './components/WhyChooseUs';
 import ExperienceSection from './components/ExperienceSection';
 import StackSection from './components/StackSection';
 import MissionSection from './components/MissionSection';
@@ -101,8 +104,14 @@ function App() {
                             {/* Marquee Transition */}
                             <InfiniteMarquee />
 
+                            {/* Who We Help Section - NEW */}
+                            <WhoWeHelp />
+
                             {/* About Section */}
                             <AboutSection />
+
+                            {/* Our Process Section - NEW */}
+                            <ProcessSection />
 
                             {/* Services Sections */}
                             <div id="services">
@@ -122,6 +131,9 @@ function App() {
 
                             {/* DesignStudio-style Stacked Carousel */}
                             <StackedCarousel />
+
+                            {/* Why Choose Us Section - NEW */}
+                            <WhyChooseUs />
 
                             {/* MagicUI Demonstration Section */}
                             <ExperienceSection />

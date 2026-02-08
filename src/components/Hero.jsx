@@ -1,34 +1,44 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import TechHUD from './TechHUD';
-import {
-    FlipText,
-    LineShadowText,
-    RainbowButton
-} from './MagicUI';
+import { RainbowButton } from './MagicUI';
 
 const Hero = () => {
     const { scrollY } = useScroll();
-    // Parallax effect for the background content only, not the CTA buttons
-    const bgY = useTransform(scrollY, [0, 800], [0, 200]);
+    const bgY = useTransform(scrollY, [0, 600], [0, 100]);
     const headingOpacity = useTransform(scrollY, [0, 400], [1, 0]);
 
-    // Premium rotating words for the hero
-    const rotatingWords = ['LEGENDARY', 'STUNNING', 'POWERFUL', 'ICONIC', 'PREMIUM'];
+    // Rotating words with their colors
+    const rotatingWords = [
+        { text: 'customers', color: 'text-cyan-400' },
+        { text: 'bookings', color: 'text-purple-400' },
+        { text: 'calls', color: 'text-pink-400' },
+        { text: 'growth', color: 'text-emerald-400' },
+        { text: 'results', color: 'text-amber-400' },
+    ];
+
+    // Simple word rotation using framer motion
+    const [currentWordIndex, setCurrentWordIndex] = React.useState(0);
+
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentWordIndex((prev) => (prev + 1) % rotatingWords.length);
+        }, 2500);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
-        <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-20">
+        <section className="relative min-h-[80vh] flex flex-col justify-center items-center overflow-hidden py-16">
             <TechHUD />
 
-            {/* Hero Content - with parallax fade for headings only */}
-            <div className="relative z-10 text-center px-6 max-w-7xl">
+            {/* Hero Content */}
+            <div className="relative z-10 text-center px-6 max-w-5xl">
                 {/* Status Badge */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.8 }}
-                    style={{ y: bgY, opacity: headingOpacity }}
-                    className="inline-flex items-center gap-3 px-5 py-2.5 mb-12 border border-white/10 rounded-full bg-white/5 backdrop-blur-md"
+                    className="inline-flex items-center gap-3 px-5 py-2.5 mb-8 border border-white/10 rounded-full bg-white/5 backdrop-blur-md"
                 >
                     <span className="relative flex h-2.5 w-2.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -39,86 +49,91 @@ const Hero = () => {
                     </span>
                 </motion.div>
 
-                {/* Main Heading - WE CREATE */}
+                {/* Main Headline */}
                 <motion.div
-                    className="overflow-hidden mb-2"
+                    className="mb-3"
                     style={{ y: bgY, opacity: headingOpacity }}
                 >
-                    <motion.div
-                        initial={{ y: 120 }}
-                        animate={{ y: 0 }}
-                        transition={{ delay: 0.4, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    <motion.h1
+                        initial={{ y: 60, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.03em] leading-[1.1] text-white"
                     >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[0.85] font-black tracking-[-0.04em]">
-                            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/40">
-                                WE CREATE
-                            </span>
-                        </h1>
-                    </motion.div>
+                        Websites that bring you
+                    </motion.h1>
                 </motion.div>
 
-                {/* Main Heading - Rotating Word with FlipText */}
+                {/* Rotating Word - Separate from headline for clean animation */}
                 <motion.div
-                    className="overflow-hidden py-2"
+                    className="mb-8 h-[1.3em]"
                     style={{ y: bgY, opacity: headingOpacity }}
                 >
-                    <motion.div
-                        initial={{ y: 120 }}
-                        animate={{ y: 0 }}
-                        transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    <motion.h1
+                        initial={{ y: 60, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.03em] leading-[1.1]"
                     >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[1] font-black tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto]">
-                            <FlipText
-                                words={rotatingWords}
-                                duration={2500}
-                            />
-                        </h1>
-                    </motion.div>
+                        <span className="text-white">more </span>
+                        <motion.span
+                            key={currentWordIndex}
+                            initial={{ y: 40, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -40, opacity: 0 }}
+                            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                            className={`inline-block ${rotatingWords[currentWordIndex].color}`}
+                        >
+                            {rotatingWords[currentWordIndex].text}
+                        </motion.span>
+                    </motion.h1>
                 </motion.div>
 
-                {/* Main Heading - EXPERIENCES */}
-                <motion.div
-                    className="overflow-hidden mt-2"
-                    style={{ y: bgY, opacity: headingOpacity }}
+                {/* Sub-headline */}
+                <motion.p
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.8 }}
+                    className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-6 leading-relaxed"
                 >
-                    <motion.div
-                        initial={{ y: 120 }}
-                        animate={{ y: 0 }}
-                        transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                        <h1 className="text-[14vw] md:text-[11vw] lg:text-[9vw] leading-[1] font-black tracking-[-0.04em]">
-                            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/40">
-                                EXPERIENCES
-                            </span>
-                        </h1>
-                    </motion.div>
-                </motion.div>
+                    We design and build high-performance websites for local businesses
+                    that turn visitors into{' '}
+                    <span className="text-white font-medium">real customers</span>.
+                </motion.p>
 
-                {/* Premium LineShadowText CTA - DOES NOT FADE */}
+                {/* Trust Line */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9, duration: 0.8 }}
-                    className="mt-14 text-xl md:text-3xl font-semibold text-balance"
+                    className="flex items-center justify-center gap-6 text-sm text-white/40 mb-10"
                 >
-                    <span className="text-white/60">Converting visitors into </span>
-                    <LineShadowText shadowColor="rgba(6, 182, 212, 0.5)" className="text-white italic px-2">
-                        paying customers
-                    </LineShadowText>
+                    <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                        Fast Loading
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                        Mobile-First
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+                        Built to Convert
+                    </span>
                 </motion.div>
 
-                {/* CTA Buttons - DOES NOT FADE */}
+                {/* CTA Buttons */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.1, duration: 0.8 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-5 mt-14"
+                    transition={{ delay: 1, duration: 0.8 }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
-                    <RainbowButton onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}>
-                        <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.15em]">
-                            Explore Our Showcase
+                    <RainbowButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+                        <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.12em]">
+                            Get More Customers
                             <motion.span
-                                animate={{ x: [0, 5, 0] }}
+                                animate={{ x: [0, 4, 0] }}
                                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                             >
                                 →
@@ -127,12 +142,16 @@ const Hero = () => {
                     </RainbowButton>
 
                     <motion.a
-                        href="#contact"
-                        whileHover={{ scale: 1.03, borderColor: 'rgba(6, 182, 212, 0.8)' }}
+                        href="#work"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        whileHover={{ scale: 1.03, borderColor: 'rgba(6, 182, 212, 0.6)' }}
                         whileTap={{ scale: 0.97 }}
-                        className="px-10 py-4 border border-white/20 text-white rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:text-cyan-400 transition-all duration-500 backdrop-blur-sm"
+                        className="px-8 py-3.5 border border-white/20 text-white rounded-full text-sm font-bold uppercase tracking-[0.12em] hover:text-cyan-400 transition-all duration-500 backdrop-blur-sm"
                     >
-                        Start a Project
+                        View Our Work
                     </motion.a>
                 </motion.div>
 
@@ -141,21 +160,21 @@ const Hero = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.5 }}
-                    className="mt-16"
+                    className="mt-12"
                 >
                     <motion.div
-                        animate={{ y: [0, 12, 0] }}
+                        animate={{ y: [0, 10, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="flex flex-col items-center gap-3"
+                        className="flex flex-col items-center gap-2"
                     >
                         <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">Scroll</span>
-                        <div className="w-px h-16 bg-gradient-to-b from-white/30 to-transparent" />
+                        <div className="w-px h-10 bg-gradient-to-b from-white/30 to-transparent" />
                     </motion.div>
                 </motion.div>
             </div>
 
             {/* Decorative Bottom Fade */}
-            <div className="absolute bottom-0 w-full h-48 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
         </section>
     );
 };

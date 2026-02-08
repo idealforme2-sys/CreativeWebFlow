@@ -1,45 +1,41 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Target, Share2, BarChart3, ArrowUpRight } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, StaggerContainer, StaggerItem, HolographicCard, MagneticButton } from './UIComponents';
+import { Search, MapPin, Star, BarChart3, ArrowRight, CheckCircle } from 'lucide-react';
+import { SectionHeader, RevealOnScroll, StaggerContainer, StaggerItem, MagneticButton } from './UIComponents';
 
 const MarketingSection = () => {
     const services = [
         {
-            icon: Search,
-            title: "Search Engine Optimization",
-            shortTitle: "SEO",
-            description: "Improve visibility, rankings, and organic traffic with SEO strategies built for sustainable growth.",
+            icon: MapPin,
+            title: "Local SEO",
+            shortTitle: "Get Found Locally",
+            description: "Show up when customers search for businesses like yours in your area. We optimize your online presence for local searches.",
             color: "cyan",
-            stat: "300%",
-            statLabel: "Avg. Traffic Increase"
+            benefits: ["Google Business optimization", "Local directory listings", "Location-based keywords"]
         },
         {
-            icon: Target,
-            title: "Pay-Per-Click Advertising",
-            shortTitle: "PPC",
-            description: "Targeted ad campaigns designed to maximize ROI and generate immediate, high-intent traffic.",
+            icon: Star,
+            title: "Review Management",
+            shortTitle: "Build Trust",
+            description: "Your online reputation matters. We help you get more positive reviews and manage your reputation across platforms.",
             color: "pink",
-            stat: "4.5x",
-            statLabel: "Average ROAS"
+            benefits: ["Review generation strategy", "Response management", "Reputation monitoring"]
         },
         {
-            icon: Share2,
-            title: "Social Media Marketing",
-            shortTitle: "SMM",
-            description: "Engaging strategies that strengthen brand presence, build trust, and grow loyal communities.",
+            icon: Search,
+            title: "Search Visibility",
+            shortTitle: "Rank Higher",
+            description: "Improve your rankings on Google so more potential customers find your business before they find your competitors.",
             color: "purple",
-            stat: "150K+",
-            statLabel: "Followers Generated"
+            benefits: ["Website optimization", "Content strategy", "Technical SEO fixes"]
         },
         {
             icon: BarChart3,
-            title: "Analytics & Tracking",
-            shortTitle: "Analytics",
-            description: "Clear reporting and insights that help optimize campaigns and continuously improve results.",
+            title: "Performance Tracking",
+            shortTitle: "See Results",
+            description: "Know exactly how your website and marketing are performing with clear, easy-to-understand reports.",
             color: "blue",
-            stat: "Real-time",
-            statLabel: "Performance Data"
+            benefits: ["Monthly reports", "Call tracking", "Lead analytics"]
         }
     ];
 
@@ -82,12 +78,12 @@ const MarketingSection = () => {
                 <div className="text-center mb-20">
                     <RevealOnScroll>
                         <SectionHeader
-                            label="Digital Marketing"
+                            label="Local Visibility"
                             title={
                                 <>
-                                    Turn attention into{' '}
+                                    Help customers{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-orange-400">
-                                        action
+                                        find you online
                                     </span>
                                 </>
                             }
@@ -97,11 +93,17 @@ const MarketingSection = () => {
                     </RevealOnScroll>
 
                     <RevealOnScroll delay={0.1}>
-                        <p className="max-w-3xl mx-auto text-lg text-gray-400 leading-relaxed">
-                            We use digital marketing to turn attention into action. Our strategies are built
-                            to increase visibility, attract the right audience, and drive real business results —
-                            not vanity metrics. By combining creativity with data-driven insights, we create
-                            campaigns that connect with users and support long-term growth.
+                        <p className="max-w-3xl mx-auto text-lg text-gray-400 leading-relaxed mb-6">
+                            Having a great website is just the start. We help local businesses get found 
+                            by the right customers at the right time — when they're actively searching 
+                            for services like yours.
+                        </p>
+                    </RevealOnScroll>
+
+                    <RevealOnScroll delay={0.15}>
+                        <p className="max-w-2xl mx-auto text-base text-gray-500 leading-relaxed">
+                            Our local marketing focuses on what actually matters: getting your phone to ring, 
+                            your inbox to fill up, and customers through your door.
                         </p>
                     </RevealOnScroll>
                 </div>
@@ -117,7 +119,7 @@ const MarketingSection = () => {
                                 <motion.div
                                     whileHover={{ y: -10, scale: 1.02 }}
                                     transition={{ duration: 0.3 }}
-                                    className="relative h-80 group"
+                                    className="relative h-auto min-h-[300px] group"
                                 >
                                     {/* Animated gradient background */}
                                     <div className="absolute inset-0 rounded-3xl overflow-hidden">
@@ -145,20 +147,33 @@ const MarketingSection = () => {
                                             </div>
                                         </div>
 
-                                        {/* Title */}
-                                        <h3 className="text-2xl font-bold mb-4 text-white">
+                                        {/* Title & Subtitle */}
+                                        <h3 className="text-xl font-bold mb-1 text-white">
                                             {service.title}
                                         </h3>
+                                        <p className={`text-sm ${colors.text} mb-4 font-medium`}>
+                                            {service.shortTitle}
+                                        </p>
 
                                         {/* Description */}
                                         <p className="leading-relaxed flex-grow text-gray-300 mb-6">
                                             {service.description}
                                         </p>
 
+                                        {/* Benefits */}
+                                        <div className="space-y-2 mb-6">
+                                            {service.benefits.map((benefit, j) => (
+                                                <div key={j} className="flex items-center gap-2 text-sm text-white/60">
+                                                    <CheckCircle className={`w-4 h-4 ${colors.text}`} />
+                                                    {benefit}
+                                                </div>
+                                            ))}
+                                        </div>
+
                                         {/* Explore Feature CTA */}
-                                        <div className={`flex items-center text-sm font-bold ${colors.text} group-hover:translate-x-1 transition-transform`}>
-                                            <span className="mr-2">Explore Feature</span>
-                                            <ArrowUpRight size={16} />
+                                        <div className={`flex items-center text-sm font-bold ${colors.text} group-hover:translate-x-1 transition-transform mt-auto`}>
+                                            <span className="mr-2">Learn More</span>
+                                            <ArrowRight size={16} />
                                         </div>
                                     </div>
                                 </motion.div>
@@ -174,8 +189,8 @@ const MarketingSection = () => {
                             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full text-white text-sm font-bold uppercase tracking-wider hover:shadow-lg hover:shadow-pink-500/25 transition-shadow"
                         >
-                            Boost Your Online Presence
-                            <ArrowUpRight size={18} />
+                            Get More Local Customers
+                            <ArrowRight size={18} />
                         </MagneticButton>
                     </div>
                 </RevealOnScroll>

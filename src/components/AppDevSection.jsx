@@ -1,48 +1,69 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, Users, Repeat, Lock, ArrowRight } from 'lucide-react';
+import { Smartphone, Users, Repeat, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 import { SectionHeader, RevealOnScroll, StaggerContainer, StaggerItem, MagneticButton } from './UIComponents';
 
 const AppDevSection = () => {
-    const services = [
+    const solutions = [
         {
             icon: Smartphone,
-            title: "iOS & Android Development",
-            description: "Native applications optimized for performance, stability, and platform-specific best practices.",
-            color: "purple"
+            title: "Progressive Web Apps",
+            subtitle: "App-like experience",
+            description: "Give your customers an app-like experience without the cost of building a separate mobile app. Works on any device.",
+            color: "purple",
+            benefits: ["Works like a native app", "No app store needed", "Automatic updates"]
         },
         {
             icon: Users,
-            title: "User-Centered Design",
-            description: "Clean, intuitive interfaces designed around user behavior to maximize usability and engagement.",
-            color: "pink"
+            title: "Customer Portals",
+            subtitle: "Client management",
+            description: "Secure portals where your customers can book appointments, view their history, and manage their accounts.",
+            color: "pink",
+            benefits: ["24/7 self-service", "Reduced admin work", "Better customer experience"]
         },
         {
             icon: Repeat,
-            title: "Cross-Platform Solutions",
-            description: "Efficient cross-platform apps that deliver a consistent experience across devices while reducing development time.",
-            color: "cyan"
+            title: "Booking Systems",
+            subtitle: "Online scheduling",
+            description: "Let customers book appointments online anytime. Integrates with your calendar and sends automatic reminders.",
+            color: "cyan",
+            benefits: ["Never miss a booking", "Reduce no-shows", "Save phone time"]
         },
         {
             icon: Lock,
-            title: "Security & Integration",
-            description: "Secure app architecture with smooth integration into existing systems, APIs, and third-party services.",
-            color: "blue"
+            title: "Custom Features",
+            subtitle: "Tailored solutions",
+            description: "Need something specific? We build custom features and integrations that solve your unique business challenges.",
+            color: "blue",
+            benefits: ["Custom functionality", "System integration", "Scalable solutions"]
         }
     ];
 
     const colorMap = {
-        cyan: "from-cyan-500 to-cyan-400",
-        purple: "from-purple-500 to-purple-400",
-        pink: "from-pink-500 to-pink-400",
-        blue: "from-blue-500 to-blue-400"
-    };
-
-    const iconBgMap = {
-        cyan: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-        purple: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-        pink: "bg-pink-500/10 text-pink-400 border-pink-500/30",
-        blue: "bg-blue-500/10 text-blue-400 border-blue-500/30"
+        cyan: {
+            gradient: "from-cyan-500 to-cyan-400",
+            text: "text-cyan-400",
+            bg: "bg-cyan-500/10",
+            border: "border-cyan-500/30"
+        },
+        purple: {
+            gradient: "from-purple-500 to-purple-400",
+            text: "text-purple-400",
+            bg: "bg-purple-500/10",
+            border: "border-purple-500/30"
+        },
+        pink: {
+            gradient: "from-pink-500 to-pink-400",
+            text: "text-pink-400",
+            bg: "bg-pink-500/10",
+            border: "border-pink-500/30"
+        },
+        blue: {
+            gradient: "from-blue-500 to-blue-400",
+            text: "text-blue-400",
+            bg: "bg-blue-500/10",
+            border: "border-blue-500/30"
+        }
     };
 
     return (
@@ -54,24 +75,19 @@ const AppDevSection = () => {
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-                    {/* Left - Services Grid */}
+                    {/* Left - Solutions Grid */}
                     <div className="order-2 lg:order-1">
                         <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 gap-6" staggerDelay={0.1}>
-                            {services.map((service, i) => {
-                                const Icon = service.icon;
-                                const colors = {
-                                    gradient: colorMap[service.color],
-                                    text: iconBgMap[service.color].split(' ')[1],
-                                    bg: iconBgMap[service.color].split(' ')[0],
-                                    border: iconBgMap[service.color].split(' ')[2]
-                                };
+                            {solutions.map((solution, i) => {
+                                const Icon = solution.icon;
+                                const colors = colorMap[solution.color];
 
                                 return (
                                     <StaggerItem key={i}>
                                         <motion.div
                                             whileHover={{ y: -10, scale: 1.02 }}
                                             transition={{ duration: 0.3 }}
-                                            className="relative min-h-[320px] group"
+                                            className="relative min-h-[300px] group"
                                         >
                                             {/* Animated gradient background */}
                                             <div className="absolute inset-0 rounded-3xl overflow-hidden">
@@ -91,28 +107,41 @@ const AppDevSection = () => {
                                             </div>
 
                                             {/* Glass card overlay */}
-                                            <div className="relative z-10 p-8 rounded-3xl h-full flex flex-col bg-black/80 backdrop-blur-sm border border-white/20 group-hover:border-white/40 transition-all">
+                                            <div className="relative z-10 p-6 rounded-3xl h-full flex flex-col bg-black/80 backdrop-blur-sm border border-white/20 group-hover:border-white/40 transition-all">
                                                 {/* Icon */}
-                                                <div className="mb-6">
-                                                    <div className={`w-14 h-14 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center shadow-lg`}>
-                                                        <Icon size={28} className={colors.text} />
+                                                <div className="mb-4">
+                                                    <div className={`w-12 h-12 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center shadow-lg`}>
+                                                        <Icon size={24} className={colors.text} />
                                                     </div>
                                                 </div>
 
-                                                {/* Title */}
-                                                <h3 className="text-xl font-bold mb-3 text-white leading-tight">
-                                                    {service.title}
+                                                {/* Title & Subtitle */}
+                                                <h3 className="text-lg font-bold mb-1 text-white leading-tight">
+                                                    {solution.title}
                                                 </h3>
-
-                                                {/* Description */}
-                                                <p className="text-sm leading-relaxed flex-grow text-gray-300 mb-4 line-clamp-4">
-                                                    {service.description}
+                                                <p className={`text-xs ${colors.text} mb-3 font-medium`}>
+                                                    {solution.subtitle}
                                                 </p>
 
-                                                {/* Explore Feature CTA */}
-                                                <div className={`flex items-center text-sm font-bold ${colors.text} group-hover:translate-x-1 transition-transform`}>
-                                                    <span className="mr-2">Explore Feature</span>
-                                                    <ArrowRight size={16} />
+                                                {/* Description */}
+                                                <p className="text-sm leading-relaxed flex-grow text-gray-300 mb-4">
+                                                    {solution.description}
+                                                </p>
+
+                                                {/* Benefits */}
+                                                <div className="space-y-1 mb-4">
+                                                    {solution.benefits.map((benefit, j) => (
+                                                        <div key={j} className="flex items-center gap-2 text-xs text-white/50">
+                                                            <span className={`w-1 h-1 rounded-full ${colors.text.replace('text-', 'bg-')}`} />
+                                                            {benefit}
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                {/* CTA */}
+                                                <div className={`flex items-center text-sm font-bold ${colors.text} group-hover:translate-x-1 transition-transform mt-auto`}>
+                                                    <span className="mr-2">Learn More</span>
+                                                    <ArrowRight size={14} />
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -126,12 +155,12 @@ const AppDevSection = () => {
                     <div className="order-1 lg:order-2">
                         <RevealOnScroll>
                             <SectionHeader
-                                label="App Development"
+                                label="Advanced Features"
                                 title={
                                     <>
-                                        Apps that users{' '}
+                                        Smart tools for{' '}
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                                            love
+                                            modern businesses
                                         </span>
                                     </>
                                 }
@@ -140,42 +169,60 @@ const AppDevSection = () => {
                         </RevealOnScroll>
 
                         <RevealOnScroll delay={0.1}>
-                            <p className="text-lg text-gray-400 leading-relaxed mb-8">
-                                We build mobile applications that are intuitive, reliable, and designed for
-                                real users. At Creative WebFlow, we focus on creating apps that not only
-                                look great but feel effortless to use — combining strong UI design with
-                                solid performance.
+                            <p className="text-lg text-gray-400 leading-relaxed mb-6">
+                                Take your business to the next level with custom features that automate 
+                                tasks, improve customer experience, and save you time.
                             </p>
                         </RevealOnScroll>
 
                         <RevealOnScroll delay={0.2}>
-                            <p className="text-lg text-gray-400 leading-relaxed mb-10">
-                                By leveraging modern mobile technologies, we help businesses launch apps
-                                that stand out, engage users, and scale with growth.
+                            <p className="text-lg text-gray-400 leading-relaxed mb-8">
+                                From online booking systems to customer portals, we build solutions that 
+                                help you work smarter, not harder. Every feature is designed with your 
+                                business goals in mind.
                             </p>
                         </RevealOnScroll>
 
-                        {/* Phone Mockup Placeholder */}
+                        {/* Trust Points */}
                         <RevealOnScroll delay={0.3}>
+                            <div className="space-y-3 mb-8">
+                                {[
+                                    "Reduce repetitive admin tasks",
+                                    "Give customers 24/7 access",
+                                    "Scale without adding overhead"
+                                ].map((point, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                        <span className="text-white/70">{point}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </RevealOnScroll>
+
+                        {/* Phone Mockup Placeholder */}
+                        <RevealOnScroll delay={0.4}>
                             <div className="relative">
-                                <div className="relative mx-auto w-48 h-96 rounded-[3rem] border-4 border-white/10 bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm overflow-hidden">
+                                <div className="relative mx-auto w-44 h-80 rounded-[2.5rem] border-4 border-white/10 bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm overflow-hidden">
                                     {/* Screen content */}
-                                    <div className="absolute inset-4 rounded-[2rem] bg-black/60 border border-white/5 overflow-hidden">
-                                        {/* Fake app UI */}
-                                        <div className="p-4 space-y-3">
-                                            <div className="h-8 w-3/4 bg-white/10 rounded-lg" />
-                                            <div className="h-24 w-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl" />
-                                            <div className="h-4 w-full bg-white/5 rounded" />
-                                            <div className="h-4 w-2/3 bg-white/5 rounded" />
-                                            <div className="grid grid-cols-2 gap-2 mt-4">
-                                                <div className="h-16 bg-cyan-500/10 rounded-lg" />
-                                                <div className="h-16 bg-purple-500/10 rounded-lg" />
+                                    <div className="absolute inset-3 rounded-[2rem] bg-black/60 border border-white/5 overflow-hidden">
+                                        {/* Mock booking UI */}
+                                        <div className="p-3 space-y-2">
+                                            <div className="h-6 w-2/3 bg-white/10 rounded-md" />
+                                            <div className="h-16 w-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center">
+                                                <span className="text-white/30 text-xs">Book Now</span>
+                                            </div>
+                                            <div className="h-3 w-full bg-white/5 rounded" />
+                                            <div className="h-3 w-3/4 bg-white/5 rounded" />
+                                            <div className="grid grid-cols-3 gap-1 mt-2">
+                                                <div className="h-8 bg-white/5 rounded text-center flex items-center justify-center text-[8px] text-white/30">Mon</div>
+                                                <div className="h-8 bg-cyan-500/20 rounded text-center flex items-center justify-center text-[8px] text-cyan-300">Tue</div>
+                                                <div className="h-8 bg-white/5 rounded text-center flex items-center justify-center text-[8px] text-white/30">Wed</div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Notch */}
-                                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
+                                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-5 bg-black rounded-full" />
                                 </div>
 
                                 {/* Glow effect */}

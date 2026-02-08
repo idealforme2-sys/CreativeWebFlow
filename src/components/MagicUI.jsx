@@ -347,8 +347,10 @@ export const ScrollVelocityRow = ({ children, baseVelocity = 20, direction = 1, 
 // FlipText - Text that flips through words with smooth vertical animation
 export const FlipText = ({ words = [], className = '', duration = 3000 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        setIsClient(true);
         if (words.length <= 1) return;
 
         const interval = setInterval(() => {
@@ -358,20 +360,21 @@ export const FlipText = ({ words = [], className = '', duration = 3000 }) => {
     }, [words.length, duration]);
 
     if (words.length === 0) return null;
+    if (!isClient) return <span className={`inline-block min-w-[120px] ${className}`}>{words[0]}</span>;
 
     return (
-        <span className={`inline-block relative ${className}`} style={{ height: '1.2em' }}>
+        <span className={`inline-block min-w-[120px] ${className}`} style={{ display: 'inline-block' }}>
             <AnimatePresence mode="wait">
                 <motion.span
                     key={currentIndex}
-                    initial={{ y: 50, opacity: 0 }}
+                    initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -50, opacity: 0 }}
+                    exit={{ y: -40, opacity: 0 }}
                     transition={{
-                        y: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-                        opacity: { duration: 0.3 }
+                        y: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+                        opacity: { duration: 0.25 }
                     }}
-                    className="absolute inset-0 flex items-center justify-center"
+                    style={{ display: 'inline-block' }}
                 >
                     {words[currentIndex]}
                 </motion.span>

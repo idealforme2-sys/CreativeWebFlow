@@ -1,48 +1,38 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Target, Lightbulb, Rocket, Shield } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, HolographicCard, StaggerContainer, StaggerItem, ParallaxContainer } from './UIComponents';
-import { TextReveal, Highlighter } from './MagicUI';
+import { Target, Users, TrendingUp, CheckCircle } from 'lucide-react';
+import { SectionHeader, RevealOnScroll, StaggerContainer, StaggerItem, ParallaxContainer } from './UIComponents';
 
 const AboutSection = () => {
-    const values = [
+    const focusPoints = [
         {
             icon: Target,
-            title: "Strategy First",
-            description: "Every project starts with understanding your goals and crafting a roadmap to achieve them.",
+            title: "Professional & Trustworthy",
+            description: "Making your business look as good as the big competitors — so customers trust you instantly.",
             color: "cyan"
         },
         {
-            icon: Lightbulb,
-            title: "Design Excellence",
-            description: "We create visually stunning experiences that capture attention and inspire action.",
+            icon: Users,
+            title: "Clear Messaging",
+            description: "Helping customers understand your offer quickly — no confusion, just action.",
             color: "purple"
         },
         {
-            icon: Rocket,
-            title: "Performance Driven",
-            description: "Speed, accessibility, and SEO are built into everything we create from day one.",
+            icon: TrendingUp,
+            title: "Real Results",
+            description: "Turning website visits into real inquiries — calls, messages, and bookings.",
             color: "pink"
-        },
-        {
-            icon: Shield,
-            title: "Results Focused",
-            description: "We measure success by the real impact we deliver for your business growth.",
-            color: "blue"
         }
     ];
-
-
 
     const colorClasses = {
         cyan: "from-cyan-500/20 to-cyan-500/0 border-cyan-500/30 text-cyan-400",
         purple: "from-purple-500/20 to-purple-500/0 border-purple-500/30 text-purple-400",
-        pink: "from-pink-500/20 to-pink-500/0 border-pink-500/30 text-pink-400",
-        blue: "from-blue-500/20 to-blue-500/0 border-blue-500/30 text-blue-400"
+        pink: "from-pink-500/20 to-pink-500/0 border-pink-500/30 text-pink-400"
     };
 
     return (
-        <section id="about" className="relative py-32 lg:py-40 overflow-hidden">
+        <section id="about" className="relative py-24 lg:py-32 overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/10 to-black" />
             <ParallaxContainer speed={0.2} className="absolute inset-0">
@@ -50,7 +40,7 @@ const AboutSection = () => {
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
             </ParallaxContainer>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6">
+            <div className="relative z-10 max-w-6xl mx-auto px-6">
                 {/* Header */}
                 <RevealOnScroll>
                     <SectionHeader
@@ -59,62 +49,74 @@ const AboutSection = () => {
                             <>
                                 We don't just build websites.{' '}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-                                    We build digital empires.
+                                    We help local businesses grow.
                                 </span>
                             </>
                         }
                         align="center"
-                        className="mb-16"
+                        className="mb-12"
                     />
                 </RevealOnScroll>
 
-                {/* Main Description with TextReveal */}
-                <div className="max-w-4xl mx-auto text-center mb-20">
-                    <TextReveal className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-8">
-                        We blend strategy, design, and technology to turn ideas into conversion-driven digital products.
-                    </TextReveal>
+                {/* Main Description */}
+                <div className="max-w-3xl mx-auto text-center mb-16">
+                    <RevealOnScroll>
+                        <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-6">
+                            <span className="text-white font-semibold">Creative WebFlow</span> is a digital agency
+                            focused on helping small businesses attract more customers through clean design,
+                            clear messaging, and conversion-focused websites.
+                        </p>
+                    </RevealOnScroll>
                     <RevealOnScroll delay={0.2}>
-                        <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
-                            <Highlighter action="highlight" color="rgba(6, 182, 212, 0.15)">
-                                <span className="text-white font-semibold">Creative WebFlow</span>
-                            </Highlighter>{' '}
-                            is a digital design agency focused on building high-impact websites and digital experiences
-                            that help brands grow. Our approach is simple: we don't just make things look good — we build
-                            solutions that work. Every project is crafted with{' '}
-                            <Highlighter action="underline" color="#a855f7">
-                                <span className="text-purple-300">performance, usability, and real business goals</span>
-                            </Highlighter>{' '}
-                            in mind.
+                        <p className="text-base md:text-lg text-white/50">
+                            We focus on what matters most to your business:
                         </p>
                     </RevealOnScroll>
                 </div>
 
-                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6" staggerDelay={0.15}>
-                    {values.map((value, i) => {
-                        const Icon = value.icon;
+                {/* Focus Points Grid */}
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16" staggerDelay={0.15}>
+                    {focusPoints.map((point, i) => {
+                        const Icon = point.icon;
                         return (
                             <StaggerItem key={i}>
                                 <motion.div
-                                    whileHover={{ y: -8 }}
+                                    whileHover={{ y: -5 }}
                                     transition={{ duration: 0.3 }}
-                                    className={`relative group p-8 rounded-2xl border bg-gradient-to-br ${colorClasses[value.color]} backdrop-blur-sm overflow-hidden`}
+                                    className={`relative group p-6 rounded-2xl border bg-gradient-to-br ${colorClasses[point.color]} backdrop-blur-sm overflow-hidden h-full`}
                                 >
-                                    {/* Background glow on hover */}
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[value.color].split(' ')[0]} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-
                                     <div className="relative z-10">
-                                        <div className={`w-14 h-14 rounded-xl bg-black/50 border ${colorClasses[value.color].split(' ')[2]} flex items-center justify-center mb-6`}>
-                                            <Icon size={24} className={colorClasses[value.color].split(' ')[3]} />
+                                        <div className={`w-12 h-12 rounded-xl bg-black/50 border ${colorClasses[point.color].split(' ')[2]} flex items-center justify-center mb-4`}>
+                                            <Icon size={22} className={colorClasses[point.color].split(' ')[3]} />
                                         </div>
-
-                                        <h4 className="text-xl font-bold text-white mb-3">{value.title}</h4>
-                                        <p className="text-gray-400 leading-relaxed">{value.description}</p>
+                                        <h4 className="text-lg font-bold text-white mb-2">{point.title}</h4>
+                                        <p className="text-sm text-white/60 leading-relaxed">{point.description}</p>
                                     </div>
                                 </motion.div>
                             </StaggerItem>
                         );
                     })}
                 </StaggerContainer>
+
+                {/* Bottom Trust Statement */}
+                <RevealOnScroll delay={0.3}>
+                    <div className="text-center">
+                        <div className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/50">
+                            <span className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                No technical jargon
+                            </span>
+                            <span className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                Simple communication
+                            </span>
+                            <span className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                We handle everything
+                            </span>
+                        </div>
+                    </div>
+                </RevealOnScroll>
             </div>
         </section>
     );
