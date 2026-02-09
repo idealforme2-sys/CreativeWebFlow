@@ -11,7 +11,7 @@ const InfiniteMarquee = () => {
     ];
 
     return (
-        <div className="relative py-8 bg-gradient-to-b from-black via-[#0a0a12] to-black border-y border-white/5 overflow-hidden">
+        <div className="relative pt-16 pb-8 bg-gradient-to-b from-black via-[#0a0a12] to-black border-y border-white/5 overflow-hidden">
             {/* Gradient fade edges */}
             <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />

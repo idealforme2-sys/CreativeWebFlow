@@ -66,7 +66,7 @@ const Hero = () => {
 
                 {/* Rotating Word - Separate from headline for clean animation */}
                 <motion.div
-                    className="mb-8 h-[1.3em]"
+                    className="mb-16 h-[1.3em]"
                     style={{ y: bgY, opacity: headingOpacity }}
                 >
                     <motion.h1
@@ -94,7 +94,7 @@ const Hero = () => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7, duration: 0.8 }}
-                    className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-6 leading-relaxed"
+                    className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-6 mt-8 leading-relaxed"
                 >
                     We design and build high-performance websites for local businesses
                     that turn visitors into{' '}
