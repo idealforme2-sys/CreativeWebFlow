@@ -28,7 +28,7 @@ const Hero = () => {
     }, []);
 
     return (
-        <section className="relative min-h-[80vh] flex flex-col justify-center items-center overflow-hidden py-16">
+        <section className="relative min-h-[80vh] flex flex-col justify-center items-center overflow-hidden pt-32 pb-16">
             <TechHUD />
 
             {/* Hero Content */}

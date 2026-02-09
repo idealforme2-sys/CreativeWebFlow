@@ -47,17 +47,40 @@ const Footer = () => {
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
-                {/* Large brand text */}
+                {/* Large brand text with video animation */}
                 <div className="text-center mb-20">
-                    <motion.h2
-                        className="text-[15vw] md:text-[12vw] leading-none font-black tracking-tighter"
-                        style={{
-                            WebkitTextStroke: '1px rgba(255,255,255,0.1)',
-                            WebkitTextFillColor: 'transparent'
-                        }}
-                    >
-                        CREATIVE
-                    </motion.h2>
+                    <div className="relative h-[15vw] md:h-[12vw] w-full overflow-hidden rounded-3xl">
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover"
+                        >
+                            <source src="https://cdn.magicui.design/ocean-small.webm" type="video/webm" />
+                        </video>
+                        <div
+                            className="absolute inset-0 flex items-center justify-center text-[15vw] md:text-[12vw] font-black tracking-tighter"
+                            style={{
+                                backgroundClip: 'text',
+                                WebkitBackgroundClip: 'text',
+                                color: 'transparent',
+                                backgroundImage: 'inherit',
+                                mixBlendMode: 'screen',
+                            }}
+                        >
+                            <span
+                                className="text-[15vw] md:text-[12vw] font-black tracking-tighter"
+                                style={{
+                                    WebkitTextStroke: '2px rgba(255,255,255,0.3)',
+                                    WebkitTextFillColor: 'transparent',
+                                    filter: 'drop-shadow(0 0 30px rgba(6,182,212,0.3))',
+                                }}
+                            >
+                                CREATIVE
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Footer Grid */}
