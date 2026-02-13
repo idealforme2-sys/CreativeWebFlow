@@ -3,333 +3,327 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Preloader = ({ onComplete }) => {
     const [count, setCount] = useState(0);
-    const [phase, setPhase] = useState('counting'); // counting, morphing, text
-    const [morphProgress, setMorphProgress] = useState(0);
-    const [text, setText] = useState("");
-    const fullText = "CREATIVE WEBFLOW";
+    const [phase, setPhase] = useState('loading'); // loading, reveal, exit
     const canvasRef = useRef(null);
+    const particlesRef = useRef([]);
+    const animFrameRef = useRef(null);
 
-    // Premium counting phase with particle effects
+    // Particle background system
     useEffect(() => {
-        let start = Date.now();
-        let duration = 2000;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+
+        // Create floating particles
+        const particles = [];
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 3 + 1,
+                opacity: Math.random() * 0.5 + 0.1,
+                hue: 180 + Math.random() * 100, // cyan to purple range
+            });
+        }
+        particlesRef.current = particles;
+
+        const animate = () => {
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            particles.forEach((p, i) => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Wrap around
+                if (p.x < 0) p.x = window.innerWidth;
+                if (p.x > window.innerWidth) p.x = 0;
+                if (p.y < 0) p.y = window.innerHeight;
+                if (p.y > window.innerHeight) p.y = 0;
+
+                // Draw particle
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${p.hue}, 80%, 65%, ${p.opacity})`;
+                ctx.fill();
+
+                // Draw connections
+                particles.forEach((p2, j) => {
+                    if (i === j) return;
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `hsla(${(p.hue + p2.hue) / 2}, 70%, 55%, ${0.1 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            animFrameRef.current = requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        return () => {
+            if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        };
+    }, []);
+
+    // Count up animation
+    useEffect(() => {
+        const start = Date.now();
+        const duration = 2200;
 
         const tick = () => {
-            let elapsed = Date.now() - start;
-            let p = Math.min(elapsed / duration, 1);
-            // Exponential ease out
-            let ease = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+            const elapsed = Date.now() - start;
+            const p = Math.min(elapsed / duration, 1);
+            const ease = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
             setCount(Math.floor(ease * 100));
 
             if (p < 1) {
                 requestAnimationFrame(tick);
             } else {
-                setPhase('morphing');
+                setTimeout(() => setPhase('reveal'), 200);
             }
         };
 
         requestAnimationFrame(tick);
     }, []);
 
-    // Premium morphing transition (number dissolves into particles then forms text)
+    // Reveal phase - show brand text then exit
     useEffect(() => {
-        if (phase !== 'morphing') return;
-
-        const canvas = canvasRef.current;
-        if (!canvas) {
-            // Fallback if canvas fails
-            setPhase('text');
-            return;
-        }
-
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        const targetText = fullText;
-
-        // Create particles from "100%"
-        ctx.font = 'bold 180px system-ui';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('100%', canvas.width / 2, canvas.height / 2);
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Sample particles from the text
-        for (let y = 0; y < canvas.height; y += 4) {
-            for (let x = 0; x < canvas.width; x += 4) {
-                const i = (y * canvas.width + x) * 4;
-                if (imageData.data[i + 3] > 128) {
-                    particles.push({
-                        x,
-                        y,
-                        originX: x,
-                        originY: y,
-                        targetX: x + (Math.random() - 0.5) * 500,
-                        targetY: y + (Math.random() - 0.5) * 500,
-                        size: 2 + Math.random() * 2,
-                        color: `hsl(${180 + Math.random() * 60}, 100%, 70%)`,
-                        speed: 0.02 + Math.random() * 0.02,
-                        phase: 0
-                    });
-                }
-            }
-        }
-
-        // Get target positions for text
-        ctx.font = 'bold 100px system-ui';
-        ctx.fillText(targetText, canvas.width / 2, canvas.height / 2);
-        const targetData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const targetPositions = [];
-        for (let y = 0; y < canvas.height; y += 4) {
-            for (let x = 0; x < canvas.width; x += 4) {
-                const i = (y * canvas.width + x) * 4;
-                if (targetData.data[i + 3] > 128) {
-                    targetPositions.push({ x, y });
-                }
-            }
-        }
-
-        // Assign target positions to particles
-        particles.forEach((p, i) => {
-            if (targetPositions[i % targetPositions.length]) {
-                p.finalX = targetPositions[i % targetPositions.length].x;
-                p.finalY = targetPositions[i % targetPositions.length].y;
-            } else {
-                p.finalX = canvas.width / 2 + (Math.random() - 0.5) * 100;
-                p.finalY = canvas.height / 2 + (Math.random() - 0.5) * 100;
-            }
-        });
-
-        let animationFrame;
-        let startTime = Date.now();
-        const duration = 2500;
-
-        const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            setMorphProgress(progress);
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach(p => {
-                if (progress < 0.4) {
-                    // Phase 1: Explode outward
-                    const explodeProgress = progress / 0.4;
-                    const ease = 1 - Math.pow(1 - explodeProgress, 3);
-                    p.x = p.originX + (p.targetX - p.originX) * ease;
-                    p.y = p.originY + (p.targetY - p.originY) * ease;
-                } else if (progress < 0.7) {
-                    // Phase 2: Swirl
-                    const swirlProgress = (progress - 0.4) / 0.3;
-                    const angle = swirlProgress * Math.PI * 2;
-                    const radius = 50 * (1 - swirlProgress);
-                    p.x = p.targetX + Math.cos(angle + p.originX * 0.01) * radius;
-                    p.y = p.targetY + Math.sin(angle + p.originY * 0.01) * radius;
-                } else {
-                    // Phase 3: Form text
-                    const formProgress = (progress - 0.7) / 0.3;
-                    const ease = 1 - Math.pow(1 - formProgress, 4);
-                    p.x = p.targetX + (p.finalX - p.targetX) * ease;
-                    p.y = p.targetY + (p.finalY - p.targetY) * ease;
-                }
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * (1 - progress * 0.3), 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-            });
-
-            if (progress < 1) {
-                animationFrame = requestAnimationFrame(animate);
-            } else {
-                setPhase('text');
-            }
-        };
-
-        animate();
-
-        return () => {
-            if (animationFrame) cancelAnimationFrame(animationFrame);
-        };
-    }, [phase]);
-
-    // Text reveal with scramble
-    useEffect(() => {
-        if (phase !== 'text') return;
-
-        let i = 0;
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const interval = setInterval(() => {
-            setText(
-                fullText.split("").map((c, idx) =>
-                    idx < i ? c : chars[Math.floor(Math.random() * chars.length)]
-                ).join("")
-            );
-            i += 0.5;
-            if (i > fullText.length) {
-                setText(fullText);
-                clearInterval(interval);
-                setTimeout(onComplete, 600);
-            }
-        }, 25);
-
-        return () => clearInterval(interval);
+        if (phase !== 'reveal') return;
+        const timer = setTimeout(() => {
+            setPhase('exit');
+            setTimeout(onComplete, 900);
+        }, 1500);
+        return () => clearTimeout(timer);
     }, [phase, onComplete]);
+
+    const letterVariants = {
+        hidden: { y: 80, opacity: 0, rotateX: -90 },
+        visible: (i) => ({
+            y: 0,
+            opacity: 1,
+            rotateX: 0,
+            transition: {
+                delay: i * 0.05,
+                duration: 0.6,
+                ease: [0.16, 1, 0.3, 1],
+            },
+        }),
+    };
+
+    const brandText = 'CREATIVE WEBFLOW';
 
     return (
         <motion.div
-            className="fixed inset-0 z-[999] bg-[#030014] flex flex-col items-center justify-center overflow-hidden"
+            className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #030014 0%, #0a0a1f 50%, #030014 100%)' }}
             exit={{
-                opacity: 0,
-                scale: 1.1,
-                filter: 'blur(20px)',
+                clipPath: 'circle(0% at 50% 50%)',
                 transition: {
-                    duration: 0.8,
+                    duration: 0.9,
                     ease: [0.76, 0, 0.24, 1]
                 }
             }}
         >
-            {/* Background gradient */}
-            <motion.div
-                className="absolute inset-0"
-                animate={{
-                    background: phase === 'morphing'
-                        ? 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.3) 0%, rgba(0, 0, 0, 0) 70%)'
-                        : 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, rgba(0, 0, 0, 0) 70%)'
-                }}
-                transition={{ duration: 1 }}
-            />
-
-            {/* Grid pattern */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
-            {/* Particle canvas for morphing */}
+            {/* Particle canvas */}
             <canvas
                 ref={canvasRef}
-                className={`absolute inset-0 z-10 ${phase === 'morphing' ? 'opacity-100' : 'opacity-0'}`}
-                style={{ transition: 'opacity 0.5s' }}
+                className="absolute inset-0 z-0"
             />
 
+            {/* Radial glow */}
+            <motion.div
+                className="absolute inset-0 z-1"
+                animate={{
+                    background: [
+                        'radial-gradient(600px circle at 50% 50%, rgba(6,182,212,0.15), transparent 70%)',
+                        'radial-gradient(600px circle at 50% 50%, rgba(168,85,247,0.15), transparent 70%)',
+                        'radial-gradient(600px circle at 50% 50%, rgba(6,182,212,0.15), transparent 70%)',
+                    ]
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            />
+
+            {/* Rotating ring */}
+            <motion.div
+                className="absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full border border-white/5 z-1"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            >
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-purple-400 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)]" />
+            </motion.div>
+
+            <motion.div
+                className="absolute w-[220px] h-[220px] md:w-[300px] md:h-[300px] rounded-full border border-white/[0.03] z-1"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+            >
+                <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-pink-400 rounded-full shadow-[0_0_12px_rgba(236,72,153,0.8)]" />
+            </motion.div>
+
+            {/* Main content */}
             <div className="relative z-20 text-center">
                 <AnimatePresence mode="wait">
-                    {phase === 'counting' && (
+                    {phase === 'loading' && (
                         <motion.div
-                            key="counting"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.2, filter: 'blur(20px)' }}
+                            key="loading"
+                            exit={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
                             transition={{ duration: 0.5 }}
-                            className="flex flex-col items-center gap-8"
+                            className="flex flex-col items-center"
                         >
+                            {/* Counter */}
                             <motion.div
-                                className="text-[20vw] md:text-[15vw] font-light leading-none tracking-tighter tabular-nums"
+                                className="text-[22vw] md:text-[15vw] font-extralight leading-none tracking-tighter tabular-nums"
                                 style={{
-                                    background: 'linear-gradient(180deg, #ffffff 0%, #a855f7 50%, #06b6d4 100%)',
+                                    background: 'linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.4) 100%)',
                                     WebkitBackgroundClip: 'text',
                                     backgroundClip: 'text',
-                                    color: 'transparent'
+                                    color: 'transparent',
                                 }}
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8 }}
                             >
-                                {count}%
+                                {String(count).padStart(2, '0')}
                             </motion.div>
 
-                            {/* Pulsing dots */}
-                            <div className="flex gap-3">
-                                {[...Array(5)].map((_, i) => (
-                                    <motion.div
-                                        key={i}
-                                        className="w-3 h-3 rounded-full"
-                                        style={{
-                                            background: `linear-gradient(135deg, #06b6d4, #a855f7)`
-                                        }}
-                                        animate={{
-                                            scale: [1, 1.5, 1],
-                                            opacity: [0.3, 1, 0.3],
-                                            boxShadow: [
-                                                '0 0 0 rgba(6, 182, 212, 0)',
-                                                '0 0 20px rgba(6, 182, 212, 0.8)',
-                                                '0 0 0 rgba(6, 182, 212, 0)'
-                                            ]
-                                        }}
-                                        transition={{
-                                            duration: 1,
-                                            repeat: Infinity,
-                                            delay: i * 0.15
-                                        }}
-                                    />
-                                ))}
+                            {/* Loading bar */}
+                            <div className="w-48 h-[1px] bg-white/10 mt-6 rounded-full overflow-hidden">
+                                <motion.div
+                                    className="h-full rounded-full"
+                                    style={{
+                                        background: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899)',
+                                        width: `${count}%`,
+                                    }}
+                                />
                             </div>
+
+                            {/* Status text */}
+                            <motion.p
+                                className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em] mt-4"
+                                animate={{ opacity: [0.3, 0.7, 0.3] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                            >
+                                Initializing experience
+                            </motion.p>
                         </motion.div>
                     )}
 
-                    {phase === 'text' && (
+                    {phase === 'reveal' && (
                         <motion.div
-                            key="text"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-4xl md:text-7xl lg:text-8xl font-black tracking-tighter"
+                            key="reveal"
+                            className="flex flex-col items-center gap-6"
+                            exit={{ opacity: 0, y: -40 }}
+                            transition={{ duration: 0.4 }}
                         >
-                            <motion.span
-                                className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-                                animate={{
-                                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                                }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                                style={{ backgroundSize: '200% 100%' }}
+                            {/* Brand text with letter-by-letter animation */}
+                            <div className="flex flex-wrap justify-center perspective-[1000px]">
+                                {brandText.split('').map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        custom={i}
+                                        variants={letterVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className={`text-4xl md:text-7xl lg:text-8xl font-black tracking-tight ${char === ' ' ? 'mx-3' : ''
+                                            }`}
+                                        style={{
+                                            background: `linear-gradient(135deg, #06b6d4 ${i * 6}%, #a855f7 ${50 + i * 3}%, #ec4899 100%)`,
+                                            WebkitBackgroundClip: 'text',
+                                            backgroundClip: 'text',
+                                            color: 'transparent',
+                                            display: 'inline-block',
+                                        }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))}
+                            </div>
+
+                            {/* Tagline */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.8, duration: 0.6 }}
+                                className="text-sm md:text-base text-white/40 font-light tracking-[0.2em] uppercase"
                             >
-                                {text}
-                            </motion.span>
+                                Crafting Digital Excellence
+                            </motion.p>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* Progress bar */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+            {/* Bottom gradient line */}
+            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/5">
                 <motion.div
-                    className="h-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"
+                    className="h-full"
+                    style={{
+                        background: 'linear-gradient(90deg, transparent, #06b6d4, #a855f7, #ec4899, transparent)',
+                    }}
                     initial={{ width: 0 }}
                     animate={{
-                        width: phase === 'text' ? '100%' :
-                            phase === 'morphing' ? `${50 + morphProgress * 50}%` :
-                                `${count * 0.5}%`
+                        width: phase === 'reveal' ? '100%' :
+                            `${count}%`
                     }}
-                    transition={{ ease: "linear", duration: 0.1 }}
+                    transition={{ ease: 'linear', duration: 0.1 }}
                 />
             </div>
 
-            {/* Corner decorations with glow */}
+            {/* Corner markers */}
             <motion.div
-                className="absolute top-8 left-8 w-20 h-20 border-t-2 border-l-2 border-cyan-500/50"
-                animate={{
-                    borderColor: phase === 'morphing'
-                        ? ['rgba(6, 182, 212, 0.5)', 'rgba(168, 85, 247, 0.8)', 'rgba(6, 182, 212, 0.5)']
-                        : 'rgba(6, 182, 212, 0.5)'
-                }}
-                transition={{ duration: 1, repeat: Infinity }}
-            />
+                className="absolute top-6 left-6 flex items-center gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+            >
+                <div className="w-6 h-[1px] bg-gradient-to-r from-cyan-400 to-transparent" />
+                <div className="h-6 w-[1px] bg-gradient-to-b from-cyan-400 to-transparent" />
+            </motion.div>
             <motion.div
-                className="absolute top-8 right-8 w-20 h-20 border-t-2 border-r-2 border-pink-500/50"
-                animate={{
-                    borderColor: phase === 'morphing'
-                        ? ['rgba(236, 72, 153, 0.5)', 'rgba(168, 85, 247, 0.8)', 'rgba(236, 72, 153, 0.5)']
-                        : 'rgba(236, 72, 153, 0.5)'
-                }}
-                transition={{ duration: 1, repeat: Infinity }}
-            />
+                className="absolute top-6 right-6 flex items-center gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+            >
+                <div className="h-6 w-[1px] bg-gradient-to-b from-purple-400 to-transparent" />
+                <div className="w-6 h-[1px] bg-gradient-to-l from-purple-400 to-transparent" />
+            </motion.div>
             <motion.div
-                className="absolute bottom-8 left-8 w-20 h-20 border-b-2 border-l-2 border-cyan-500/50"
-            />
+                className="absolute bottom-6 left-6 flex items-center gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+            >
+                <div className="w-6 h-[1px] bg-gradient-to-r from-cyan-400/50 to-transparent" />
+                <div className="h-6 w-[1px] bg-gradient-to-t from-cyan-400/50 to-transparent" />
+            </motion.div>
             <motion.div
-                className="absolute bottom-8 right-8 w-20 h-20 border-b-2 border-r-2 border-pink-500/50"
-            />
+                className="absolute bottom-6 right-6 flex items-center gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+            >
+                <div className="h-6 w-[1px] bg-gradient-to-t from-pink-400/50 to-transparent" />
+                <div className="w-6 h-[1px] bg-gradient-to-l from-pink-400/50 to-transparent" />
+            </motion.div>
         </motion.div>
     );
 };

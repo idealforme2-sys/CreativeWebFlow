@@ -49,8 +49,8 @@ const Navbar = () => {
                 animate={{ y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className={`fixed z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-                        ? 'top-3 left-6 right-6 lg:left-16 lg:right-16 rounded-2xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/40 py-3'
-                        : 'top-0 left-0 right-0 py-6 bg-gradient-to-b from-black/80 to-transparent'
+                    ? 'top-3 left-6 right-6 lg:left-16 lg:right-16 rounded-2xl bg-black/85 backdrop-blur-xl border border-white/[0.04] shadow-2xl shadow-black/40 py-3'
+                    : 'top-0 left-0 right-0 py-6 bg-gradient-to-b from-black/80 to-transparent'
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
