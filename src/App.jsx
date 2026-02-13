@@ -10,6 +10,7 @@ import Preloader from './components/Preloader';
 
 // Section Components
 import Navbar from './components/Navbar';
+import ScrollSidebar from './components/ScrollSidebar';
 import Hero from './components/Hero';
 import InfiniteMarquee from './components/InfiniteMarquee';
 import WhoWeHelp from './components/WhoWeHelp';
@@ -74,6 +75,7 @@ function App() {
 
                     {/* Navigation */}
                     <Navbar />
+                    <ScrollSidebar />
 
                     {/* Main Content */}
                     <main className="relative z-10">
