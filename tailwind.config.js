@@ -27,6 +27,7 @@ export default {
                 'shimmer': 'shimmer 2s linear infinite',
                 'scan-line': 'scan-line 4s linear infinite',
                 'text-reveal': 'text-reveal 1s ease forwards',
+                'lava-wave': 'lava-wave 4s ease-in-out infinite',
             },
             keyframes: {
                 'gradient-x': {
@@ -56,6 +57,12 @@ export default {
                 'text-reveal': {
                     '0%': { clipPath: 'inset(0 100% 0 0)' },
                     '100%': { clipPath: 'inset(0 0 0 0)' },
+                },
+                'lava-wave': {
+                    '0%': { backgroundPosition: '0% 50%' },
+                    '33%': { backgroundPosition: '50% 50%' },
+                    '66%': { backgroundPosition: '100% 50%' },
+                    '100%': { backgroundPosition: '0% 50%' },
                 },
             },
             backgroundSize: {

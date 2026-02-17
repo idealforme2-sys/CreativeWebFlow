@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Send, Mail, ArrowUpRight } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, MagneticButton, HolographicCard } from './UIComponents';
+import { motion, useInView } from 'framer-motion';
+import { Send, Mail, ArrowUpRight, Rocket } from 'lucide-react';
+import { SectionHeader, RevealOnScroll } from './UIComponents';
+import { RainbowButton } from './MagicUI';
 
 const ContactSection = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         company: '',
+        budget: '',
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,7 +18,6 @@ const ContactSection = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Simulate form submission
         await new Promise(resolve => setTimeout(resolve, 1500));
         setIsSubmitting(false);
         setSubmitted(true);
@@ -48,14 +49,13 @@ const ContactSection = () => {
                         label="Get in Touch"
                         title={
                             <>
-                                Let's{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-                                    Grow Your Business
+                                Let's Build Something{' '}
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                                    Amazing Together
                                 </span>
                             </>
                         }
-                        subtitle="Not sure what you need? That's okay — tell us about your business and we'll guide you."
-                        align="center"
+                        subtitle="Tell us about your project and we'll get back to you within 24 hours."
                         className="mb-16"
                     />
                 </RevealOnScroll>
@@ -71,7 +71,7 @@ const ContactSection = () => {
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
                     {/* Contact Form */}
                     <RevealOnScroll delay={0.1}>
-                        <HolographicCard className="p-8 md:p-10">
+                        <div className="p-8 md:p-10 border border-white/[0.06] bg-white/[0.02] backdrop-blur-md rounded-2xl">
                             {submitted ? (
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
@@ -117,18 +117,39 @@ const ContactSection = () => {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
-                                            Company (Optional)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="company"
-                                            value={formData.company}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
-                                            placeholder="Your Company"
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+                                                Company (Optional)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="company"
+                                                value={formData.company}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+                                                placeholder="Your Company"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+                                                Budget Range
+                                            </label>
+                                            <select
+                                                name="budget"
+                                                value={formData.budget}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white/60 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all appearance-none"
+                                                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
+                                            >
+                                                <option value="" className="bg-[#1a1a2e]">Select budget...</option>
+                                                <option value="200-500" className="bg-[#1a1a2e]">$200 – $500 (Starter)</option>
+                                                <option value="500-1000" className="bg-[#1a1a2e]">$500 – $1,000 (Growth)</option>
+                                                <option value="1000-3000" className="bg-[#1a1a2e]">$1,000 – $3,000 (Premium)</option>
+                                                <option value="3000+" className="bg-[#1a1a2e]">$3,000+ (Enterprise)</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div>
@@ -146,29 +167,29 @@ const ContactSection = () => {
                                         />
                                     </div>
 
-                                    <MagneticButton
-                                        className="w-full py-5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white font-bold uppercase tracking-wider flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-cyan-500/25 transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                                    <RainbowButton
                                         onClick={() => { }}
+                                        className="w-full rounded-xl"
                                     >
                                         {isSubmitting ? (
                                             <motion.div
                                                 animate={{ rotate: 360 }}
                                                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                                                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full mx-auto"
                                             />
                                         ) : (
-                                            <>
+                                            <span className="flex items-center justify-center gap-3 text-sm font-bold uppercase tracking-wider">
                                                 Send Message
                                                 <Send size={18} />
-                                            </>
+                                            </span>
                                         )}
-                                    </MagneticButton>
+                                    </RainbowButton>
                                 </form>
                             )}
-                        </HolographicCard>
+                        </div>
                     </RevealOnScroll>
 
-                    {/* Contact Info */}
+                    {/* Right Column — Info + Response Timeline */}
                     <RevealOnScroll delay={0.2}>
                         <div className="space-y-8">
                             <div>
@@ -209,11 +230,63 @@ const ContactSection = () => {
                                     );
                                 })}
                             </div>
+
+                            {/* Response Timeline */}
+                            <ResponseTimeline />
                         </div>
                     </RevealOnScroll>
                 </div>
             </div>
         </section>
+    );
+};
+
+const ResponseTimeline = () => {
+    const ref = React.useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+    const steps = [
+        {
+            emoji: '📩',
+            title: 'We receive your message',
+            desc: 'Our team reviews your project details within hours.',
+            color: 'from-cyan-500 to-blue-500',
+        },
+        {
+            emoji: '🚀',
+            title: 'Project kickoff',
+            desc: 'We start bringing your vision to life.',
+            color: 'from-purple-500 to-pink-500',
+        },
+    ];
+
+    return (
+        <div ref={ref} className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+            <h4 className="text-sm font-mono text-white/40 uppercase tracking-wider mb-6">What happens next</h4>
+            <div className="space-y-0">
+                {steps.map((step, i) => (
+                    <motion.div
+                        key={step.title}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.5, delay: i * 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex items-start gap-4 relative"
+                    >
+                        {/* Timeline line */}
+                        {i < steps.length - 1 && (
+                            <div className="absolute left-5 top-12 w-px h-8 bg-gradient-to-b from-white/10 to-transparent" />
+                        )}
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-lg shadow-lg`}>
+                            {step.emoji}
+                        </div>
+                        <div className="pb-6">
+                            <p className="text-white font-semibold text-sm">{step.title}</p>
+                            <p className="text-white/40 text-xs mt-1">{step.desc}</p>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
     );
 };
 

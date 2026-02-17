@@ -183,32 +183,73 @@ export const TextAnimate = ({ children, animation = 'blurInUp', by = 'word', onc
     );
 };
 
-// RainbowButton - Animated gradient button with shimmer
+// RainbowButton — Dark bg + lava-lamp neon border glow
 export const RainbowButton = ({ children, onClick, className = '' }) => {
     return (
         <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
-            className={`relative px-8 py-4 rounded-full font-bold text-white overflow-hidden group ${className}`}
+            className={`relative group rounded-full overflow-hidden ${className}`}
+            style={{ padding: 0, border: 'none', background: 'none' }}
         >
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 animate-gradient-x" />
-
-            {/* Shimmer effect */}
-            <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                animate={{
-                    x: ['-200%', '200%']
-                }}
-                transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: 'linear'
+            {/* Lava-lamp neon glow underneath — the light leak */}
+            <div
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-8 blur-xl opacity-60 group-hover:opacity-90 transition-opacity duration-500"
+                style={{
+                    background: 'linear-gradient(90deg, #ff0080, #7928ca, #00dfd8, #06d6a0, #0070f3, #ff0080)',
+                    backgroundSize: '300% 100%',
+                    animation: 'lava-wave 4s ease-in-out infinite',
                 }}
             />
 
-            {/* Button content */}
+            {/* Lava-lamp neon gradient border ring */}
+            <div
+                className="absolute inset-0 rounded-full p-[2px]"
+                style={{
+                    background: 'linear-gradient(90deg, #ff0080, #7928ca, #00dfd8, #06d6a0, #0070f3, #ff0080)',
+                    backgroundSize: '300% 100%',
+                    animation: 'lava-wave 4s ease-in-out infinite',
+                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude',
+                }}
+            />
+
+            {/* Dark inner bg */}
+            <div className="relative px-8 py-4 rounded-full bg-slate-950 text-white font-bold overflow-hidden">
+                {/* Contained shimmer sweep */}
+                <motion.div
+                    className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                />
+                <span className="relative z-10">{children}</span>
+            </div>
+        </motion.button>
+    );
+};
+
+// ShimmerButton - Dark glass button with sweeping shimmer
+export const ShimmerButton = ({ children, onClick, className = '' }) => {
+    return (
+        <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClick}
+            className={`relative px-8 py-4 rounded-full font-bold text-white overflow-hidden bg-slate-950 border border-white/10 hover:border-white/20 transition-colors group ${className}`}
+        >
+            {/* Shimmer sweep */}
+            <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12"
+                animate={{ x: ['-200%', '200%'] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 1 }}
+            />
+
+            {/* Hover glow */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            {/* Content */}
             <span className="relative z-10">{children}</span>
         </motion.button>
     );

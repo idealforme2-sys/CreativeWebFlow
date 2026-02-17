@@ -13,15 +13,9 @@ const Footer = () => {
             { label: 'Contact', href: '#contact' }
         ],
         services: [
-            { label: 'Web Development', href: '#web-development' },
-            { label: 'App Development', href: '#app-development' },
-            { label: 'Digital Marketing', href: '#digital-marketing' }
-        ],
-        socials: [
-            { label: 'Twitter', href: '#' },
-            { label: 'LinkedIn', href: '#' },
-            { label: 'Instagram', href: '#' },
-            { label: 'Dribbble', href: '#' }
+            { label: 'Web Development', href: '#services' },
+            { label: 'Smart Features', href: '#services' },
+            { label: 'Local Marketing', href: '#services' }
         ],
         legal: [
             { label: 'Privacy Policy', href: '#' },

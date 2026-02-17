@@ -29,22 +29,26 @@ export const GlitchText = ({ text, className = "" }) => {
     );
 };
 
-// Holographic Card with 3D tilt
+// Holographic Card with 3D tilt (clamped)
 export const HolographicCard = ({ children, className = "" }) => {
     const x = useMotionValue(0);
     const y = useMotionValue(0);
-    const rotateX = useTransform(y, [-100, 100], [15, -15]);
-    const rotateY = useTransform(x, [-100, 100], [-15, 15]);
+    // Clamped: normalized to [-1, 1] range, max ±6° instead of raw pixels
+    const rotateX = useTransform(y, [-1, 1], [6, -6]);
+    const rotateY = useTransform(x, [-1, 1], [-6, 6]);
 
     return (
         <motion.div
-            style={{ x, y, rotateX, rotateY, z: 100 }}
+            style={{ rotateX, rotateY, z: 100 }}
             whileHover={{ scale: 1.02 }}
             className={`relative group border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl overflow-hidden ${className}`}
             onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
-                x.set(e.clientX - rect.left - rect.width / 2);
-                y.set(e.clientY - rect.top - rect.height / 2);
+                // Normalize to [-1, 1] based on element dimensions
+                const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+                const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+                x.set(Math.max(-1, Math.min(1, nx)));
+                y.set(Math.max(-1, Math.min(1, ny)));
             }}
             onMouseLeave={() => {
                 x.set(0);
@@ -86,18 +90,33 @@ export const MagneticButton = ({ children, className = "", onClick }) => {
     );
 };
 
-// Reveal on Scroll wrapper
+// Reveal on Scroll wrapper — Aura-style blur-fade-up
 export const RevealOnScroll = ({ children, className = "", delay = 0 }) => {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{
                 duration: 0.8,
                 delay,
-                ease: [0.16, 1, 0.3, 1] // ease-out-expo
+                ease: [0.16, 1, 0.3, 1]
             }}
+            className={className}
+        >
+            {children}
+        </motion.div>
+    );
+};
+
+// Lightweight blur-fade (no Y movement) — for inline text, labels
+export const BlurFadeIn = ({ children, className = "", delay = 0, duration = 0.6 }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, filter: 'blur(6px)' }}
+            whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
             className={className}
         >
             {children}
@@ -127,17 +146,18 @@ export const StaggerContainer = ({ children, className = "", staggerDelay = 0.1 
     );
 };
 
-// Stagger Item (child of StaggerContainer)
+// Stagger Item (child of StaggerContainer) — with blur
 export const StaggerItem = ({ children, className = "" }) => {
     return (
         <motion.div
             variants={{
-                hidden: { opacity: 0, y: 40 },
+                hidden: { opacity: 0, y: 20, filter: 'blur(6px)' },
                 visible: {
                     opacity: 1,
                     y: 0,
+                    filter: 'blur(0px)',
                     transition: {
-                        duration: 0.6,
+                        duration: 0.7,
                         ease: [0.16, 1, 0.3, 1]
                     }
                 }
@@ -227,9 +247,10 @@ export const SectionHeader = ({ label, title, subtitle, align = "left", classNam
         <div className={`max-w-3xl ${alignClasses[align]} ${className}`}>
             {label && (
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
+                    whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                     viewport={{ once: true }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     className={`flex items-center gap-4 mb-6 ${align === 'center' ? 'justify-center' : ''}`}
                 >
                     <div className="h-px w-12 bg-cyan-500" />
@@ -238,8 +259,8 @@ export const SectionHeader = ({ label, title, subtitle, align = "left", classNam
             )}
 
             <motion.h2
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
@@ -249,10 +270,10 @@ export const SectionHeader = ({ label, title, subtitle, align = "left", classNam
 
             {subtitle && (
                 <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+                    whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.2, duration: 0.8 }}
+                    transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     className="text-lg text-gray-400 leading-relaxed"
                 >
                     {subtitle}

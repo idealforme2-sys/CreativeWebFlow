@@ -50,6 +50,16 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
 
         const ctx = canvas.getContext('2d');
         const game = gameStateRef.current;
+        const isRunning = { current: true };
+
+        // Lock body scroll and hide custom cursor while game is active
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('game-active');
+
+        // Prevent scroll events from propagating
+        const blockScroll = (e) => e.preventDefault();
+        window.addEventListener('wheel', blockScroll, { passive: false });
+        window.addEventListener('touchmove', blockScroll, { passive: false });
 
         // Initialize game state
         const resize = () => {
@@ -178,11 +188,11 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
 
-        // Mouse handler
+        // Mouse handler — attach to window so we never miss events
         const handleMouseMove = (e) => {
             if (!game.gameOver) {
-                game.player.x += (e.clientX - game.player.x) * 0.12;
-                game.player.y += (e.clientY - game.player.y) * 0.08;
+                game.player.x += (e.clientX - game.player.x) * 0.15;
+                game.player.y += (e.clientY - game.player.y) * 0.10;
                 game.player.y = Math.max(100, Math.min(canvas.height - 50, game.player.y));
             }
         };
@@ -208,8 +218,22 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             if (!game.gameOver) shoot();
         };
 
-        canvas.addEventListener('mousemove', handleMouseMove);
+        // Auto-fire while mouse held down
+        let autoFireInterval = null;
+        const handleMouseDown = () => {
+            if (!game.gameOver) {
+                shoot();
+                autoFireInterval = setInterval(() => { if (!game.gameOver) shoot(); }, 150);
+            }
+        };
+        const handleMouseUp = () => {
+            if (autoFireInterval) { clearInterval(autoFireInterval); autoFireInterval = null; }
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
         canvas.addEventListener('click', handleClick);
+        canvas.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
 
         // Explosion effect
         const createExplosion = (x, y, color = '#06b6d4', count = 15) => {
@@ -239,9 +263,9 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
 
         // Game loop
         const gameLoop = () => {
+            if (!isRunning.current) return;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Player movement
             if (!game.gameOver) {
@@ -472,13 +496,21 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         gameLoop();
 
         return () => {
+            isRunning.current = false;
             if (animationRef.current) cancelAnimationFrame(animationRef.current);
             intervalsRef.current.forEach(i => clearInterval(i));
             window.removeEventListener('resize', resize);
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-            canvas.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('wheel', blockScroll);
+            window.removeEventListener('touchmove', blockScroll);
+            window.removeEventListener('mousemove', handleMouseMove);
             canvas.removeEventListener('click', handleClick);
+            canvas.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
+            if (autoFireInterval) clearInterval(autoFireInterval);
+            document.body.style.overflow = '';
+            document.body.classList.remove('game-active');
         };
     }, [isActive, gameStarted, onClose]);
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { GlitchText, MagneticButton } from './UIComponents';
+import { RainbowButton } from './MagicUI';
 import Logo from '../assets/logo-transparent.png';
 
 const Navbar = () => {
@@ -48,9 +49,9 @@ const Navbar = () => {
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className={`fixed z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] border ${isScrolled
-                    ? 'top-3 left-6 right-6 lg:left-16 lg:right-16 rounded-2xl bg-black/85 backdrop-blur-xl border-white/[0.04] shadow-2xl shadow-black/40 py-3'
-                    : 'top-0 left-0 right-0 rounded-none py-6 bg-gradient-to-b from-black/80 to-transparent border-transparent'
+                className={`fixed z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
+                    ? 'top-3 left-6 right-6 lg:left-16 lg:right-16 rounded-2xl bg-black/85 backdrop-blur-xl shadow-2xl shadow-black/40 py-3'
+                    : 'top-0 left-0 right-0 rounded-none py-6 bg-gradient-to-b from-black/80 to-transparent'
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -122,12 +123,12 @@ const Navbar = () => {
                     </div>
 
                     {/* CTA Button */}
-                    <MagneticButton
+                    <RainbowButton
                         onClick={() => scrollToSection('#contact')}
-                        className="hidden lg:flex px-6 py-2.5 bg-white text-black rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gradient-to-r hover:from-cyan-400 hover:to-purple-400 hover:text-white transition-all duration-300"
+                        className="hidden lg:flex px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest"
                     >
                         Start Project
-                    </MagneticButton>
+                    </RainbowButton>
 
                     {/* Mobile Menu Button */}
                     <button
@@ -181,15 +182,12 @@ const Navbar = () => {
                                 </motion.div>
                             ))}
 
-                            <motion.button
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
+                            <RainbowButton
                                 onClick={() => scrollToSection('#contact')}
-                                className="mt-8 px-8 py-3 bg-gradient-to-r from-cyan-400 to-purple-400 text-black rounded-full text-sm font-bold uppercase tracking-widest"
+                                className="mt-8 px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest"
                             >
                                 Start Project
-                            </motion.button>
+                            </RainbowButton>
                         </div>
                     </motion.div>
                 )}
