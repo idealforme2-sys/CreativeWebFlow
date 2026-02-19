@@ -1,15 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MessageCircle, Palette, Smartphone, Target, LifeBuoy, Clock, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+
+import card1 from '../assets/why-us/card-1.png';
+import card2 from '../assets/why-us/card-2.png';
+import card3 from '../assets/why-us/card-3.png';
+import card4 from '../assets/why-us/card-4.png';
+import card5 from '../assets/why-us/card-5.png';
+import card6 from '../assets/why-us/card-6.png';
 
 const WhyChooseUs = () => {
     const reasons = [
-        { icon: MessageCircle, title: 'Simple communication', desc: 'No technical jargon — just clear, honest conversation.' },
-        { icon: Palette, title: 'Modern, professional design', desc: 'Your business will look as good as the big players.' },
-        { icon: Smartphone, title: 'Works on all devices', desc: 'Perfect on phones, tablets, and desktops.' },
-        { icon: Target, title: 'Focus on real results', desc: 'Not just looks — websites that bring customers.' },
-        { icon: LifeBuoy, title: 'Reliable support', desc: 'We are here when you need help, even after launch.' },
-        { icon: Clock, title: 'Clear timelines', desc: 'Know exactly when your project will be ready.' },
+        { image: card1, title: 'Simple communication', desc: 'No technical jargon — just clear, honest conversation.' },
+        { image: card2, title: 'Modern, professional design', desc: 'Your business will look as good as the big players.' },
+        { image: card3, title: 'Works on all devices', desc: 'Perfect on phones, tablets, and desktops.' },
+        { image: card4, title: 'Focus on real results', desc: 'Not just looks — websites that bring customers.' },
+        { image: card5, title: 'Reliable support', desc: 'We are here when you need help, even after launch.' },
+        { image: card6, title: 'Clear timelines', desc: 'Know exactly when your project will be ready.' },
     ];
 
     return (
@@ -31,6 +38,9 @@ const WhyChooseUs = () => {
                             Why Local Businesses Choose Us
                         </span>
                     </h2>
+                    <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
+                        We earn trust through transparency, quality, and results — not buzzwords. Discover the difference a dedicated partner makes.
+                    </p>
                 </motion.div>
 
                 {/* Reasons Grid */}
@@ -42,16 +52,17 @@ const WhyChooseUs = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-50px" }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="group relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-cyan-500/20 transition-all duration-500"
+                            className="group relative rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform duration-300"
                         >
-                            <div className="flex items-start gap-4">
-                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <reason.icon className="w-6 h-6 text-cyan-400" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-white mb-2">{reason.title}</h3>
-                                    <p className="text-sm text-white/50 leading-relaxed">{reason.desc}</p>
-                                </div>
+                            <img
+                                src={reason.image}
+                                alt={reason.title}
+                                className="w-full h-auto object-cover rounded-2xl shadow-2xl border border-white/10"
+                            />
+                            {/* Hidden text for accessibility */}
+                            <div className="sr-only">
+                                <h3>{reason.title}</h3>
+                                <p>{reason.desc}</p>
                             </div>
                         </motion.div>
                     ))}
