@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { GlitchText, MagneticButton } from './UIComponents';
 import { RainbowButton } from './MagicUI';
-import Logo from '../assets/logo-transparent.png';
+import Logo from '../assets/logo-main.png';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -61,12 +61,13 @@ const Navbar = () => {
                         onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                         className="flex items-center gap-3 group cursor-pointer"
                     >
-                        <div className="relative w-10 h-10 flex items-center justify-center overflow-hidden">
-                            <img src={Logo} alt="Creative WebFlow" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
+                        <div className="relative h-12 w-auto flex items-center justify-center overflow-hidden">
+                            <img
+                                src={Logo}
+                                alt="Creative WebFlow"
+                                className="h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                            />
                         </div>
-                        <span className="font-semibold text-sm uppercase tracking-[0.15em] text-white group-hover:text-cyan-400 transition-colors hidden sm:block">
-                            <GlitchText text="Creative WebFlow" />
-                        </span>
                     </a>
 
                     {/* Desktop Navigation */}

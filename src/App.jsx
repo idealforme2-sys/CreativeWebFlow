@@ -17,6 +17,7 @@ import AboutSection from './components/AboutSection';
 import ProcessSection from './components/ProcessSection';
 import ServicesShowcase from './components/ServicesShowcase';
 import WorkSection from './components/WorkSection';
+import DetailedCaseStudies from './components/DetailedCaseStudies'; // New Component
 import WhyChooseUs from './components/WhyChooseUs';
 import ContactSection from './components/ContactSection';
 import SocialProofSection from './components/SocialProofSection';
@@ -113,6 +114,9 @@ function App() {
 
                             {/* Portfolio */}
                             <WorkSection />
+
+                            {/* Detailed Case Studies (Original Section) */}
+                            <DetailedCaseStudies />
 
                             {/* Why Choose Us */}
                             <WhyChooseUs />
