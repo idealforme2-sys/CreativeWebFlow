@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { MessageCircle, Palette, Smartphone, Target, LifeBuoy, Clock, CheckCircle } from 'lucide-react';
-import { RainbowButton, GradientText } from './MagicUI';
+import { RainbowButton } from './MagicUI';
 import WavyCard from './WavyCard';
 
 // Import local macro images
@@ -95,7 +95,6 @@ const WhyChooseUs = () => {
     const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
     return (
-        // Restored transparency: bg-gradient instead of opaque bg-[#050505]
         <section className="relative py-28 md:py-36 overflow-hidden bg-gradient-to-b from-black/30 to-black/50">
             {/* Background Ambience */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -145,7 +144,7 @@ const WhyChooseUs = () => {
                                 <WavyCard className="w-full h-full" color={colorMap[reason.accentColor]}>
                                     <div className="relative w-full h-full overflow-hidden">
                                         {/* Image Background */}
-                                        <div className="absolute inset-0 opacity-20 transition-transform duration-700 group-hover:scale-110">
+                                        <div className="absolute inset-0 opacity-30 transition-transform duration-700 group-hover:scale-110">
                                             <img
                                                 src={reason.image}
                                                 alt={reason.title}
@@ -153,23 +152,23 @@ const WhyChooseUs = () => {
                                             />
                                         </div>
 
-                                        {/* Inner Content */}
-                                        <div className="relative h-full flex flex-col p-8 backdrop-blur-sm bg-gradient-to-b from-transparent to-[#18181b]/90">
+                                        {/* Gradient Overlay for Text Readability */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#18181b] via-[#18181b]/60 to-transparent pointer-events-none" />
+
+                                        {/* Inner Content - Simplified Layout */}
+                                        <div className="relative h-full flex flex-col p-8 justify-end z-10">
                                             {/* Icon Badge */}
-                                            <div className={`mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${reason.gradient} border ${reason.borderColor} ${reason.shadow}`}>
+                                            <div className={`mb-auto inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${reason.gradient} border ${reason.borderColor} ${reason.shadow}`}>
                                                 <Icon size={28} className={reason.textColor} />
                                             </div>
 
-                                            <h3 className="text-2xl font-bold text-white mb-4 leading-tight">
+                                            <h3 className="text-2xl font-bold text-white mb-3 mt-4 leading-tight drop-shadow-sm">
                                                 {reason.title}
                                             </h3>
 
-                                            {/* Description Box */}
-                                            <div className="mt-auto bg-black/40 border border-white/10 rounded-xl p-4 backdrop-blur-md">
-                                                <p className="text-sm text-gray-300 font-medium leading-relaxed">
-                                                    {reason.desc}
-                                                </p>
-                                            </div>
+                                            <p className="text-base text-gray-300 font-medium leading-relaxed drop-shadow-sm">
+                                                {reason.desc}
+                                            </p>
                                         </div>
                                     </div>
                                 </WavyCard>
