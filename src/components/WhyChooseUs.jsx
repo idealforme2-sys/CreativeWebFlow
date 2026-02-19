@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { MessageCircle, Palette, Smartphone, Target, LifeBuoy, Clock, CheckCircle } from 'lucide-react';
 import { RainbowButton, GradientText } from './MagicUI';
+import WavyCard from './WavyCard';
 
 // Import local macro images
 import communicationImg from '../assets/whyus/communication.png';
@@ -81,6 +82,15 @@ const WhyChooseUs = () => {
         },
     ];
 
+    const colorMap = {
+        cyan: '#06b6d4',
+        purple: '#a855f7',
+        pink: '#ec4899',
+        teal: '#14b8a6',
+        amber: '#f59e0b',
+        indigo: '#6366f1'
+    };
+
     const containerRef = useRef(null);
     const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
@@ -130,40 +140,39 @@ const WhyChooseUs = () => {
                                 initial={{ opacity: 0, y: 40 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                                className="relative group rounded-[0.9rem]"
+                                className="relative group h-[420px]"
                             >
-                                {/* Animated rotating border (CSS equivalent) */}
-                                <div className="absolute -inset-[2px] rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-
-                                <div className="relative h-[420px] bg-[#18181b] rounded-[0.9rem] p-1 overflow-hidden">
-                                    {/* Image Background */}
-                                    <div className="absolute inset-0 opacity-20 transition-transform duration-700 group-hover:scale-110">
-                                        <img
-                                            src={reason.image}
-                                            alt={reason.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-
-                                    {/* Inner Content */}
-                                    <div className="relative h-full flex flex-col p-8 backdrop-blur-sm bg-gradient-to-b from-transparent to-[#18181b]/90">
-                                        {/* Icon Badge */}
-                                        <div className={`mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${reason.gradient} border ${reason.borderColor} ${reason.shadow}`}>
-                                            <Icon size={28} className={reason.textColor} />
+                                <WavyCard className="w-full h-full" color={colorMap[reason.accentColor]}>
+                                    <div className="relative w-full h-full overflow-hidden">
+                                        {/* Image Background */}
+                                        <div className="absolute inset-0 opacity-20 transition-transform duration-700 group-hover:scale-110">
+                                            <img
+                                                src={reason.image}
+                                                alt={reason.title}
+                                                className="w-full h-full object-cover"
+                                            />
                                         </div>
 
-                                        <h3 className="text-2xl font-bold text-white mb-4 leading-tight">
-                                            {reason.title}
-                                        </h3>
+                                        {/* Inner Content */}
+                                        <div className="relative h-full flex flex-col p-8 backdrop-blur-sm bg-gradient-to-b from-transparent to-[#18181b]/90">
+                                            {/* Icon Badge */}
+                                            <div className={`mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${reason.gradient} border ${reason.borderColor} ${reason.shadow}`}>
+                                                <Icon size={28} className={reason.textColor} />
+                                            </div>
 
-                                        {/* Description Box */}
-                                        <div className="mt-auto bg-black/40 border border-white/10 rounded-xl p-4 backdrop-blur-md">
-                                            <p className="text-sm text-gray-300 font-medium leading-relaxed">
-                                                {reason.desc}
-                                            </p>
+                                            <h3 className="text-2xl font-bold text-white mb-4 leading-tight">
+                                                {reason.title}
+                                            </h3>
+
+                                            {/* Description Box */}
+                                            <div className="mt-auto bg-black/40 border border-white/10 rounded-xl p-4 backdrop-blur-md">
+                                                <p className="text-sm text-gray-300 font-medium leading-relaxed">
+                                                    {reason.desc}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </WavyCard>
                             </motion.div>
                         );
                     })}
