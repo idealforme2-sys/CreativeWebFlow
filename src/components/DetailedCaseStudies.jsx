@@ -78,7 +78,7 @@ const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
     }, [isInView, index, setActiveIndex]);
 
     return (
-        <div ref={ref} className="min-h-[90vh] flex flex-col justify-center py-20 pr-0 lg:pr-12">
+        <div id={study.id} ref={ref} className="min-h-[90vh] flex flex-col justify-center py-20 pr-0 lg:pr-12">
 
             {/* Mobile View: Iframe Preview (Hidden on Desktop) */}
             <div className="block lg:hidden w-full aspect-[4/3] rounded-3xl overflow-hidden mb-10 relative border border-white/10 shadow-2xl">

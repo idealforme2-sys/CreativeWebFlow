@@ -216,9 +216,10 @@ const WhyChooseUs = () => {
                 <div className="absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
 
                 {/* Row 1 (Moves Left) */}
-                <div className="flex w-max overflow-hidden">
+                <div className="flex w-max overflow-hidden" style={{ perspective: 1000, transformStyle: "preserve-3d" }}>
                     <motion.div
-                        className="flex w-max"
+                        className="flex w-max will-change-transform"
+                        style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
                         animate={{ x: [0, "-50%"] }}
                         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                     >
@@ -231,9 +232,10 @@ const WhyChooseUs = () => {
                 </div>
 
                 {/* Row 2 (Moves Right) */}
-                <div className="flex w-max overflow-hidden">
+                <div className="flex w-max overflow-hidden" style={{ perspective: 1000, transformStyle: "preserve-3d" }}>
                     <motion.div
-                        className="flex w-max"
+                        className="flex w-max will-change-transform"
+                        style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
                         animate={{ x: ["-50%", 0] }}
                         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                     >
