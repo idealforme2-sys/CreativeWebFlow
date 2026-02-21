@@ -81,7 +81,7 @@ const CaseStudyCard = ({ study, index }) => {
             initial={{ opacity: 0, x: isImageLeft ? 40 : -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className={`lg:col-span-5 space-y-6 ${isImageLeft ? 'pl-0 lg:pl-12' : 'pr-0 lg:pr-12'}`}
+            className={`lg:col-span-5 space-y-6 ${isImageLeft ? 'order-1 lg:order-2 pl-0 lg:pl-12' : 'order-1 pr-0 lg:pr-12'}`}
         >
             <div className="relative">
                 {/* Large faded number */}
@@ -141,7 +141,7 @@ const CaseStudyCard = ({ study, index }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7"
+            className={`lg:col-span-7 ${isImageLeft ? 'order-2 lg:order-1' : 'order-2'}`}
         >
             <motion.div
                 whileHover={{ y: -8, scale: 1.01 }}
@@ -207,17 +207,8 @@ const CaseStudyCard = ({ study, index }) => {
 
     return (
         <div ref={ref} id={study.id} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {isImageLeft ? (
-                <>
-                    <div className="lg:col-span-7 order-2 lg:order-1">{imageContent}</div>
-                    <div className="order-1 lg:order-2">{infoContent}</div>
-                </>
-            ) : (
-                <>
-                    <div className="order-1">{infoContent}</div>
-                    <div className="lg:col-span-7 order-2">{imageContent}</div>
-                </>
-            )}
+            {infoContent}
+            {imageContent}
         </div>
     );
 };
@@ -244,16 +235,16 @@ const DetailedCaseStudies = () => {
                             <div className="h-px w-12 bg-gradient-to-r from-pink-500 to-transparent" />
                             <span className="text-pink-400 text-[10px] font-bold tracking-[0.25em] uppercase">Example Projects</span>
                         </motion.div>
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                        <div className="max-w-3xl">
                             <AnimatedHeadline>
-                                <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl max-w-2xl leading-[1.1] text-white">
-                                    How We Help Local{' '}
+                                <h2 className="font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-8">
+                                    How We Help Local<br className="hidden md:block" />{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
                                         Businesses
                                     </span>
                                 </h2>
                             </AnimatedHeadline>
-                            <p className="text-white/40 max-w-md text-sm leading-relaxed">
+                            <p className="text-white/50 text-base md:text-lg leading-relaxed max-w-xl">
                                 These example projects show our approach to helping local businesses succeed online through strategic design and development.
                             </p>
                         </div>
