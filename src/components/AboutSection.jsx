@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, MessageCircle, TrendingUp, CheckCircle } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, ParallaxContainer, AnimatedHeadline } from './UIComponents';
+import { SectionHeader, RevealOnScroll, ParallaxContainer, AnimatedHeadline, TyphoonVortex } from './UIComponents';
 
 // Local macro images
 import professionalImg from '../assets/aboutus/trusty.png';
@@ -125,8 +125,9 @@ const AboutSection = () => {
         <section id="about" className="relative py-24 lg:py-32 overflow-hidden">
 
             {/* Background Elements */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/10 to-black" />
-            <ParallaxContainer speed={0.2} className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/10 to-black z-0" />
+            <TyphoonVortex color="#06b6d4" speed={40} />
+            <ParallaxContainer speed={0.2} className="absolute inset-0 z-0">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
             </ParallaxContainer>

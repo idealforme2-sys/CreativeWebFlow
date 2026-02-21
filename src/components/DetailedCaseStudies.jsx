@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award, ExternalLink } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
-import { AnimatedHeadline, RevealOnScroll, SectionParticles } from './UIComponents';
+import { AnimatedHeadline, RevealOnScroll, SectionParticles, TyphoonVortex } from './UIComponents';
 
 const caseStudies = [
     {
@@ -218,6 +218,7 @@ const DetailedCaseStudies = () => {
                             className="absolute inset-0 z-0 transition-all duration-1000 blur-3xl opacity-30"
                             style={{ background: caseStudies[activeIndex].glowColor }}
                         />
+                        <TyphoonVortex color={caseStudies[activeIndex].gradient.split('-')[1]} speed={30} />
 
                         {/* Iframes Stack */}
                         {caseStudies.map((study, index) => {

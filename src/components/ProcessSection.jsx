@@ -1,7 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Fingerprint, Layout, Terminal, Zap } from 'lucide-react';
-import { AnimatedHeadline, ParticlesBackground } from './UIComponents';
+import { AnimatedHeadline, ParticlesBackground, ElectricCurrent, FloatingOrbs } from './UIComponents';
 
 // Import local images directly
 import discoveryImg from '../assets/process/discovery.png';
@@ -155,6 +155,9 @@ const ProcessSection = () => {
             {/* The sticky inner container stays in view while we scroll down */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between py-[4vh] md:py-[6vh] overflow-hidden">
                 <ParticlesBackground />
+                <FloatingOrbs count={6} color1="#06b6d4" color2="#a855f7" />
+                <ElectricCurrent color="#06b6d4" className="top-20 left-[10%]" />
+                <ElectricCurrent color="#a855f7" className="bottom-40 right-[10%] rotate-180" />
 
                 {/* Background Gradients */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />

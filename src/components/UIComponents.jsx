@@ -611,3 +611,146 @@ export const SectionParticles = ({ type = 'dust', color = 'rgba(6,182,212,0.3)',
         </motion.div>
     );
 };
+
+// ==========================================
+// ADVANCED SECTION EFFECTS (Phase 30)
+// ==========================================
+
+export const ShootingStars = ({ count = 15, color = '#06b6d4' }) => {
+    return (
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+            {[...Array(count)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    initial={{ x: '100vw', y: '-10vh', opacity: 0, scale: 0 }}
+                    animate={{
+                        x: '-20vw',
+                        y: '120vh',
+                        opacity: [0, 1, 1, 0],
+                        scale: [0, 1, 0.5, 0]
+                    }}
+                    transition={{
+                        duration: Math.random() * 2 + 1.5,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: Math.random() * 15
+                    }}
+                    className="absolute rounded-full"
+                    style={{
+                        top: `${Math.random() * 50}%`,
+                        right: `${Math.random() * 50 - 20}%`,
+                        width: `${Math.random() * 150 + 50}px`,
+                        height: '2px',
+                        background: `linear-gradient(90deg, ${color}, transparent)`,
+                        transform: 'rotate(-45deg)',
+                        filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.8))'
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
+
+export const TyphoonVortex = ({ color = '#a855f7', speed = 20 }) => {
+    return (
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center mix-blend-screen opacity-40">
+            <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
+                className="relative w-[800px] h-[800px]"
+            >
+                {[...Array(40)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.3, 0.8, 0.3]
+                        }}
+                        transition={{
+                            duration: Math.random() * 3 + 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: Math.random() * 2
+                        }}
+                        className="absolute rounded-full"
+                        style={{
+                            left: '50%',
+                            top: '50%',
+                            width: `${Math.random() * 6 + 2}px`,
+                            height: `${Math.random() * 6 + 2}px`,
+                            backgroundColor: color,
+                            filter: `blur(${Math.random() * 3}px)`,
+                            boxShadow: `0 0 ${Math.random() * 10 + 5}px ${color}`,
+                            transform: `rotate(${i * 9}deg) translateX(${Math.random() * 300 + 50}px)`
+                        }}
+                    />
+                ))}
+                {/* Core glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-[80px]" style={{ backgroundColor: color }} />
+            </motion.div>
+        </div>
+    );
+};
+
+export const ElectricCurrent = ({ color = '#06b6d4', style, className }) => {
+    const d = `M 0,50 Q ${Math.random() * 50 + 25},${Math.random() * 100} 100,50 T 200,50 T 300,50 T 400,50`;
+
+    return (
+        <div className={`absolute pointer-events-none z-0 ${className}`} style={style}>
+            <svg width="400" height="100" viewBox="0 0 400 100" className="opacity-60 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">
+                <motion.path
+                    d={d}
+                    fill="transparent"
+                    stroke={color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    initial={{ strokeDasharray: "10 20", strokeDashoffset: 100 }}
+                    animate={{ strokeDashoffset: 0 }}
+                    transition={{
+                        duration: Math.random() * 1 + 0.5,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                />
+            </svg>
+        </div>
+    );
+};
+
+export const FloatingOrbs = ({ count = 5, color1 = '#06b6d4', color2 = '#a855f7' }) => {
+    return (
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-30">
+            {[...Array(count)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    animate={{
+                        x: [
+                            `${Math.random() * 100}%`,
+                            `${Math.random() * 100}%`,
+                            `${Math.random() * 100}%`
+                        ],
+                        y: [
+                            `${Math.random() * 100}%`,
+                            `${Math.random() * 100}%`,
+                            `${Math.random() * 100}%`
+                        ],
+                        scale: [1, 1.5, 1],
+                        opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{
+                        duration: Math.random() * 20 + 20,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                    className="absolute rounded-full mix-blend-screen"
+                    style={{
+                        width: `${Math.random() * 300 + 150}px`,
+                        height: `${Math.random() * 300 + 150}px`,
+                        background: `radial-gradient(circle, ${i % 2 === 0 ? color1 : color2} 0%, transparent 70%)`,
+                        filter: 'blur(40px)',
+                    }}
+                />
+            ))}
+        </div>
+    );
+};

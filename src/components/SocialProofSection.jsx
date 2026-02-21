@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Smartphone, Lock, Quote, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { RevealOnScroll, AnimatedHeadline } from './UIComponents';
+import { RevealOnScroll, AnimatedHeadline, FloatingOrbs } from './UIComponents';
 
 // Import local images for commitment cards (Stitch 3D abstract assets)
 import speedImg from '../assets/commitments/speed_bolt.png';
@@ -82,9 +82,10 @@ const SocialProofSection = () => {
         // Restored transparency: bg-transparent instead of opaque
         <section className="relative py-24 lg:py-32 overflow-hidden bg-transparent">
             {/* Background - adjusted for transparency */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-purple-950/20 to-black/80" />
-            <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-purple-950/20 to-black/80 z-0" />
+            <FloatingOrbs count={4} color1="#00f0ff" color2="#bd00ff" />
+            <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
 
             {/* Noise Overlay */}
             <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import TechHUD from './TechHUD';
 import { RainbowButton } from './MagicUI';
+import { ShootingStars } from './UIComponents';
 
 // Morphing grid background for depth
 const MorphGrid = () => {
@@ -110,6 +110,7 @@ const Hero = () => {
             {/* Layered backgrounds */}
             <MorphGrid />
             <FloatingOrbs />
+            <ShootingStars count={25} color="#bd00ff" />
             <TechHUD />
 
             {/* Radial spotlight from center */}
