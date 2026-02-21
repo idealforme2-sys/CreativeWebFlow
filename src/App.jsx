@@ -51,10 +51,7 @@ function App() {
 
         requestAnimationFrame(raf);
 
-        // Pause smooth scroll when game is active
-        if (gameActive) {
-            lenis.stop();
-        }
+        // Removed code that forces lenis.stop() on gameActive so user can play and scroll simultaneously
 
         return () => {
             lenis.destroy();

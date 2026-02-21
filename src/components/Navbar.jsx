@@ -69,7 +69,7 @@ const Navbar = () => {
             >
                 <div
                     className={`relative transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-                        ? 'rounded-3xl bg-[#0a0f1c]/90 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.4)] border border-white/[0.06] py-3'
+                        ? 'rounded-2xl bg-[#0a0f1c]/90 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.4)] py-3'
                         : 'rounded-none bg-gradient-to-b from-black/80 via-black/40 to-transparent py-5'
                         }`}
                 >

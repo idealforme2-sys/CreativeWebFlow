@@ -163,9 +163,10 @@ const FeatureCard = ({ feature, index }) => {
 };
 
 const WhyChooseUs = () => {
-    // Split features into two rows for the marquee
-    const row1 = [...features.slice(0, 3), ...features.slice(0, 3)];
-    const row2 = [...features.slice(3, 6), ...features.slice(3, 6)];
+    // We duplicate the 6 cards four times (24 cards total) to ensure the row is long enough
+    // to cover ultrawide monitors seamlessly before looping.
+    const row1 = [...features, ...features, ...features, ...features];
+    const row2 = [...features.slice().reverse(), ...features.slice().reverse(), ...features.slice().reverse(), ...features.slice().reverse()];
 
     return (
         <section className="relative py-24 lg:py-32 overflow-hidden bg-black/20 pb-40">
@@ -208,38 +209,40 @@ const WhyChooseUs = () => {
                 </RevealOnScroll>
             </div>
 
-            {/* Velocity Marquee Container */}
+            {/* Framer Motion Velocity Marquee Container */}
             <div className="relative w-full flex flex-col gap-6 md:gap-8 z-10 rotate-[-2deg] scale-[1.05]">
                 {/* Fade edges */}
-                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
-                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
+                <div className="absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
 
                 {/* Row 1 (Moves Left) */}
-                <div className="flex w-[200%] md:w-[150%] animate-marquee-left">
-                    {row1.map((feature, i) => (
-                        <div key={`row1-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
-                            <FeatureCard feature={feature} index={i} />
-                        </div>
-                    ))}
-                    {row1.map((feature, i) => (
-                        <div key={`row1-dup-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
-                            <FeatureCard feature={feature} index={i} />
-                        </div>
-                    ))}
+                <div className="flex w-max overflow-hidden">
+                    <motion.div
+                        className="flex w-max"
+                        animate={{ x: [0, "-50%"] }}
+                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                    >
+                        {row1.map((feature, i) => (
+                            <div key={`row1-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
+                                <FeatureCard feature={feature} index={i} />
+                            </div>
+                        ))}
+                    </motion.div>
                 </div>
 
                 {/* Row 2 (Moves Right) */}
-                <div className="flex w-[200%] md:w-[150%] animate-marquee-right">
-                    {row2.map((feature, i) => (
-                        <div key={`row2-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
-                            <FeatureCard feature={feature} index={i} />
-                        </div>
-                    ))}
-                    {row2.map((feature, i) => (
-                        <div key={`row2-dup-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
-                            <FeatureCard feature={feature} index={i} />
-                        </div>
-                    ))}
+                <div className="flex w-max overflow-hidden">
+                    <motion.div
+                        className="flex w-max"
+                        animate={{ x: ["-50%", 0] }}
+                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                    >
+                        {row2.map((feature, i) => (
+                            <div key={`row2-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
+                                <FeatureCard feature={feature} index={i} />
+                            </div>
+                        ))}
+                    </motion.div>
                 </div>
             </div>
 

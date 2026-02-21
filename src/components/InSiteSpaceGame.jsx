@@ -461,7 +461,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                 p.vx *= 0.97; p.vy *= 0.97;
                 p.life -= 0.025;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, Math.max(0, p.size * p.life), 0, Math.PI * 2);
                 const r = parseInt(p.color.slice(1, 3), 16);
                 const g = parseInt(p.color.slice(3, 5), 16);
                 const b = parseInt(p.color.slice(5, 7), 16);
@@ -475,7 +475,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                 e.radius += 3;
                 e.opacity -= 0.05;
                 ctx.beginPath();
-                ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+                ctx.arc(e.x, e.y, Math.max(0, e.radius), 0, Math.PI * 2);
                 const r = parseInt(e.color.slice(1, 3), 16);
                 const g = parseInt(e.color.slice(3, 5), 16);
                 const b = parseInt(e.color.slice(5, 7), 16);

@@ -149,12 +149,9 @@ const Hero = () => {
                     className="mb-4 relative z-20"
                     style={{ y: bgY, opacity: headingOpacity, scale: headingScale }}
                 >
-                    <div className="absolute -inset-x-8 -inset-y-4 bg-black/40 backdrop-blur-md rounded-[3rem] -z-10" />
                     <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[1.05] text-white">
                         <span className="relative">
                             Websites that
-                            {/* Subtle underline glow */}
-                            <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
                         </span>
                         <br />
                         <span className="relative inline-block">
