@@ -62,7 +62,26 @@ function App() {
     }, [loading, gameActive]);
 
     return (
-        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip">
+        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative">
+            {/* Animated App Border — color-cycling gradient */}
+            <div
+                className="fixed inset-0 z-[100] pointer-events-none"
+                style={{
+                    borderWidth: '2px',
+                    borderStyle: 'solid',
+                    borderImage: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4, #a855f7) 1',
+                    animation: 'app-border-cycle 6s linear infinite',
+                }}
+            />
+            <style>{`
+                @keyframes app-border-cycle {
+                    0% { border-image-source: linear-gradient(0deg, #06b6d4, #a855f7, #ec4899, #06b6d4); }
+                    25% { border-image-source: linear-gradient(90deg, #a855f7, #ec4899, #06b6d4, #a855f7); }
+                    50% { border-image-source: linear-gradient(180deg, #ec4899, #06b6d4, #a855f7, #ec4899); }
+                    75% { border-image-source: linear-gradient(270deg, #06b6d4, #ec4899, #a855f7, #06b6d4); }
+                    100% { border-image-source: linear-gradient(360deg, #06b6d4, #a855f7, #ec4899, #06b6d4); }
+                }
+            `}</style>
             {/* Custom Cursor */}
             <CustomCursor />
 

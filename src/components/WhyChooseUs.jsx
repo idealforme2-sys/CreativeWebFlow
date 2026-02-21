@@ -1,223 +1,213 @@
 import React, { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { AnimatedHeadline, RevealOnScroll } from './UIComponents';
 
-const Card3D = ({ auroraColors, icon, title, description }) => {
-    const wrapperRef = useRef(null);
-    const cardRef = useRef(null);
+const features = [
+    {
+        title: 'Simple\nCommunication',
+        description: 'No technical jargon — just clear, honest conversation about your goals.',
+        gradient: 'from-pink-500 via-purple-500 to-indigo-500',
+        glowColor: 'rgba(236,72,153,0.15)',
+        iconBg: 'from-pink-500/20 to-purple-500/20',
+        icon: (
+            <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8">
+                <path d="M12 20c0-6 4-10 10-10s10 4 10 10-4 10-10 10c-1.5 0-3-.3-4.2-.9L12 32l1.5-5.5C12.5 24.5 12 22.3 12 20z" stroke="url(#gc1)" strokeWidth="2" strokeLinejoin="round" />
+                <circle cx="18" cy="20" r="1.5" fill="#f9a8d4" />
+                <circle cx="22" cy="20" r="1.5" fill="#f9a8d4" />
+                <circle cx="26" cy="20" r="1.5" fill="#f9a8d4" />
+                <defs><linearGradient id="gc1" x1="12" y1="10" x2="32" y2="32"><stop stopColor="#f9a8d4" /><stop offset="1" stopColor="#a78bfa" /></linearGradient></defs>
+            </svg>
+        ),
+    },
+    {
+        title: 'Modern\nDesign',
+        description: 'Sleek, high-end aesthetics tailored to your brand.',
+        gradient: 'from-slate-400 via-white to-slate-300',
+        glowColor: 'rgba(148,163,184,0.15)',
+        iconBg: 'from-slate-400/20 to-white/10',
+        icon: (
+            <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8">
+                <polygon points="20,6 34,18 20,36 6,18" stroke="url(#gc2)" strokeWidth="2" strokeLinejoin="round" fill="none" />
+                <polygon points="20,6 34,18 20,18" fill="url(#gc2)" opacity="0.3" />
+                <polygon points="6,18 20,36 20,18" fill="url(#gc2)" opacity="0.15" />
+                <defs><linearGradient id="gc2" x1="6" y1="6" x2="34" y2="36"><stop stopColor="#e2e8f0" /><stop offset="1" stopColor="#64748b" /></linearGradient></defs>
+            </svg>
+        ),
+    },
+    {
+        title: 'Works on All\nDevices',
+        description: 'Perfect performance on phones, tablets, and desktops.',
+        gradient: 'from-emerald-400 via-teal-400 to-cyan-400',
+        glowColor: 'rgba(52,211,153,0.15)',
+        iconBg: 'from-emerald-500/20 to-cyan-500/20',
+        icon: (
+            <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8">
+                <rect x="6" y="12" width="28" height="16" rx="2" stroke="url(#gc3)" strokeWidth="2" />
+                <line x1="20" y1="28" x2="20" y2="32" stroke="url(#gc3)" strokeWidth="2" />
+                <line x1="14" y1="32" x2="26" y2="32" stroke="url(#gc3)" strokeWidth="2" strokeLinecap="round" />
+                <rect x="12" y="16" width="8" height="8" rx="1" fill="url(#gc3)" opacity="0.3" />
+                <rect x="24" y="18" width="5" height="6" rx="1" fill="url(#gc3)" opacity="0.2" />
+                <defs><linearGradient id="gc3" x1="6" y1="12" x2="34" y2="32"><stop stopColor="#6ee7b7" /><stop offset="1" stopColor="#22d3ee" /></linearGradient></defs>
+            </svg>
+        ),
+    },
+    {
+        title: 'Focus on\nResults',
+        description: 'Websites engineered to convert visitors into loyal customers.',
+        gradient: 'from-red-400 via-pink-400 to-rose-500',
+        glowColor: 'rgba(248,113,113,0.15)',
+        iconBg: 'from-red-500/20 to-pink-500/20',
+        icon: (
+            <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8">
+                <circle cx="20" cy="20" r="14" stroke="#fca5a5" strokeWidth="1.5" opacity="0.4" />
+                <circle cx="20" cy="20" r="9" stroke="#fca5a5" strokeWidth="1.5" opacity="0.6" />
+                <circle cx="20" cy="20" r="4" fill="#fca5a5" />
+                <line x1="20" y1="4" x2="20" y2="10" stroke="#fca5a5" strokeWidth="1.5" opacity="0.5" />
+                <line x1="20" y1="30" x2="20" y2="36" stroke="#fca5a5" strokeWidth="1.5" opacity="0.5" />
+                <line x1="4" y1="20" x2="10" y2="20" stroke="#fca5a5" strokeWidth="1.5" opacity="0.5" />
+                <line x1="30" y1="20" x2="36" y2="20" stroke="#fca5a5" strokeWidth="1.5" opacity="0.5" />
+            </svg>
+        ),
+    },
+    {
+        title: 'Reliable\nSupport',
+        description: "We're here for updates, help, or advice — even long after launch.",
+        gradient: 'from-violet-400 via-purple-400 to-indigo-400',
+        glowColor: 'rgba(139,92,246,0.15)',
+        iconBg: 'from-violet-500/20 to-indigo-500/20',
+        icon: (
+            <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8">
+                <path d="M20 6L33 12C33 24 28 32 20 38C12 32 7 24 7 12Z" stroke="url(#gc5)" strokeWidth="2" strokeLinejoin="round" fill="url(#gc5)" fillOpacity="0.15" />
+                <path d="M15 20L19 24L27 16" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <defs><linearGradient id="gc5" x1="7" y1="6" x2="33" y2="38"><stop stopColor="#c4b5fd" /><stop offset="1" stopColor="#818cf8" /></linearGradient></defs>
+            </svg>
+        ),
+    },
+    {
+        title: 'Clear\nTimelines',
+        description: 'Know exactly when your project will be ready. We respect your time.',
+        gradient: 'from-sky-400 via-cyan-300 to-teal-300',
+        glowColor: 'rgba(56,189,248,0.15)',
+        iconBg: 'from-sky-500/20 to-teal-500/20',
+        icon: (
+            <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8">
+                <circle cx="20" cy="20" r="14" stroke="url(#gc6)" strokeWidth="2" />
+                <line x1="20" y1="12" x2="20" y2="20" stroke="url(#gc6)" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="20" y1="20" x2="26" y2="24" stroke="url(#gc6)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="20" cy="20" r="2" fill="#7dd3fc" />
+                <defs><linearGradient id="gc6" x1="6" y1="6" x2="34" y2="34"><stop stopColor="#bae6fd" /><stop offset="1" stopColor="#5eead4" /></linearGradient></defs>
+            </svg>
+        ),
+    },
+];
 
-    const handleMouseMove = (e) => {
-        if (!cardRef.current || !wrapperRef.current) return;
-
-        const card = cardRef.current;
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
-
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const maxRotate = 10;
-
-        const rotateX = ((y - centerY) / centerY) * -maxRotate;
-        const rotateY = ((x - centerX) / centerX) * maxRotate;
-
-        card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-    };
-
-    const handleMouseLeave = () => {
-        if (!cardRef.current) return;
-        const card = cardRef.current;
-
-        card.style.transform = `perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-        card.style.transition = `transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)`;
-        card.style.setProperty('--mouse-x', `50%`);
-        card.style.setProperty('--mouse-y', `50%`);
-    };
-
-    const handleMouseEnter = () => {
-        if (!cardRef.current) return;
-        cardRef.current.style.transition = `transform 0.1s linear`;
-    };
+const FeatureCard = ({ feature, index }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const [titleLine1, titleLine2] = feature.title.split('\n');
 
     return (
-        <div
-            className="card-wrapper-3d group"
-            ref={wrapperRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            onMouseEnter={handleMouseEnter}
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+            animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+            transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            className="group relative rounded-3xl p-6 bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm cursor-default overflow-hidden"
         >
-            <div className="aurora-container" style={auroraColors}>
-                <div className="aurora-glow"></div>
+            {/* Hover glow */}
+            <div
+                className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                style={{ background: `radial-gradient(ellipse at 50% 0%, ${feature.glowColor}, transparent 70%)` }}
+            />
+
+            {/* Gradient border on hover */}
+            <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none p-[1px]">
+                <div
+                    className="absolute inset-0 rounded-3xl"
+                    style={{
+                        background: `linear-gradient(135deg, ${feature.glowColor}, transparent, ${feature.glowColor})`,
+                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                        WebkitMaskComposite: 'xor',
+                        maskComposite: 'exclude',
+                        padding: '1px',
+                    }}
+                />
             </div>
-            <div className="glass-card-3d" ref={cardRef}>
-                <div className="icon-container">
-                    {icon}
-                </div>
-                <div className="content-container">
-                    <h3 className="text-white font-bold text-lg leading-tight mb-2" dangerouslySetInnerHTML={{ __html: title }}></h3>
-                    <p className="text-gray-300 text-[11px] leading-relaxed">{description}</p>
-                </div>
+
+            {/* Icon */}
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.iconBg} border border-white/[0.05] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500`}>
+                {feature.icon}
             </div>
-        </div>
+
+            {/* Text */}
+            <div className="relative">
+                <h3 className="text-white font-bold text-lg leading-tight mb-2">
+                    {titleLine1}
+                    <br />
+                    <span className={`text-transparent bg-clip-text bg-gradient-to-r ${feature.gradient}`}>
+                        {titleLine2}
+                    </span>
+                </h3>
+                <p className="text-white/40 text-sm leading-relaxed">{feature.description}</p>
+            </div>
+
+            {/* Subtle shimmer */}
+            <motion.div
+                className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -skew-x-12 pointer-events-none"
+                animate={{ x: ['-200%', '200%'] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'linear', repeatDelay: 6 }}
+            />
+        </motion.div>
     );
 };
 
 const WhyChooseUs = () => {
     return (
-        <section className="py-24 px-10 why-us-section border-t border-white/10 relative overflow-hidden">
+        <section className="relative py-24 lg:py-32 px-6 overflow-hidden">
+            {/* Ambient background */}
+            <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
+
             <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-24">
-                    <div className="flex items-center justify-center gap-4 mb-6">
-                        <div className="h-px w-12 bg-cyan-500" />
-                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Why Us</span>
-                        <div className="h-px w-12 bg-cyan-500" />
+                {/* Header */}
+                <RevealOnScroll>
+                    <div className="text-center mb-20">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
+                            whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                            viewport={{ once: true }}
+                            className="flex items-center justify-center gap-4 mb-6"
+                        >
+                            <div className="h-px w-12 bg-cyan-500" />
+                            <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-[0.25em]">Why Us</span>
+                            <div className="h-px w-12 bg-cyan-500" />
+                        </motion.div>
+                        <AnimatedHeadline>
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                                Why Local Businesses <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                                    Choose Us
+                                </span>
+                            </h2>
+                        </AnimatedHeadline>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="text-white/40 max-w-2xl mx-auto text-lg leading-relaxed"
+                        >
+                            We don't just build websites; we build growth engines. Here is how we differ from the rest.
+                        </motion.p>
                     </div>
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6"
-                    >
-                        Why Local Businesses <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
-                            Choose Us
-                        </span>
-                    </motion.h2>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed"
-                    >
-                        We don't just build websites; we build growth engines. Here is how we differ from the rest.
-                    </motion.p>
-                </div>
+                </RevealOnScroll>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
-                    {/* Card 1: Simple Communication */}
-                    <Card3D
-                        auroraColors={{ '--c1': '#00f2fe', '--c2': '#f093fb', '--c3': '#8a2387' }}
-                        title="Simple<br>Communication"
-                        description="No technical jargon — just clear, honest conversation about your goals."
-                        icon={
-                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
-                                <defs>
-                                    <radialGradient id="grad1" cx="30%" cy="30%" r="70%">
-                                        <stop offset="0%" stopColor="#fff" />
-                                        <stop offset="50%" stopColor="#f093fb" />
-                                        <stop offset="100%" stopColor="#8a2387" />
-                                    </radialGradient>
-                                </defs>
-                                <path d="M 30 50 C 30 30, 45 20, 65 20 C 85 20, 95 30, 95 50 C 95 70, 85 80, 65 80 C 60 80, 55 79, 50 76 L 35 85 L 38 68 C 33 63, 30 57, 30 50 Z" fill="none" stroke="url(#grad1)" strokeWidth="4" opacity="0.5" />
-                                <path d="M 15 45 C 15 25, 30 15, 50 15 C 70 15, 80 25, 80 45 C 80 65, 70 75, 50 75 C 45 75, 40 74, 35 71 L 20 80 L 23 63 C 18 58, 15 52, 15 45 Z" fill="url(#grad1)" opacity="0.8" />
-                                <circle cx="35" cy="45" r="4" fill="#fff" />
-                                <circle cx="50" cy="45" r="4" fill="#fff" />
-                                <circle cx="65" cy="45" r="4" fill="#fff" />
-                            </svg>
-                        }
-                    />
-
-                    {/* Card 2: Modern Design */}
-                    <Card3D
-                        auroraColors={{ '--c1': '#e0e0e0', '--c2': '#8a8a8a', '--c3': '#b0b0b0' }}
-                        title="Modern<br>Design"
-                        description="Sleek, high-end aesthetics tailored to your brand."
-                        icon={
-                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
-                                <defs>
-                                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#fff" />
-                                        <stop offset="50%" stopColor="#a0a0a0" />
-                                        <stop offset="100%" stopColor="#404040" />
-                                    </linearGradient>
-                                </defs>
-                                <polygon points="50,15 85,45 50,90 15,45" fill="none" stroke="url(#grad2)" strokeWidth="4" strokeLinejoin="round" />
-                                <polygon points="50,15 85,45 50,45" fill="url(#grad2)" opacity="0.6" />
-                                <polygon points="50,15 15,45 50,45" fill="url(#grad2)" opacity="0.3" />
-                                <polygon points="15,45 50,90 50,45" fill="url(#grad2)" opacity="0.4" />
-                            </svg>
-                        }
-                    />
-
-                    {/* Card 3: Works on all Devices */}
-                    <Card3D
-                        auroraColors={{ '--c1': '#43e97b', '--c2': '#38f9d7', '--c3': '#4facfe' }}
-                        title="Works on all<br>Devices"
-                        description="Perfect performance on phones, tablets, and desktops."
-                        icon={
-                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
-                                <defs>
-                                    <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#e0f7fa" />
-                                        <stop offset="100%" stopColor="#80deea" />
-                                    </linearGradient>
-                                </defs>
-                                <rect x="10" y="30" width="80" height="45" rx="4" fill="url(#grad3)" opacity="0.8" />
-                                <rect x="5" y="75" width="90" height="5" rx="2" fill="#fff" />
-                                <rect x="15" y="40" width="30" height="40" rx="3" fill="#fff" opacity="0.9" />
-                                <rect x="65" y="50" width="18" height="30" rx="2" fill="#fff" />
-                            </svg>
-                        }
-                    />
-
-                    {/* Card 4: Focus on Results */}
-                    <Card3D
-                        auroraColors={{ '--c1': '#ff0844', '--c2': '#ffb199', '--c3': '#ff758c' }}
-                        title="Focus on<br>Results"
-                        description="Websites engineered to convert visitors into loyal customers."
-                        icon={
-                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
-                                <circle cx="50" cy="50" r="35" fill="none" stroke="#ffb199" strokeWidth="2" opacity="0.5" />
-                                <circle cx="50" cy="50" r="10" fill="#ffb199" />
-                                <line x1="50" y1="5" x2="50" y2="95" stroke="#ffb199" strokeWidth="2" opacity="0.6" />
-                                <line x1="5" y1="50" x2="95" y2="50" stroke="#ffb199" strokeWidth="2" opacity="0.6" />
-                            </svg>
-                        }
-                    />
-
-                    {/* Card 5: Reliable Support */}
-                    <Card3D
-                        auroraColors={{ '--c1': '#667eea', '--c2': '#764ba2', '--c3': '#a18cd1' }}
-                        title="Reliable<br>Support"
-                        description="We're here for updates, help, or advice — even long after launch."
-                        icon={
-                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
-                                <defs>
-                                    <linearGradient id="grad5" x1="0%" y1="100%" x2="100%" y2="0%">
-                                        <stop offset="0%" stopColor="#a18cd1" />
-                                        <stop offset="100%" stopColor="#e0e0e0" />
-                                    </linearGradient>
-                                </defs>
-                                <path d="M 50 15 L 85 28 C 85 60, 70 80, 50 95 C 30 80, 15 60, 15 28 Z" fill="none" stroke="url(#grad5)" strokeWidth="5" strokeLinejoin="round" />
-                                <path d="M 50 22 L 75 32 C 75 58, 65 72, 50 85 C 35 72, 25 58, 25 32 Z" fill="url(#grad5)" opacity="0.5" />
-                                <path d="M 38 52 L 48 62 L 68 40" fill="none" stroke="#fff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        }
-                    />
-
-                    {/* Card 6: Clear Timelines */}
-                    <Card3D
-                        auroraColors={{ '--c1': '#8fd3f4', '--c2': '#84fab0', '--c3': '#fdfbfb' }}
-                        title="Clear<br>Timelines"
-                        description="Know exactly when your project will be ready. We respect your time."
-                        icon={
-                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
-                                <defs>
-                                    <linearGradient id="grad6" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#fff" />
-                                        <stop offset="100%" stopColor="#8fd3f4" />
-                                    </linearGradient>
-                                </defs>
-                                <path d="M 25 20 L 75 20 C 75 20, 65 45, 50 50 C 35 45, 25 20, 25 20 Z" fill="none" stroke="url(#grad6)" strokeWidth="5" strokeLinejoin="round" />
-                                <path d="M 25 80 L 75 80 C 75 80, 65 55, 50 50 C 35 55, 25 80, 25 80 Z" fill="url(#grad6)" opacity="0.6" stroke="url(#grad6)" strokeWidth="5" strokeLinejoin="round" />
-                                <circle cx="50" cy="50" r="2" fill="#fff" />
-                                <circle cx="50" cy="65" r="4" fill="#fff" />
-                            </svg>
-                        }
-                    />
+                {/* Feature cards grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {features.map((feature, i) => (
+                        <FeatureCard key={i} feature={feature} index={i} />
+                    ))}
                 </div>
             </div>
         </section>

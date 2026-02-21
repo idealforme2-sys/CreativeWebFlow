@@ -165,7 +165,7 @@ const Hero = () => {
                 {/* Rotating Word with gradient + glow */}
                 <motion.div
                     variants={itemVariants}
-                    className="mb-10 h-[1.3em] relative"
+                    className="mb-16 h-[1.3em] relative"
                     style={{ y: bgY, opacity: headingOpacity, scale: headingScale }}
                 >
                     <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[1.05]">
@@ -180,7 +180,6 @@ const Hero = () => {
                                 className={`inline-block text-transparent bg-clip-text bg-gradient-to-r ${rotatingWords[currentWordIndex].gradient}`}
                                 style={{
                                     textShadow: 'none',
-                                    filter: 'drop-shadow(0 0 30px rgba(0,240,255,0.3))',
                                 }}
                             >
                                 {rotatingWords[currentWordIndex].text}
@@ -216,34 +215,56 @@ const Hero = () => {
                     ))}
                 </motion.div>
 
-                {/* CTA Buttons — more prominent */}
+                {/* CTA Buttons — premium with glow & effects */}
                 <motion.div
                     variants={itemVariants}
                     className="flex flex-col sm:flex-row items-center gap-5 justify-center"
                 >
-                    <RainbowButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-                        <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.12em]">
-                            Get More Customers
-                            <motion.span
-                                animate={{ x: [0, 6, 0] }}
-                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                                className="text-lg"
-                            >
-                                →
-                            </motion.span>
-                        </span>
-                    </RainbowButton>
+                    {/* Primary CTA — Pulsing glow ring */}
+                    <div className="relative group">
+                        {/* Pulsing glow ring behind button */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full blur-md opacity-40 group-hover:opacity-70 transition-opacity duration-500 animate-pulse" />
+                        <RainbowButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+                            <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.12em]">
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L4 7l8 5 8-5-8-5z" /><path d="M4 12l8 5 8-5" /><path d="M4 17l8 5 8-5" /></svg>
+                                Get More Customers
+                                <motion.span
+                                    animate={{ x: [0, 6, 0] }}
+                                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                    className="text-lg"
+                                >
+                                    →
+                                </motion.span>
+                            </span>
+                        </RainbowButton>
+                    </div>
 
+                    {/* Secondary CTA — Gradient border with shimmer */}
                     <motion.a
                         href="#work"
                         onClick={(e) => {
                             e.preventDefault();
                             document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        whileHover={{ scale: 1.05, borderColor: 'rgba(0, 240, 255, 0.5)' }}
+                        whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="relative px-8 py-3.5 text-white rounded-full text-sm font-bold uppercase tracking-[0.12em] border border-white/15 bg-white/[0.03] backdrop-blur-md overflow-hidden hover:text-cyan-400 hover:bg-white/5 transition-all duration-500 group"
+                        className="relative px-8 py-3.5 text-white rounded-full text-sm font-bold uppercase tracking-[0.12em] overflow-hidden group"
                     >
+                        {/* Animated gradient border */}
+                        <div
+                            className="absolute inset-0 rounded-full p-[1.5px]"
+                            style={{
+                                background: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
+                                backgroundSize: '300% 100%',
+                                animation: 'lava-wave 4s ease-in-out infinite',
+                                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                WebkitMaskComposite: 'xor',
+                                maskComposite: 'exclude',
+                            }}
+                        />
+                        {/* Inner fill */}
+                        <div className="absolute inset-[1.5px] bg-black/90 rounded-full group-hover:bg-black/70 transition-colors duration-300" />
+                        {/* Shimmer */}
                         <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12"
                             animate={{ x: ['-200%', '200%'] }}

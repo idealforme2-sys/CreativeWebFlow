@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cpu } from 'lucide-react';
+import AnimatedLogo from './AnimatedLogo';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -116,13 +116,11 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
+                {/* Bottom Bar — with animated logo */}
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 border border-white/20 rounded-md flex items-center justify-center">
-                            <Cpu size={14} className="text-white/60" />
-                        </div>
+                        <AnimatedLogo size={32} />
                         <span className="text-xs font-mono text-white/40 uppercase tracking-widest">
                             Creative WebFlow Co.
                         </span>
