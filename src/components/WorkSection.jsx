@@ -6,7 +6,8 @@ import { MagneticButton } from './UIComponents';
 // Industry images
 import dentalImg from '../assets/industries/dental-medical.png';
 import fitnessImg from '../assets/industries/fitness-gyms.png';
-import realEstateImg from '../assets/industries/real-estate.png';
+
+const REAL_ESTATE_IMG = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800";
 
 const WorkSection = () => {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -58,7 +59,7 @@ const WorkSection = () => {
             statLabel: "Qualified Leads",
             imgAlt: "Real Estate decorative",
             icon: Building2,
-            image: realEstateImg,
+            image: REAL_ESTATE_IMG,
             gradient: "from-orange-500 to-red-500"
         }
     ];
@@ -259,8 +260,8 @@ const WorkSection = () => {
                                                                 </div>
                                                             </div>
 
-                                                            <div onClick={() => scrollToSection(card.id)} className="w-full">
-                                                                <MagneticButton className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-white font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 group/btn cursor-pointer">
+                                                            <div className="w-full">
+                                                                <MagneticButton onClick={() => scrollToSection(card.id)} className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-white font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 group/btn cursor-pointer relative z-50">
                                                                     View Examples
                                                                     <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                                                                 </MagneticButton>

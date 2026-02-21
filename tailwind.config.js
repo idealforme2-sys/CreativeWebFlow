@@ -26,8 +26,9 @@ export default {
                 'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
                 'shimmer': 'shimmer 2s linear infinite',
                 'scan-line': 'scan-line 4s linear infinite',
-                'text-reveal': 'text-reveal 1s ease forwards',
                 'lava-wave': 'lava-wave 4s ease-in-out infinite',
+                'marquee-left': 'marquee-left 30s linear infinite',
+                'marquee-right': 'marquee-right 30s linear infinite',
             },
             keyframes: {
                 'gradient-x': {
@@ -63,6 +64,14 @@ export default {
                     '33%': { backgroundPosition: '50% 50%' },
                     '66%': { backgroundPosition: '100% 50%' },
                     '100%': { backgroundPosition: '0% 50%' },
+                },
+                'marquee-left': {
+                    '0%': { transform: 'translateX(0%)' },
+                    '100%': { transform: 'translateX(-50%)' }, // Half of 200% width
+                },
+                'marquee-right': {
+                    '0%': { transform: 'translateX(-50%)' },
+                    '100%': { transform: 'translateX(0%)' },
                 },
             },
             backgroundSize: {

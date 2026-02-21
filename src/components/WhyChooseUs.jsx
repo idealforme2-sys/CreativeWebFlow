@@ -163,16 +163,20 @@ const FeatureCard = ({ feature, index }) => {
 };
 
 const WhyChooseUs = () => {
+    // Split features into two rows for the marquee
+    const row1 = [...features.slice(0, 3), ...features.slice(0, 3)];
+    const row2 = [...features.slice(3, 6), ...features.slice(3, 6)];
+
     return (
-        <section className="relative py-24 lg:py-32 px-6 overflow-hidden">
+        <section className="relative py-24 lg:py-32 overflow-hidden bg-black/20 pb-40">
             {/* Ambient background */}
             <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
 
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
+            {/* Header */}
+            <div className="max-w-7xl mx-auto px-6 mb-20 relative z-20">
                 <RevealOnScroll>
-                    <div className="text-center mb-20">
+                    <div className="text-center">
                         <motion.div
                             initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
                             whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
@@ -202,14 +206,43 @@ const WhyChooseUs = () => {
                         </motion.p>
                     </div>
                 </RevealOnScroll>
+            </div>
 
-                {/* Feature cards grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {features.map((feature, i) => (
-                        <FeatureCard key={i} feature={feature} index={i} />
+            {/* Velocity Marquee Container */}
+            <div className="relative w-full flex flex-col gap-6 md:gap-8 z-10 rotate-[-2deg] scale-[1.05]">
+                {/* Fade edges */}
+                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
+
+                {/* Row 1 (Moves Left) */}
+                <div className="flex w-[200%] md:w-[150%] animate-marquee-left">
+                    {row1.map((feature, i) => (
+                        <div key={`row1-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
+                            <FeatureCard feature={feature} index={i} />
+                        </div>
+                    ))}
+                    {row1.map((feature, i) => (
+                        <div key={`row1-dup-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
+                            <FeatureCard feature={feature} index={i} />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Row 2 (Moves Right) */}
+                <div className="flex w-[200%] md:w-[150%] animate-marquee-right">
+                    {row2.map((feature, i) => (
+                        <div key={`row2-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
+                            <FeatureCard feature={feature} index={i} />
+                        </div>
+                    ))}
+                    {row2.map((feature, i) => (
+                        <div key={`row2-dup-${i}`} className="w-[350px] md:w-[450px] flex-shrink-0 px-3 md:px-4">
+                            <FeatureCard feature={feature} index={i} />
+                        </div>
                     ))}
                 </div>
             </div>
+
         </section>
     );
 };

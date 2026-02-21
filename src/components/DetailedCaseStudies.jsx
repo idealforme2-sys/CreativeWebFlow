@@ -237,7 +237,7 @@ const DetailedCaseStudies = () => {
                                     <div className="absolute inset-4 rounded-[2rem] overflow-hidden bg-slate-900 shadow-inner">
                                         <iframe
                                             src={study.url}
-                                            className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0"
+                                            className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0 pointer-events-none"
                                             title={`${study.title} Preview`}
                                             loading="lazy"
                                         />

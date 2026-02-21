@@ -52,14 +52,9 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         const game = gameStateRef.current;
         const isRunning = { current: true };
 
-        // Lock body scroll and hide custom cursor while game is active
-        document.body.style.overflow = 'hidden';
-        document.body.classList.add('game-active');
-
-        // Prevent scroll events from propagating
-        const blockScroll = (e) => e.preventDefault();
-        window.addEventListener('wheel', blockScroll, { passive: false });
-        window.addEventListener('touchmove', blockScroll, { passive: false });
+        // Ensure the game only captures necessary input, leaving scroll mostly intact
+        // We removed the overflow hidden and scroll blocking to prevent "scroll jacking"
+        // Let the game be an overlay without breaking the global page experience.
 
         // Initialize game state
         const resize = () => {
@@ -502,15 +497,11 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             window.removeEventListener('resize', resize);
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-            window.removeEventListener('wheel', blockScroll);
-            window.removeEventListener('touchmove', blockScroll);
             window.removeEventListener('mousemove', handleMouseMove);
             canvas.removeEventListener('click', handleClick);
             canvas.removeEventListener('mousedown', handleMouseDown);
             window.removeEventListener('mouseup', handleMouseUp);
             if (autoFireInterval) clearInterval(autoFireInterval);
-            document.body.style.overflow = '';
-            document.body.classList.remove('game-active');
         };
     }, [isActive, gameStarted, onClose]);
 

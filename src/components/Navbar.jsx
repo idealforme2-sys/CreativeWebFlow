@@ -69,7 +69,7 @@ const Navbar = () => {
             >
                 <div
                     className={`relative transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-                        ? 'rounded-2xl bg-black/70 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.4)] border border-white/[0.06] py-3'
+                        ? 'rounded-3xl bg-[#0a0f1c]/90 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.4)] border border-white/[0.06] py-3'
                         : 'rounded-none bg-gradient-to-b from-black/80 via-black/40 to-transparent py-5'
                         }`}
                 >
@@ -126,7 +126,11 @@ const Navbar = () => {
                         {/* Desktop Navigation */}
                         <div className="hidden lg:flex items-center gap-1">
                             {navLinks.map((link, i) => (
-                                <div key={link.label} className="relative group">
+                                <div
+                                    key={link.label}
+                                    className="relative group"
+                                    onMouseLeave={() => setActiveDropdown(null)}
+                                >
                                     {link.dropdown ? (
                                         <button
                                             onClick={() => setActiveDropdown(activeDropdown === link.label ? null : link.label)}
@@ -156,7 +160,6 @@ const Navbar = () => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                                                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                                                    onMouseLeave={() => setActiveDropdown(null)}
                                                     className="absolute top-full left-0 mt-2 w-52 py-2 bg-black/95 backdrop-blur-2xl border border-white/[0.08] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
                                                 >
                                                     {/* Dropdown gradient accent */}
