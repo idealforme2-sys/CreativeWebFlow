@@ -1,141 +1,233 @@
-import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import TechHUD from './TechHUD';
 import { RainbowButton } from './MagicUI';
+
+// Morphing grid background for depth
+const MorphGrid = () => {
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.07]">
+            <div
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(rgba(0,240,255,0.3) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,240,255,0.3) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '60px 60px',
+                    animation: 'gridPulse 8s ease-in-out infinite',
+                    maskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
+                    WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
+                }}
+            />
+            <style>{`
+                @keyframes gridPulse {
+                    0%, 100% { transform: perspective(500px) rotateX(35deg) scale(2.5) translateY(-10%); }
+                    50% { transform: perspective(500px) rotateX(40deg) scale(2.6) translateY(-12%); }
+                }
+            `}</style>
+        </div>
+    );
+};
+
+// Floating orbs component for ambient atmosphere
+const FloatingOrbs = () => (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+            animate={{
+                x: [0, 100, -50, 0],
+                y: [0, -80, 40, 0],
+                scale: [1, 1.3, 0.9, 1],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/4 left-[15%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-cyan-500/15 to-blue-600/10 blur-[100px]"
+        />
+        <motion.div
+            animate={{
+                x: [0, -120, 60, 0],
+                y: [0, 60, -100, 0],
+                scale: [1, 0.8, 1.2, 1],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/3 right-[10%] w-[400px] h-[400px] rounded-full bg-gradient-to-br from-purple-500/15 to-pink-600/10 blur-[100px]"
+        />
+        <motion.div
+            animate={{
+                x: [0, 80, -80, 0],
+                y: [0, -40, 80, 0],
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-1/4 left-[40%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-emerald-500/10 to-cyan-500/8 blur-[80px]"
+        />
+    </div>
+);
 
 const Hero = () => {
     const { scrollY } = useScroll();
     const bgY = useTransform(scrollY, [0, 600], [0, 100]);
     const headingOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+    const headingScale = useTransform(scrollY, [0, 400], [1, 0.95]);
 
-    // Rotating words with their colors
     const rotatingWords = [
-        { text: 'customers', color: 'text-cyan-400' },
-        { text: 'bookings', color: 'text-purple-400' },
-        { text: 'calls', color: 'text-pink-400' },
-        { text: 'growth', color: 'text-emerald-400' },
-        { text: 'results', color: 'text-amber-400' },
+        { text: 'customers', gradient: 'from-cyan-400 via-blue-400 to-cyan-300' },
+        { text: 'bookings', gradient: 'from-purple-400 via-violet-400 to-purple-300' },
+        { text: 'calls', gradient: 'from-pink-400 via-rose-400 to-pink-300' },
+        { text: 'growth', gradient: 'from-emerald-400 via-teal-400 to-emerald-300' },
+        { text: 'results', gradient: 'from-amber-400 via-orange-400 to-amber-300' },
     ];
 
-    const [currentWordIndex, setCurrentWordIndex] = React.useState(0);
+    const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const interval = setInterval(() => {
             setCurrentWordIndex((prev) => (prev + 1) % rotatingWords.length);
         }, 2500);
         return () => clearInterval(interval);
     }, []);
 
+    // Stagger animation for the hero elements
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.2,
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 40, filter: 'blur(12px)' },
+        visible: {
+            opacity: 1, y: 0, filter: 'blur(0px)',
+            transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+        }
+    };
+
     return (
-        <section className="relative min-h-[90vh] flex flex-col justify-center items-center overflow-hidden pt-32 pb-16">
+        <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-24 pb-16">
+            {/* Layered backgrounds */}
+            <MorphGrid />
+            <FloatingOrbs />
             <TechHUD />
 
+            {/* Radial spotlight from center */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vh] bg-[radial-gradient(ellipse_at_center,rgba(0,240,255,0.04)_0%,transparent_50%)] pointer-events-none" />
+
             {/* Hero Content — Centered */}
-            <div className="relative z-10 w-full max-w-4xl mx-auto px-6 flex flex-col items-center text-center">
-                {/* Status Badge with heartbeat — Centered */}
+            <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center text-center"
+            >
+                {/* Status Badge with neon ring */}
+                <motion.div variants={itemVariants}>
+                    <div className="inline-flex items-center gap-3 px-5 py-2.5 mb-10 rounded-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md relative overflow-hidden border border-cyan-500/20 shadow-[0_0_30px_rgba(0,240,255,0.08)]">
+                        {/* Heartbeat ring */}
+                        <span className="relative flex h-3 w-3">
+                            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                            <span className="absolute inline-flex h-[200%] w-[200%] -top-1/2 -left-1/2 rounded-full bg-emerald-400/20 animate-[pulse_2s_ease-in-out_infinite]" />
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
+                        </span>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-purple-300">
+                            Available for Projects
+                        </span>
+                        {/* Shimmer sweep */}
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
+                            animate={{ x: ['-200%', '200%'] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                        />
+                    </div>
+                </motion.div>
+
+                {/* Main Headline — word-by-word stagger with glow */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="inline-flex items-center gap-3 px-5 py-2.5 mb-8 rounded-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md relative overflow-hidden border border-cyan-500/20"
+                    variants={itemVariants}
+                    className="mb-4"
+                    style={{ y: bgY, opacity: headingOpacity, scale: headingScale }}
                 >
-                    {/* Heartbeat ring */}
-                    <span className="relative flex h-3 w-3">
-                        <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-                        <span className="absolute inline-flex h-[200%] w-[200%] -top-1/2 -left-1/2 rounded-full bg-emerald-400/20 animate-[pulse_2s_ease-in-out_infinite]" />
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
-                    </span>
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-purple-300">
-                        Available for Projects
-                    </span>
-                    {/* Shimmer sweep */}
-                    <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
-                        animate={{ x: ['-200%', '200%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
-                    />
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[1.05] text-white">
+                        <span className="relative">
+                            Websites that
+                            {/* Subtle underline glow */}
+                            <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+                        </span>
+                        <br />
+                        <span className="relative inline-block">
+                            bring you
+                        </span>
+                    </h1>
                 </motion.div>
 
-                {/* Main Headline */}
-                <motion.div className="mb-6" style={{ y: bgY, opacity: headingOpacity }}>
-                    <motion.h1
-                        initial={{ y: 60, opacity: 0, filter: 'blur(12px)', scale: 0.97 }}
-                        animate={{ y: 0, opacity: 1, filter: 'blur(0px)', scale: 1 }}
-                        transition={{ delay: 0.4, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.03em] leading-[1.1] text-white"
-                    >
-                        Websites that bring you
-                    </motion.h1>
-                </motion.div>
-
-                {/* Rotating Word */}
-                <motion.div className="mb-10 h-[1.3em]" style={{ y: bgY, opacity: headingOpacity }}>
-                    <motion.h1
-                        initial={{ y: 60, opacity: 0, filter: 'blur(12px)' }}
-                        animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                        transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.03em] leading-[1.1]"
-                    >
+                {/* Rotating Word with gradient + glow */}
+                <motion.div
+                    variants={itemVariants}
+                    className="mb-10 h-[1.3em] relative"
+                    style={{ y: bgY, opacity: headingOpacity, scale: headingScale }}
+                >
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[1.05]">
                         <span className="text-white">more </span>
-                        <motion.span
-                            key={currentWordIndex}
-                            initial={{ y: 40, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: -40, opacity: 0 }}
-                            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                            className={`inline-block ${rotatingWords[currentWordIndex].color}`}
-                        >
-                            {rotatingWords[currentWordIndex].text}
-                        </motion.span>
-                    </motion.h1>
+                        <AnimatePresence mode="wait">
+                            <motion.span
+                                key={currentWordIndex}
+                                initial={{ y: 50, opacity: 0, filter: 'blur(8px)', scale: 0.95 }}
+                                animate={{ y: 0, opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                                exit={{ y: -50, opacity: 0, filter: 'blur(8px)', scale: 1.05 }}
+                                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                className={`inline-block text-transparent bg-clip-text bg-gradient-to-r ${rotatingWords[currentWordIndex].gradient}`}
+                                style={{
+                                    textShadow: 'none',
+                                    filter: 'drop-shadow(0 0 30px rgba(0,240,255,0.3))',
+                                }}
+                            >
+                                {rotatingWords[currentWordIndex].text}
+                            </motion.span>
+                        </AnimatePresence>
+                    </h1>
                 </motion.div>
 
-                {/* Sub-headline */}
+                {/* Sub-headline with refined typography */}
                 <motion.p
-                    initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-8 leading-relaxed"
+                    variants={itemVariants}
+                    className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-8 leading-relaxed font-light"
                 >
                     We design and build high-performance websites for local businesses
                     that turn visitors into{' '}
-                    <span className="text-white font-medium">real customers</span>.
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-semibold">real customers</span>.
                 </motion.p>
 
-                {/* Trust Line */}
+                {/* Trust signals — refined with glowing pips */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ delay: 0.9, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex items-center gap-6 text-sm text-white/40 mb-10 justify-center"
+                    variants={itemVariants}
+                    className="flex flex-wrap items-center gap-6 text-sm text-white/40 mb-12 justify-center"
                 >
-                    <span className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,1)]" />
-                        Fast Loading
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,1)]" />
-                        Mobile-First
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(236,72,153,1)]" />
-                        Built to Convert
-                    </span>
+                    {[
+                        { label: 'Fast Loading', color: 'bg-cyan-400', shadow: 'shadow-[0_0_10px_rgba(6,182,212,1)]' },
+                        { label: 'Mobile-First', color: 'bg-purple-400', shadow: 'shadow-[0_0_10px_rgba(168,85,247,1)]' },
+                        { label: 'Built to Convert', color: 'bg-pink-400', shadow: 'shadow-[0_0_10px_rgba(236,72,153,1)]' },
+                    ].map((item) => (
+                        <span key={item.label} className="flex items-center gap-2 hover:text-white/70 transition-colors duration-300 cursor-default">
+                            <span className={`w-1.5 h-1.5 rounded-full ${item.color} ${item.shadow}`} />
+                            {item.label}
+                        </span>
+                    ))}
                 </motion.div>
 
-                {/* CTA Buttons */}
+                {/* CTA Buttons — more prominent */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-col sm:flex-row items-center gap-4 justify-center"
+                    variants={itemVariants}
+                    className="flex flex-col sm:flex-row items-center gap-5 justify-center"
                 >
                     <RainbowButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
                         <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.12em]">
                             Get More Customers
                             <motion.span
-                                animate={{ x: [0, 4, 0] }}
+                                animate={{ x: [0, 6, 0] }}
                                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                className="text-lg"
                             >
                                 →
                             </motion.span>
@@ -148,34 +240,58 @@ const Hero = () => {
                             e.preventDefault();
                             document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        whileHover={{ scale: 1.03, borderColor: 'rgba(6, 182, 212, 0.6)' }}
-                        whileTap={{ scale: 0.97 }}
-                        className="btn-outline-shimmer px-8 py-3.5 text-white rounded-full text-sm font-bold uppercase tracking-[0.12em] hover:text-cyan-400 hover:bg-white/5 transition-all duration-500"
+                        whileHover={{ scale: 1.05, borderColor: 'rgba(0, 240, 255, 0.5)' }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative px-8 py-3.5 text-white rounded-full text-sm font-bold uppercase tracking-[0.12em] border border-white/15 bg-white/[0.03] backdrop-blur-md overflow-hidden hover:text-cyan-400 hover:bg-white/5 transition-all duration-500 group"
                     >
-                        View Our Work
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12"
+                            animate={{ x: ['-200%', '200%'] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                        />
+                        <span className="relative z-10">View Our Work</span>
                     </motion.a>
                 </motion.div>
-            </div>
 
-            {/* Scroll Indicator */}
+                {/* Social proof micro-stat */}
+                <motion.div
+                    variants={itemVariants}
+                    className="mt-14 flex items-center gap-4"
+                >
+                    <div className="flex -space-x-2">
+                        {['bg-gradient-to-br from-cyan-400 to-blue-500', 'bg-gradient-to-br from-purple-400 to-pink-500', 'bg-gradient-to-br from-emerald-400 to-teal-500'].map((bg, i) => (
+                            <div key={i} className={`w-8 h-8 rounded-full ${bg} border-2 border-black flex items-center justify-center text-white text-[10px] font-bold`}>
+                                {['CW', 'JD', 'MR'][i]}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="text-xs text-white/40">
+                        <span className="text-white/70 font-semibold">Trusted by local businesses</span>
+                        <span className="mx-1.5">·</span>
+                        <span className="text-emerald-400">★ 5.0</span>
+                    </div>
+                </motion.div>
+            </motion.div>
+
+            {/* Scroll Indicator — refined with pulsing line */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.5 }}
-                className="mt-16 flex justify-center"
+                transition={{ delay: 2 }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex justify-center z-20"
             >
                 <motion.div
                     animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                     className="flex flex-col items-center gap-2"
                 >
-                    <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">Scroll</span>
-                    <div className="w-px h-10 bg-gradient-to-b from-white/30 to-transparent" />
+                    <span className="text-[9px] font-mono text-white/20 uppercase tracking-[0.4em]">Scroll</span>
+                    <div className="w-px h-12 bg-gradient-to-b from-cyan-500/50 via-white/20 to-transparent" />
                 </motion.div>
             </motion.div>
 
             {/* Decorative Bottom Fade */}
-            <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
         </section>
     );
 };

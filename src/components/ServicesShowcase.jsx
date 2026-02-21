@@ -1,51 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { BlurFadeIn, MagneticButton, ParticlesBackground } from './UIComponents';
-import { ArrowRight, Check, CheckCircle2, Star, TrendingUp, Search } from 'lucide-react';
+import { ArrowRight, Check, CheckCircle2, Star, TrendingUp, Search, Code2, Cpu, MapPin } from 'lucide-react';
 
-
-// 3D Tilt Wrapper Component
-const TiltCard = ({ children, className }) => {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const rotateX = useTransform(y, [-100, 100], [10, -10]);
-    const rotateY = useTransform(x, [-100, 100], [-10, 10]);
-
-    function handleMouse(event) {
-        const rect = event.currentTarget.getBoundingClientRect();
-        // Calculate mouse position relative to center of element
-        x.set(event.clientX - rect.left - rect.width / 2);
-        y.set(event.clientY - rect.top - rect.height / 2);
-    }
-
-    function handleMouseLeave() {
-        x.set(0);
-        y.set(0);
-    }
-
-    return (
-        <motion.div
-            style={{ perspective: 1000 }}
-            className={`cursor-crosshair ${className}`}
-        >
-            <motion.div
-                style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                onMouseMove={handleMouse}
-                onMouseLeave={handleMouseLeave}
-                className="w-full h-full relative"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-                {children}
-            </motion.div>
-        </motion.div>
-    );
-};
-
-// Data Structure
+// Data Structure — icons added back, headings fixed (no more .split('to') truncation)
 const tabsData = [
     {
         id: 'web',
+        icon: Code2,
         title: 'Web Development',
         gradient: 'from-blue-600 to-indigo-600',
         textGradient: 'from-blue-400 to-cyan-300',
@@ -53,7 +15,8 @@ const tabsData = [
         colorClass: 'text-blue-400',
         borderClass: 'border-blue-500/20',
         bgGlowClass: 'bg-blue-500/10 hover:bg-blue-500/20',
-        heading: 'Websites built to bring customers',
+        headingLine1: 'Websites built to bring',
+        headingLine2: 'more customers',
         description: 'Your website is your hardest working employee. We build fast, mobile-friendly sites that turn visitors into paying customers.',
         features: [
             'Professional, responsive design',
@@ -79,6 +42,7 @@ const tabsData = [
     },
     {
         id: 'smart',
+        icon: Cpu,
         title: 'Smart Features',
         gradient: 'from-purple-600 to-pink-600',
         textGradient: 'from-purple-400 to-pink-400',
@@ -86,7 +50,8 @@ const tabsData = [
         colorClass: 'text-purple-400',
         borderClass: 'border-purple-500/20',
         bgGlowClass: 'bg-purple-500/10 hover:bg-purple-500/20',
-        heading: 'Smart tools for modern businesses',
+        headingLine1: 'Smart tools for',
+        headingLine2: 'modern businesses',
         description: 'Automate tasks, improve customer experience, and save time with custom features built for your specific needs.',
         features: [
             'Customer portals & dashboards',
@@ -112,6 +77,7 @@ const tabsData = [
     },
     {
         id: 'local',
+        icon: MapPin,
         title: 'Local Marketing',
         gradient: 'from-teal-500 to-emerald-500',
         textGradient: 'from-teal-400 to-emerald-400',
@@ -119,7 +85,8 @@ const tabsData = [
         colorClass: 'text-teal-400',
         borderClass: 'border-teal-500/20',
         bgGlowClass: 'bg-teal-500/10 hover:bg-teal-500/20',
-        heading: 'Help customers find you online',
+        headingLine1: 'Help customers',
+        headingLine2: 'find you online',
         description: 'Get found when customers search for businesses like yours. We optimize your presence for local searches and build your reputation.',
         features: [
             'Google Business optimization',
@@ -150,23 +117,24 @@ const ServicesShowcase = () => {
     const [activeTabId, setActiveTabId] = useState(tabsData[0].id);
     const activeData = tabsData.find(t => t.id === activeTabId);
 
-    // Slide variants for directional content transition
+    // Smooth content transition variants
     const contentVariants = {
         enter: { opacity: 0, x: -30, filter: 'blur(8px)' },
         center: { opacity: 1, x: 0, filter: 'blur(0px)' },
         exit: { opacity: 0, x: 30, filter: 'blur(8px)' },
     };
 
+    // Replaced rotateY with a cleaner scale + blur transition
     const imageVariants = {
-        enter: { opacity: 0, scale: 0.9, rotateY: 10 },
-        center: { opacity: 1, scale: 1, rotateY: 0 },
-        exit: { opacity: 0, scale: 0.95 },
+        enter: { opacity: 0, scale: 0.92, filter: 'blur(6px)' },
+        center: { opacity: 1, scale: 1, filter: 'blur(0px)' },
+        exit: { opacity: 0, scale: 0.96, filter: 'blur(4px)' },
     };
 
     return (
         <section id="what-we-do" className="relative py-24 lg:py-32 overflow-hidden min-h-screen flex items-center">
 
-            {/* Interactive Particle Background overlaying the site's existing dark bg */}
+            {/* Interactive Particle Background */}
             <ParticlesBackground />
 
             {/* Glowing Ambient Orbs */}
@@ -191,17 +159,18 @@ const ServicesShowcase = () => {
                     </div>
                 </BlurFadeIn>
 
-                {/* Tab Buttons (Glassmorphic with Sliding Pill via Framer Motion) */}
+                {/* Tab Buttons — icons restored */}
                 <BlurFadeIn delay={0.2}>
                     <div className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar mb-16 pb-4 sm:pb-0">
                         <div className="relative flex space-x-1 bg-white/5 border border-white/10 backdrop-blur-md p-1.5 rounded-2xl min-w-max">
                             {tabsData.map((tab) => {
                                 const isActive = activeTabId === tab.id;
+                                const TabIcon = tab.icon;
                                 return (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
-                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-semibold transition-colors duration-300 w-48 text-center ${isActive ? 'text-white' : 'text-slate-400 hover:text-white'
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-semibold transition-colors duration-300 w-52 text-center flex items-center justify-center gap-2 ${isActive ? 'text-white' : 'text-slate-400 hover:text-white'
                                             }`}
                                     >
                                         {isActive && (
@@ -211,6 +180,7 @@ const ServicesShowcase = () => {
                                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                             />
                                         )}
+                                        <TabIcon size={18} className="flex-shrink-0" />
                                         {tab.title}
                                     </button>
                                 );
@@ -220,7 +190,7 @@ const ServicesShowcase = () => {
                 </BlurFadeIn>
 
                 {/* Tab Content Container */}
-                <div className="relative perspective-1000 min-h-[500px]">
+                <div className="relative min-h-[500px]">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeData.id}
@@ -236,9 +206,9 @@ const ServicesShowcase = () => {
                                 className="lg:col-span-5 order-2 lg:order-1"
                             >
                                 <h3 className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight">
-                                    {activeData.heading.split('to')[0]} to <br />
+                                    {activeData.headingLine1}<br />
                                     <span className={`text-transparent bg-clip-text bg-gradient-to-r ${activeData.textGradient}`}>
-                                        {activeData.heading.split('to')[1].trim()}
+                                        {activeData.headingLine2}
                                     </span>
                                 </h3>
                                 <p className="text-lg text-slate-300 mb-8 leading-relaxed font-light">
@@ -272,30 +242,32 @@ const ServicesShowcase = () => {
                                 </MagneticButton>
                             </motion.div>
 
-                            {/* Image Content with Tilt */}
+                            {/* Image Content — replaced rotation with a clean magnetic hover glow */}
                             <motion.div
                                 variants={imageVariants}
                                 initial="enter"
                                 animate="center"
                                 exit="exit"
                                 transition={{ duration: 0.6, ease: "easeOut" }}
-                                className="lg:col-span-7 order-1 lg:order-2 perspective-1000"
+                                className="lg:col-span-7 order-1 lg:order-2"
                             >
-                                <TiltCard className="w-full">
-                                    <div className="relative w-full rounded-3xl p-2 bg-white/5 border border-white/10 backdrop-blur-md">
-                                        {/* Image Glow */}
-                                        <div className={`absolute inset-0 bg-gradient-to-tr ${activeData.gradient} rounded-3xl opacity-20 blur-2xl transition-opacity duration-500`} />
+                                <motion.div
+                                    whileHover={{ scale: 1.02, y: -6 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                    className="relative w-full rounded-3xl p-2 bg-white/5 border border-white/10 backdrop-blur-md group cursor-pointer"
+                                >
+                                    {/* Image Glow */}
+                                    <div className={`absolute inset-0 bg-gradient-to-tr ${activeData.gradient} rounded-3xl opacity-20 blur-2xl group-hover:opacity-40 transition-opacity duration-500`} />
 
-                                        <img
-                                            src={activeData.image}
-                                            alt={activeData.title}
-                                            className="relative rounded-2xl w-full h-[300px] sm:h-[400px] object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 filter brightness-90 contrast-125"
-                                        />
+                                    <img
+                                        src={activeData.image}
+                                        alt={activeData.title}
+                                        className="relative rounded-2xl w-full h-[300px] sm:h-[400px] object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 filter brightness-90 contrast-125 group-hover:brightness-100 transition-all duration-500"
+                                    />
 
-                                        {/* Floating overlay component */}
-                                        {activeData.floatingOverlay}
-                                    </div>
-                                </TiltCard>
+                                    {/* Floating overlay component */}
+                                    {activeData.floatingOverlay}
+                                </motion.div>
                             </motion.div>
                         </motion.div>
                     </AnimatePresence>
