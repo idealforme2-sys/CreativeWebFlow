@@ -1,202 +1,224 @@
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { MessageCircle, Palette, Smartphone, Target, LifeBuoy, Clock, CheckCircle } from 'lucide-react';
-import { RainbowButton } from './MagicUI';
-import WavyCard from './WavyCard';
+import { motion } from 'framer-motion';
 
-// Import local macro images
-import communicationImg from '../assets/whyus/communication.png';
-import designImg from '../assets/whyus/design.png';
-import devicesImg from '../assets/whyus/devices.png';
-import resultsImg from '../assets/whyus/results.png';
-import supportImg from '../assets/whyus/support.png';
-import timelinesImg from '../assets/whyus/timelines.png';
+const Card3D = ({ auroraColors, icon, title, description }) => {
+    const wrapperRef = useRef(null);
+    const cardRef = useRef(null);
 
-const WhyChooseUs = () => {
-    const reasons = [
-        {
-            icon: MessageCircle,
-            title: 'Simple communication',
-            desc: 'No technical jargon — just clear, honest conversation about your goals and how we achieve them.',
-            image: communicationImg,
-            accentColor: 'cyan', // Cyan-500
-            gradient: 'from-cyan-500/20 to-blue-600/20',
-            borderColor: 'border-cyan-500/30',
-            shadow: 'shadow-[0_0_15px_rgba(6,182,212,0.3)]',
-            textColor: 'text-cyan-400'
-        },
-        {
-            icon: Palette,
-            title: 'Modern, professional design',
-            desc: 'Sleek, high-end aesthetics tailored to your brand — your business will look as good as the big players.',
-            image: designImg,
-            accentColor: 'purple', // Purple-500
-            gradient: 'from-purple-500/20 to-pink-600/20',
-            borderColor: 'border-purple-500/30',
-            shadow: 'shadow-[0_0_15px_rgba(168,85,247,0.3)]',
-            textColor: 'text-purple-400'
-        },
-        {
-            icon: Smartphone,
-            title: 'Works on all devices',
-            desc: 'Perfect performance on phones, tablets, and desktops. A seamless experience everywhere.',
-            image: devicesImg,
-            accentColor: 'pink', // Pink-500
-            gradient: 'from-pink-500/20 to-rose-600/20',
-            borderColor: 'border-pink-500/30',
-            shadow: 'shadow-[0_0_15px_rgba(236,72,153,0.3)]',
-            textColor: 'text-pink-400'
-        },
-        {
-            icon: Target,
-            title: 'Focus on real results',
-            desc: 'Not just looks — websites engineered to convert visitors into loyal customers and drive growth.',
-            image: resultsImg,
-            accentColor: 'teal', // Teal-500
-            gradient: 'from-teal-500/20 to-emerald-600/20',
-            borderColor: 'border-teal-500/30',
-            shadow: 'shadow-[0_0_15px_rgba(20,184,166,0.3)]',
-            textColor: 'text-teal-400'
-        },
-        {
-            icon: LifeBuoy,
-            title: 'Reliable support',
-            desc: "We don't disappear. We're here for updates, help, or advice — even long after launch.",
-            image: supportImg,
-            accentColor: 'amber', // Amber-500
-            gradient: 'from-amber-500/20 to-orange-600/20',
-            borderColor: 'border-amber-500/30',
-            shadow: 'shadow-[0_0_15px_rgba(245,158,11,0.3)]',
-            textColor: 'text-amber-400'
-        },
-        {
-            icon: Clock,
-            title: 'Clear timelines',
-            desc: 'Know exactly when your project will be ready. We respect your time and hit our deadlines.',
-            image: timelinesImg,
-            accentColor: 'indigo', // Indigo-500
-            gradient: 'from-indigo-500/20 to-blue-600/20',
-            borderColor: 'border-indigo-500/30',
-            shadow: 'shadow-[0_0_15px_rgba(99,102,241,0.3)]',
-            textColor: 'text-indigo-400'
-        },
-    ];
+    const handleMouseMove = (e) => {
+        if (!cardRef.current || !wrapperRef.current) return;
 
-    const colorMap = {
-        cyan: '#06b6d4',
-        purple: '#a855f7',
-        pink: '#ec4899',
-        teal: '#14b8a6',
-        amber: '#f59e0b',
-        indigo: '#6366f1'
+        const card = cardRef.current;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const maxRotate = 10;
+
+        const rotateX = ((y - centerY) / centerY) * -maxRotate;
+        const rotateY = ((x - centerX) / centerX) * maxRotate;
+
+        card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
     };
 
-    const containerRef = useRef(null);
-    const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+    const handleMouseLeave = () => {
+        if (!cardRef.current) return;
+        const card = cardRef.current;
+
+        card.style.transform = `perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+        card.style.transition = `transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)`;
+        card.style.setProperty('--mouse-x', `50%`);
+        card.style.setProperty('--mouse-y', `50%`);
+    };
+
+    const handleMouseEnter = () => {
+        if (!cardRef.current) return;
+        cardRef.current.style.transition = `transform 0.1s linear`;
+    };
 
     return (
-        <section className="relative py-28 md:py-36 overflow-hidden bg-gradient-to-b from-black/30 to-black/50">
-            {/* Background Ambience */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-900/20 rounded-full blur-[120px] mix-blend-screen" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[800px] h-[500px] bg-purple-900/10 rounded-full blur-[100px]" />
+        <div
+            className="card-wrapper-3d group"
+            ref={wrapperRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            onMouseEnter={handleMouseEnter}
+        >
+            <div className="aurora-container" style={auroraColors}>
+                <div className="aurora-glow"></div>
             </div>
+            <div className="glass-card-3d" ref={cardRef}>
+                <div className="icon-container">
+                    {icon}
+                </div>
+                <div className="content-container">
+                    <h3 className="text-white font-bold text-lg leading-tight mb-2" dangerouslySetInnerHTML={{ __html: title }}></h3>
+                    <p className="text-gray-300 text-[11px] leading-relaxed">{description}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6" ref={containerRef}>
-                {/* Section Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-                    whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.8 }}
-                    className="text-center mb-20 relative z-10"
-                >
-                    <div className="inline-flex items-center space-x-2 mb-4">
-                        <span className="h-px w-8 bg-cyan-400/50"></span>
-                        <span className="text-xs font-bold tracking-[0.2em] text-cyan-400 uppercase">Why Us</span>
-                        <span className="h-px w-8 bg-cyan-400/50"></span>
+const WhyChooseUs = () => {
+    return (
+        <section className="py-24 px-10 why-us-section border-t border-white/10 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-24">
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                        <div className="h-px w-12 bg-cyan-500" />
+                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Why Us</span>
+                        <div className="h-px w-12 bg-cyan-500" />
                     </div>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-2">
-                        Why Local Businesses
-                    </h2>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight pb-2">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6"
+                    >
+                        Why Local Businesses <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
                             Choose Us
                         </span>
-                    </h2>
-                    <p className="mt-6 max-w-2xl mx-auto text-lg text-white/60 leading-relaxed">
-                        We earn trust through transparency, quality, and results — not buzzwords. Discover the difference a dedicated partner makes.
-                    </p>
-                </motion.div>
-
-                {/* Cinematic Macro Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-                    {reasons.map((reason, index) => {
-                        const Icon = reason.icon;
-                        return (
-                            <motion.div
-                                key={reason.title}
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.6, delay: index * 0.1 }}
-                                className="relative group h-[420px]"
-                            >
-                                <WavyCard className="w-full h-full" color={colorMap[reason.accentColor]}>
-                                    <div className="relative w-full h-full overflow-hidden">
-                                        {/* Image Background */}
-                                        <div className="absolute inset-0 opacity-30 transition-transform duration-700 group-hover:scale-110">
-                                            <img
-                                                src={reason.image}
-                                                alt={reason.title}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-
-                                        {/* Gradient Overlay for Text Readability */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#18181b] via-[#18181b]/60 to-transparent pointer-events-none" />
-
-                                        {/* Inner Content - Simplified Layout */}
-                                        <div className="relative h-full flex flex-col p-8 justify-end z-10">
-                                            {/* Icon Badge */}
-                                            <div className={`mb-auto inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${reason.gradient} border ${reason.borderColor} ${reason.shadow}`}>
-                                                <Icon size={28} className={reason.textColor} />
-                                            </div>
-
-                                            <h3 className="text-2xl font-bold text-white mb-3 mt-4 leading-tight drop-shadow-sm">
-                                                {reason.title}
-                                            </h3>
-
-                                            <p className="text-base text-gray-300 font-medium leading-relaxed drop-shadow-sm">
-                                                {reason.desc}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </WavyCard>
-                            </motion.div>
-                        );
-                    })}
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed"
+                    >
+                        We don't just build websites; we build growth engines. Here is how we differ from the rest.
+                    </motion.p>
                 </div>
 
-                {/* Bottom CTA */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
-                    whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.6 }}
-                    className="mt-20 text-center"
-                >
-                    <p className="text-white/60 text-lg mb-6">
-                        Ready to grow your business online?
-                    </p>
-                    <RainbowButton
-                        onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                    >
-                        <span className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.1em]">
-                            Let's Talk
-                            <CheckCircle className="w-4 h-4" />
-                        </span>
-                    </RainbowButton>
-                </motion.div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+                    {/* Card 1: Simple Communication */}
+                    <Card3D
+                        auroraColors={{ '--c1': '#00f2fe', '--c2': '#f093fb', '--c3': '#8a2387' }}
+                        title="Simple<br>Communication"
+                        description="No technical jargon — just clear, honest conversation about your goals."
+                        icon={
+                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
+                                <defs>
+                                    <radialGradient id="grad1" cx="30%" cy="30%" r="70%">
+                                        <stop offset="0%" stopColor="#fff" />
+                                        <stop offset="50%" stopColor="#f093fb" />
+                                        <stop offset="100%" stopColor="#8a2387" />
+                                    </radialGradient>
+                                </defs>
+                                <path d="M 30 50 C 30 30, 45 20, 65 20 C 85 20, 95 30, 95 50 C 95 70, 85 80, 65 80 C 60 80, 55 79, 50 76 L 35 85 L 38 68 C 33 63, 30 57, 30 50 Z" fill="none" stroke="url(#grad1)" strokeWidth="4" opacity="0.5" />
+                                <path d="M 15 45 C 15 25, 30 15, 50 15 C 70 15, 80 25, 80 45 C 80 65, 70 75, 50 75 C 45 75, 40 74, 35 71 L 20 80 L 23 63 C 18 58, 15 52, 15 45 Z" fill="url(#grad1)" opacity="0.8" />
+                                <circle cx="35" cy="45" r="4" fill="#fff" />
+                                <circle cx="50" cy="45" r="4" fill="#fff" />
+                                <circle cx="65" cy="45" r="4" fill="#fff" />
+                            </svg>
+                        }
+                    />
+
+                    {/* Card 2: Modern Design */}
+                    <Card3D
+                        auroraColors={{ '--c1': '#e0e0e0', '--c2': '#8a8a8a', '--c3': '#b0b0b0' }}
+                        title="Modern<br>Design"
+                        description="Sleek, high-end aesthetics tailored to your brand."
+                        icon={
+                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
+                                <defs>
+                                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#fff" />
+                                        <stop offset="50%" stopColor="#a0a0a0" />
+                                        <stop offset="100%" stopColor="#404040" />
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="50,15 85,45 50,90 15,45" fill="none" stroke="url(#grad2)" strokeWidth="4" strokeLinejoin="round" />
+                                <polygon points="50,15 85,45 50,45" fill="url(#grad2)" opacity="0.6" />
+                                <polygon points="50,15 15,45 50,45" fill="url(#grad2)" opacity="0.3" />
+                                <polygon points="15,45 50,90 50,45" fill="url(#grad2)" opacity="0.4" />
+                            </svg>
+                        }
+                    />
+
+                    {/* Card 3: Works on all Devices */}
+                    <Card3D
+                        auroraColors={{ '--c1': '#43e97b', '--c2': '#38f9d7', '--c3': '#4facfe' }}
+                        title="Works on all<br>Devices"
+                        description="Perfect performance on phones, tablets, and desktops."
+                        icon={
+                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
+                                <defs>
+                                    <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#e0f7fa" />
+                                        <stop offset="100%" stopColor="#80deea" />
+                                    </linearGradient>
+                                </defs>
+                                <rect x="10" y="30" width="80" height="45" rx="4" fill="url(#grad3)" opacity="0.8" />
+                                <rect x="5" y="75" width="90" height="5" rx="2" fill="#fff" />
+                                <rect x="15" y="40" width="30" height="40" rx="3" fill="#fff" opacity="0.9" />
+                                <rect x="65" y="50" width="18" height="30" rx="2" fill="#fff" />
+                            </svg>
+                        }
+                    />
+
+                    {/* Card 4: Focus on Results */}
+                    <Card3D
+                        auroraColors={{ '--c1': '#ff0844', '--c2': '#ffb199', '--c3': '#ff758c' }}
+                        title="Focus on<br>Results"
+                        description="Websites engineered to convert visitors into loyal customers."
+                        icon={
+                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
+                                <circle cx="50" cy="50" r="35" fill="none" stroke="#ffb199" strokeWidth="2" opacity="0.5" />
+                                <circle cx="50" cy="50" r="10" fill="#ffb199" />
+                                <line x1="50" y1="5" x2="50" y2="95" stroke="#ffb199" strokeWidth="2" opacity="0.6" />
+                                <line x1="5" y1="50" x2="95" y2="50" stroke="#ffb199" strokeWidth="2" opacity="0.6" />
+                            </svg>
+                        }
+                    />
+
+                    {/* Card 5: Reliable Support */}
+                    <Card3D
+                        auroraColors={{ '--c1': '#667eea', '--c2': '#764ba2', '--c3': '#a18cd1' }}
+                        title="Reliable<br>Support"
+                        description="We're here for updates, help, or advice — even long after launch."
+                        icon={
+                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
+                                <defs>
+                                    <linearGradient id="grad5" x1="0%" y1="100%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#a18cd1" />
+                                        <stop offset="100%" stopColor="#e0e0e0" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M 50 15 L 85 28 C 85 60, 70 80, 50 95 C 30 80, 15 60, 15 28 Z" fill="none" stroke="url(#grad5)" strokeWidth="5" strokeLinejoin="round" />
+                                <path d="M 50 22 L 75 32 C 75 58, 65 72, 50 85 C 35 72, 25 58, 25 32 Z" fill="url(#grad5)" opacity="0.5" />
+                                <path d="M 38 52 L 48 62 L 68 40" fill="none" stroke="#fff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        }
+                    />
+
+                    {/* Card 6: Clear Timelines */}
+                    <Card3D
+                        auroraColors={{ '--c1': '#8fd3f4', '--c2': '#84fab0', '--c3': '#fdfbfb' }}
+                        title="Clear<br>Timelines"
+                        description="Know exactly when your project will be ready. We respect your time."
+                        icon={
+                            <svg viewBox="0 0 100 100" className="w-full h-auto svg-3d-shadow">
+                                <defs>
+                                    <linearGradient id="grad6" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#fff" />
+                                        <stop offset="100%" stopColor="#8fd3f4" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M 25 20 L 75 20 C 75 20, 65 45, 50 50 C 35 45, 25 20, 25 20 Z" fill="none" stroke="url(#grad6)" strokeWidth="5" strokeLinejoin="round" />
+                                <path d="M 25 80 L 75 80 C 75 80, 65 55, 50 50 C 35 55, 25 80, 25 80 Z" fill="url(#grad6)" opacity="0.6" stroke="url(#grad6)" strokeWidth="5" strokeLinejoin="round" />
+                                <circle cx="50" cy="50" r="2" fill="#fff" />
+                                <circle cx="50" cy="65" r="4" fill="#fff" />
+                            </svg>
+                        }
+                    />
+                </div>
             </div>
         </section>
     );

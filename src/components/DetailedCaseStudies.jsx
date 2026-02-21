@@ -1,5 +1,5 @@
 ﻿import React, { useRef } from 'react';
-import { LayoutGrid, ChevronDown, Users, ArrowRight, Phone, TrendingUp } from 'lucide-react';
+import { LayoutGrid, ChevronDown, Users, ArrowRight, Phone, TrendingUp, Monitor } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const DetailedCaseStudies = () => {
@@ -52,14 +52,26 @@ const DetailedCaseStudies = () => {
 
                 <div className="space-y-32">
                     {/* Case Study 01: Local Gym */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
+                    <div id="fitness" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
                         <div className="lg:col-span-7 tilt-card-container order-2 lg:order-1">
                             <div
-                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-card-gym border border-white/10 overflow-hidden shadow-2xl transition-all duration-300"
+                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:shadow-cyan-500/20"
                                 onMouseMove={handleMouseMove}
                                 onMouseLeave={handleMouseLeave}
+                                onClick={() => window.open('https://iron-core-fit.vercel.app', '_blank')}
                             >
-                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
+                                {/* Live Preview Iframe */}
+                                <div className="absolute inset-0 z-0 bg-gray-900">
+                                    <iframe
+                                        src="https://iron-core-fit.vercel.app"
+                                        className="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none border-0 opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                                        title="Iron Core Fit Preview"
+                                    />
+                                    {/* Gradient Overlay for Text Readability */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-60" />
+                                </div>
+
+                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10 pointer-events-none">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h4 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Fitness & Wellness</h4>
@@ -69,17 +81,16 @@ const DetailedCaseStudies = () => {
                                             <Users className="text-white" size={24} />
                                         </div>
                                     </div>
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center">More Inquiries</h2>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">Visit Site</h2>
                                     </div>
                                     <div className="flex justify-between items-end text-xs font-mono text-gray-500">
-                                        <span>Case Study 01</span>
-                                        <span>Local Business</span>
+                                        <span>iron-core-fit.vercel.app</span>
+                                        <span>Live Demo</span>
                                     </div>
                                 </div>
-                                <div className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500 via-transparent to-transparent"></div>
-                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none group-hover:pointer-events-auto hover:bg-gray-100">
-                                    VIEW DETAILS
+                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none">
+                                    VISIT SITE
                                 </button>
                             </div>
                         </div>
@@ -99,7 +110,10 @@ const DetailedCaseStudies = () => {
                                     <p className="text-white font-semibold text-lg">Improved engagement and more contact requests.</p>
                                 </div>
                                 <div className="mt-8">
-                                    <button className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group">
+                                    <button
+                                        onClick={() => window.open('https://iron-core-fit.vercel.app', '_blank')}
+                                        className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group"
+                                    >
                                         <ArrowRight className="text-gray-400 group-hover:text-black transition-colors" size={20} />
                                     </button>
                                 </div>
@@ -108,7 +122,7 @@ const DetailedCaseStudies = () => {
                     </div>
 
                     {/* Case Study 02: Dental Clinic */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
+                    <div id="medical" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
                         <div className="lg:col-span-5 space-y-8 pr-0 lg:pr-12 order-1">
                             <div className="relative">
                                 <span className="font-display text-[120px] leading-none font-bold text-white/5 absolute -top-16 -left-8 -z-10 select-none">02</span>
@@ -125,7 +139,10 @@ const DetailedCaseStudies = () => {
                                     <p className="text-white font-semibold text-lg">Streamlined booking process and significant patient growth.</p>
                                 </div>
                                 <div className="mt-8">
-                                    <button className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group">
+                                    <button
+                                        onClick={() => window.open('https://radiant-smile.vercel.app', '_blank')}
+                                        className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group"
+                                    >
                                         <ArrowRight className="text-gray-400 group-hover:text-black transition-colors" size={20} />
                                     </button>
                                 </div>
@@ -133,11 +150,22 @@ const DetailedCaseStudies = () => {
                         </div>
                         <div className="lg:col-span-7 tilt-card-container order-2">
                             <div
-                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-card-clinic border border-white/10 overflow-hidden shadow-2xl transition-all duration-300"
+                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:shadow-pink-500/20"
                                 onMouseMove={handleMouseMove}
                                 onMouseLeave={handleMouseLeave}
+                                onClick={() => window.open('https://radiant-smile.vercel.app', '_blank')}
                             >
-                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
+                                {/* Live Preview Iframe */}
+                                <div className="absolute inset-0 z-0 bg-gray-900">
+                                    <iframe
+                                        src="https://radiant-smile.vercel.app"
+                                        className="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none border-0 opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                                        title="Radiant Smile Preview"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-60" />
+                                </div>
+
+                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10 pointer-events-none">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h4 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Healthcare</h4>
@@ -147,31 +175,41 @@ const DetailedCaseStudies = () => {
                                             <Phone className="text-white" size={24} />
                                         </div>
                                     </div>
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center">More Bookings</h2>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">Visit Site</h2>
                                     </div>
                                     <div className="flex justify-between items-end text-xs font-mono text-gray-500">
-                                        <span>Case Study 02</span>
-                                        <span>Local Business</span>
+                                        <span>radiant-smile.vercel.app</span>
+                                        <span>Live Demo</span>
                                     </div>
                                 </div>
-                                <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-pink-600 via-transparent to-transparent"></div>
-                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none group-hover:pointer-events-auto hover:bg-gray-100">
-                                    VIEW DETAILS
+                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none">
+                                    VISIT SITE
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     {/* Case Study 03: Local Restaurant */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
+                    <div id="food" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
                         <div className="lg:col-span-7 tilt-card-container order-2 lg:order-1">
                             <div
-                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-card-restaurant border border-white/10 overflow-hidden shadow-2xl transition-all duration-300"
+                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:shadow-orange-500/20"
                                 onMouseMove={handleMouseMove}
                                 onMouseLeave={handleMouseLeave}
+                                onClick={() => window.open('https://savory-sage-food.vercel.app', '_blank')}
                             >
-                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
+                                {/* Live Preview Iframe */}
+                                <div className="absolute inset-0 z-0 bg-gray-900">
+                                    <iframe
+                                        src="https://savory-sage-food.vercel.app"
+                                        className="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none border-0 opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                                        title="Savory Sage Food Preview"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-60" />
+                                </div>
+
+                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10 pointer-events-none">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h4 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Food & Dining</h4>
@@ -181,17 +219,16 @@ const DetailedCaseStudies = () => {
                                             <TrendingUp className="text-white" size={24} />
                                         </div>
                                     </div>
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center">More Orders</h2>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">Visit Site</h2>
                                     </div>
                                     <div className="flex justify-between items-end text-xs font-mono text-gray-500">
-                                        <span>Case Study 03</span>
-                                        <span>Local Business</span>
+                                        <span>savory-sage-food.vercel.app</span>
+                                        <span>Live Demo</span>
                                     </div>
                                 </div>
-                                <div className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-orange-600/40 via-transparent to-transparent"></div>
-                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none group-hover:pointer-events-auto hover:bg-gray-100">
-                                    VIEW DETAILS
+                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none">
+                                    VISIT SITE
                                 </button>
                             </div>
                         </div>
@@ -211,10 +248,82 @@ const DetailedCaseStudies = () => {
                                     <p className="text-white font-semibold text-lg">Increased online visibility and expanded customer reach.</p>
                                 </div>
                                 <div className="mt-8">
-                                    <button className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group">
+                                    <button
+                                        onClick={() => window.open('https://savory-sage-food.vercel.app', '_blank')}
+                                        className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group"
+                                    >
                                         <ArrowRight className="text-gray-400 group-hover:text-black transition-colors" size={20} />
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Case Study 04: The Obsidian */}
+                    <div id="real-estate" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center group">
+                        <div className="lg:col-span-5 space-y-8 pr-0 lg:pr-12 order-1">
+                            <div className="relative">
+                                <span className="font-display text-[120px] leading-none font-bold text-white/5 absolute -top-16 -left-8 -z-10 select-none">04</span>
+                                <div className="mb-8">
+                                    <h4 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Goal</h4>
+                                    <p className="text-xl font-medium text-white">Establish a premium digital presence</p>
+                                </div>
+                                <div className="mb-8">
+                                    <h4 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Solution</h4>
+                                    <p className="text-gray-400 leading-relaxed">High-end dark mode aesthetics, smooth animations, and optimized performance to showcase brand quality.</p>
+                                </div>
+                                <div className="bg-gradient-to-r from-teal-500 to-emerald-500 p-6 rounded-xl shadow-lg shadow-teal-900/20 border border-white/10">
+                                    <h4 className="text-[10px] font-bold tracking-widest text-white/80 uppercase mb-1">Result</h4>
+                                    <p className="text-white font-semibold text-lg">A striking brand identity that captivates luxury clients.</p>
+                                </div>
+                                <div className="mt-8">
+                                    <button
+                                        onClick={() => window.open('https://the-obsidian.vercel.app', '_blank')}
+                                        className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group"
+                                    >
+                                        <ArrowRight className="text-gray-400 group-hover:text-black transition-colors" size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="lg:col-span-7 tilt-card-container order-2">
+                            <div
+                                className="tilt-card relative w-full aspect-[4/3] rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:shadow-teal-500/20"
+                                onMouseMove={handleMouseMove}
+                                onMouseLeave={handleMouseLeave}
+                                onClick={() => window.open('https://the-obsidian.vercel.app', '_blank')}
+                            >
+                                {/* Live Preview Iframe */}
+                                <div className="absolute inset-0 z-0 bg-gray-900">
+                                    <iframe
+                                        src="https://the-obsidian.vercel.app"
+                                        className="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none border-0 opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                                        title="The Obsidian Preview"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-60" />
+                                </div>
+
+                                <div className="absolute inset-0 p-8 flex flex-col justify-between z-10 pointer-events-none">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Premium Agency</h4>
+                                            <h3 className="font-display text-3xl font-bold text-white">The Obsidian</h3>
+                                        </div>
+                                        <div className="w-12 h-12 rounded-xl bg-teal-500 flex items-center justify-center shadow-lg shadow-teal-500/20">
+                                            <Monitor className="text-white" size={24} />
+                                        </div>
+                                    </div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <h2 className="font-display text-5xl md:text-6xl font-black text-white/90 drop-shadow-lg text-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">Visit Site</h2>
+                                    </div>
+                                    <div className="flex justify-between items-end text-xs font-mono text-gray-500">
+                                        <span>the-obsidian.vercel.app</span>
+                                        <span>Live Demo</span>
+                                    </div>
+                                </div>
+                                <button className="view-details-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] opacity-0 transition-all duration-300 z-20 pointer-events-none">
+                                    VISIT SITE
+                                </button>
                             </div>
                         </div>
                     </div>

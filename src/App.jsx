@@ -62,7 +62,7 @@ function App() {
     }, [loading, gameActive]);
 
     return (
-        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-x-hidden">
+        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip">
             {/* Custom Cursor */}
             <CustomCursor />
 

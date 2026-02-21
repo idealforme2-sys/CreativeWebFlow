@@ -54,7 +54,7 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--color-dark);
   color: #fff;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -662,6 +662,137 @@ body.game-active * {
   background: linear-gradient(135deg, rgba(35, 15, 35, 0.9), rgba(20, 5, 20, 0.95));
 }
 
-.bg-card-restaurant {
-  background: linear-gradient(135deg, rgba(40, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+
+/* ===== 3D LIQUID MORPHING CARDS CSS ===== */
+.why-us-section {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Background removed for transparency */
+}
+
+.card-wrapper-3d {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+.aurora-container {
+  position: absolute;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask: radial-gradient(circle at 50% 50%, black 25%, transparent 65%);
+  mask: radial-gradient(circle at 50% 50%, black 25%, transparent 65%);
+}
+
+.aurora-glow {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(from 0deg, var(--c1), var(--c2), var(--c3), var(--c1));
+  filter: blur(40px);
+  animation: spinGlow 10s linear infinite;
+  opacity: 0.5;
+  transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease;
+  border-radius: 50%;
+}
+
+.card-wrapper-3d:hover .aurora-glow {
+  opacity: 1;
+  filter: blur(30px);
+  transform: scale(1.05);
+  animation-duration: 5s;
+}
+
+@keyframes spinGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.glass-card-3d {
+  position: relative;
+  z-index: 10;
+  background: rgba(12, 12, 12, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  transform-style: preserve-3d;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  transition: transform 0.1s linear;
+}
+
+/* Mouse Tracking Border Glow */
+.glass-card-3d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.05) 40%,
+      transparent 80%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+  opacity: 0.4;
+}
+
+.card-wrapper-3d:hover .glass-card-3d::before {
+  opacity: 1;
+}
+
+/* Ambient Inner Mouse Light */
+.glass-card-3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.04),
+      transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-wrapper-3d:hover .glass-card-3d::after {
+  opacity: 1;
+}
+
+.glass-card-3d .icon-container {
+  flex-shrink: 0;
+  width: 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateZ(35px);
+  position: relative;
+  z-index: 2;
+}
+
+.glass-card-3d .content-container {
+  width: 65%;
+  transform: translateZ(25px);
+  position: relative;
+  z-index: 2;
+}
+
+.svg-3d-shadow {
+  filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.5));
 }

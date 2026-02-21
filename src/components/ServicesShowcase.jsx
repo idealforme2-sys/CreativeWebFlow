@@ -1,320 +1,440 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Globe, Smartphone, Zap, Search, MapPin, Star, BarChart3, Users, Repeat, Lock, ArrowRight } from 'lucide-react';
-import { RevealOnScroll, BlurFadeIn, MagneticButton } from './UIComponents';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue } from 'framer-motion';
+import { BlurFadeIn, MagneticButton } from './UIComponents';
+import { ArrowRight, Check, CheckCircle2, Star, TrendingUp, Search } from 'lucide-react';
 
-const services = [
-    {
-        id: 'web',
-        label: 'Web Development',
-        icon: Globe,
-        gradient: 'from-cyan-500 to-blue-500',
-        bgGlow: 'bg-cyan-500/10',
-        borderColor: 'border-cyan-500/30',
-        textColor: 'text-cyan-400',
-        glowColor: 'rgba(6, 182, 212, 0.15)',
-        headline: 'Websites built to bring customers',
-        description: 'Your website is your hardest working employee. We build fast, mobile-friendly sites that turn visitors into paying customers.',
-        features: [
-            { icon: Globe, text: 'Professional, responsive design' },
-            { icon: Smartphone, text: 'Perfect on every device' },
-            { icon: Zap, text: 'Lightning-fast performance' },
-            { icon: Search, text: 'SEO optimized from day one' },
-        ]
-    },
-    {
-        id: 'app',
-        label: 'Smart Features',
-        icon: Smartphone,
-        gradient: 'from-purple-500 to-pink-500',
-        bgGlow: 'bg-purple-500/10',
-        borderColor: 'border-purple-500/30',
-        textColor: 'text-purple-400',
-        glowColor: 'rgba(168, 85, 247, 0.15)',
-        headline: 'Smart tools for modern businesses',
-        description: 'Automate tasks, improve customer experience, and save time with custom features built for your specific needs.',
-        features: [
-            { icon: Users, text: 'Customer portals & dashboards' },
-            { icon: Repeat, text: 'Online booking systems' },
-            { icon: Lock, text: 'Custom integrations' },
-            { icon: Smartphone, text: 'Progressive Web Apps' },
-        ]
-    },
-    {
-        id: 'marketing',
-        label: 'Local Marketing',
-        icon: MapPin,
-        gradient: 'from-pink-500 to-orange-500',
-        bgGlow: 'bg-pink-500/10',
-        borderColor: 'border-pink-500/30',
-        textColor: 'text-pink-400',
-        glowColor: 'rgba(236, 72, 153, 0.15)',
-        headline: 'Help customers find you online',
-        description: 'Get found when customers search for businesses like yours. We optimize your presence for local searches and build your reputation.',
-        features: [
-            { icon: MapPin, text: 'Google Business optimization' },
-            { icon: Star, text: 'Review management' },
-            { icon: Search, text: 'Local SEO strategy' },
-            { icon: BarChart3, text: 'Performance tracking' },
-        ]
+// Custom HTML5 Canvas Particles for Constellation Effect
+// This prevents the memory leaks associated with external particles.js libraries in React
+const ParticlesBackground = () => {
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let animationFrameId;
+        let particles = [];
+        const numParticles = 60;
+        const connectionDistance = 150;
+
+        const resize = () => {
+            // Get parent element dimensions
+            const parent = canvas.parentElement;
+            canvas.width = parent.offsetWidth;
+            canvas.height = parent.offsetHeight;
+        };
+
+        // Initial setup
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = Math.random() * 2 + 1;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        let mouseX = -1000;
+        let mouseY = -1000;
+
+        const handleMouseMove = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        };
+
+        const handleMouseLeave = () => {
+            mouseX = -1000;
+            mouseY = -1000;
+        };
+
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseleave', handleMouseLeave);
+
+        const render = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw particles
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Connect particles to each other
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        // Opacity based on distance
+                        const opacity = 1 - (dist / connectionDistance);
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${opacity * 0.2})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+
+                // Connect particles to mouse
+                const dxMouse = particles[i].x - mouseX;
+                const dyMouse = particles[i].y - mouseY;
+                const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+
+                if (distMouse < 180) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(mouseX, mouseY);
+                    const opacity = 1 - (distMouse / 180);
+                    ctx.strokeStyle = `rgba(59, 130, 246, ${opacity * 0.5})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+            window.removeEventListener('resize', resize);
+            canvas.removeEventListener('mousemove', handleMouseMove);
+            canvas.removeEventListener('mouseleave', handleMouseLeave);
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, []);
+
+    return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-auto" />;
+};
+
+// 3D Tilt Wrapper Component
+const TiltCard = ({ children, className }) => {
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const rotateX = useTransform(y, [-100, 100], [10, -10]);
+    const rotateY = useTransform(x, [-100, 100], [-10, 10]);
+
+    function handleMouse(event) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        // Calculate mouse position relative to center of element
+        x.set(event.clientX - rect.left - rect.width / 2);
+        y.set(event.clientY - rect.top - rect.height / 2);
     }
-];
 
-// Individual feature card with premium vibration + distortion
-const FeatureCard = ({ feat, active, index }) => {
-    const FeatIcon = feat.icon;
-
-    // Unique vibration timing per card
-    const vibDuration = 2.5 + index * 0.4;
-    const vibDelay = index * 0.3;
+    function handleMouseLeave() {
+        x.set(0);
+        y.set(0);
+    }
 
     return (
         <motion.div
-            key={feat.text}
-            initial={{ opacity: 0, scale: 0.85, y: 30, filter: 'blur(8px)' }}
-            animate={{
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                x: [0, -1.2, 0.8, -0.5, 0],
-                rotate: [0, -0.3, 0.2, -0.15, 0],
-            }}
-            exit={{ opacity: 0, scale: 0.9, y: -15, filter: 'blur(6px)' }}
-            transition={{
-                opacity: { delay: index * 0.08 + 0.15, duration: 0.5 },
-                scale: { delay: index * 0.08 + 0.15, duration: 0.5 },
-                y: { delay: index * 0.08 + 0.15, duration: 0.5 },
-                filter: { delay: index * 0.08 + 0.15, duration: 0.5 },
-                x: { delay: vibDelay + 1, duration: vibDuration, repeat: Infinity, ease: "easeInOut" },
-                rotate: { delay: vibDelay + 1, duration: vibDuration, repeat: Infinity, ease: "easeInOut" },
-            }}
-            whileHover={{
-                y: -8,
-                scale: 1.04,
-                transition: { duration: 0.25 }
-            }}
-            className="group relative p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-colors duration-300 backdrop-blur-sm overflow-hidden"
-            style={{ perspective: '600px' }}
+            style={{ perspective: 1000 }}
+            className={`cursor-crosshair ${className}`}
         >
-            {/* Distortion shimmer on hover — chromatic aberration feel */}
-            <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{
-                    background: `
-                        linear-gradient(135deg, 
-                            rgba(255,0,128,0.06) 0%, 
-                            transparent 40%, 
-                            rgba(0,112,243,0.06) 60%, 
-                            transparent 100%
-                        )
-                    `,
-                    mixBlendMode: 'screen',
-                }}
-            />
-
-            <div className={`w-10 h-10 rounded-lg ${active.bgGlow} border ${active.borderColor} flex items-center justify-center mb-3 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                <FeatIcon size={20} className={active.textColor} />
-            </div>
-            <p className="text-sm text-white/80 font-medium leading-snug">{feat.text}</p>
-
-            {/* Hover glow */}
             <motion.div
-                className="absolute inset-0 rounded-2xl pointer-events-none"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-                style={{
-                    background: `radial-gradient(circle at 50% 50%, ${active.glowColor}, transparent 70%)`,
-                }}
-            />
+                style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                onMouseMove={handleMouse}
+                onMouseLeave={handleMouseLeave}
+                className="w-full h-full relative"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+                {children}
+            </motion.div>
         </motion.div>
     );
 };
 
+// Data Structure
+const tabsData = [
+    {
+        id: 'web',
+        title: 'Web Development',
+        gradient: 'from-blue-600 to-indigo-600',
+        textGradient: 'from-blue-400 to-cyan-300',
+        neonShadow: 'shadow-[0_0_20px_rgba(59,130,246,0.5)]',
+        colorClass: 'text-blue-400',
+        borderClass: 'border-blue-500/20',
+        bgGlowClass: 'bg-blue-500/10 hover:bg-blue-500/20',
+        heading: 'Websites built to bring customers',
+        description: 'Your website is your hardest working employee. We build fast, mobile-friendly sites that turn visitors into paying customers.',
+        features: [
+            'Professional, responsive design',
+            'Perfect on every device',
+            'Lightning-fast performance'
+        ],
+        image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        floatingOverlay: (
+            <motion.div
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-6 -left-6 bg-slate-900/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl flex items-center space-x-4"
+            >
+                <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center border border-green-500/30">
+                    <TrendingUp className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                    <p className="text-xs text-slate-400 font-medium">Conversion Rate</p>
+                    <p className="text-lg font-bold text-white">+142%</p>
+                </div>
+            </motion.div>
+        )
+    },
+    {
+        id: 'smart',
+        title: 'Smart Features',
+        gradient: 'from-purple-600 to-pink-600',
+        textGradient: 'from-purple-400 to-pink-400',
+        neonShadow: 'shadow-[0_0_20px_rgba(168,85,247,0.5)]',
+        colorClass: 'text-purple-400',
+        borderClass: 'border-purple-500/20',
+        bgGlowClass: 'bg-purple-500/10 hover:bg-purple-500/20',
+        heading: 'Smart tools for modern businesses',
+        description: 'Automate tasks, improve customer experience, and save time with custom features built for your specific needs.',
+        features: [
+            'Customer portals & dashboards',
+            'Online booking systems',
+            'Progressive Web Apps'
+        ],
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        floatingOverlay: (
+            <motion.div
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-6 -right-6 bg-slate-900/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl flex items-center space-x-4"
+            >
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
+                    <CheckCircle2 className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                    <p className="text-xs text-slate-400 font-medium">System Status</p>
+                    <p className="text-sm font-bold text-white">Automated</p>
+                </div>
+            </motion.div>
+        )
+    },
+    {
+        id: 'local',
+        title: 'Local Marketing',
+        gradient: 'from-teal-500 to-emerald-500',
+        textGradient: 'from-teal-400 to-emerald-400',
+        neonShadow: 'shadow-[0_0_20px_rgba(20,184,166,0.5)]',
+        colorClass: 'text-teal-400',
+        borderClass: 'border-teal-500/20',
+        bgGlowClass: 'bg-teal-500/10 hover:bg-teal-500/20',
+        heading: 'Help customers find you online',
+        description: 'Get found when customers search for businesses like yours. We optimize your presence for local searches and build your reputation.',
+        features: [
+            'Google Business optimization',
+            'Review management & SEO',
+            'Performance tracking'
+        ],
+        image: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        floatingOverlay: (
+            <motion.div
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -bottom-6 right-10 bg-slate-900/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl flex items-center space-x-4"
+            >
+                <div className="flex -space-x-3">
+                    <div className="w-10 h-10 rounded-full border-2 border-slate-900 bg-blue-500 flex items-center justify-center text-xs font-bold text-white"><Star size={12} className="mr-0.5 fill-white" />5</div>
+                    <div className="w-10 h-10 rounded-full border-2 border-slate-900 bg-emerald-500 flex items-center justify-center text-xs font-bold text-white"><Star size={12} className="mr-0.5 fill-white" />5</div>
+                </div>
+                <div>
+                    <p className="text-xs text-slate-400 font-medium">Customer Reviews</p>
+                    <p className="text-sm font-bold text-white">Growing fast</p>
+                </div>
+            </motion.div>
+        )
+    }
+];
+
 const ServicesShowcase = () => {
-    const [activeTab, setActiveTab] = useState(0);
-    const [direction, setDirection] = useState(1);
-    const containerRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
-    const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
-
-    const active = services[activeTab];
-
-    const handleTabChange = (i) => {
-        setDirection(i > activeTab ? 1 : -1);
-        setActiveTab(i);
-    };
+    const [activeTabId, setActiveTabId] = useState(tabsData[0].id);
+    const activeData = tabsData.find(t => t.id === activeTabId);
 
     // Slide variants for directional content transition
     const contentVariants = {
-        enter: (dir) => ({
-            opacity: 0,
-            x: dir > 0 ? 60 : -60,
-            filter: 'blur(12px)',
-        }),
-        center: {
-            opacity: 1,
-            x: 0,
-            filter: 'blur(0px)',
-        },
-        exit: (dir) => ({
-            opacity: 0,
-            x: dir > 0 ? -60 : 60,
-            filter: 'blur(12px)',
-        }),
+        enter: { opacity: 0, x: -30, filter: 'blur(8px)' },
+        center: { opacity: 1, x: 0, filter: 'blur(0px)' },
+        exit: { opacity: 0, x: 30, filter: 'blur(8px)' },
+    };
+
+    const imageVariants = {
+        enter: { opacity: 0, scale: 0.9, rotateY: 10 },
+        center: { opacity: 1, scale: 1, rotateY: 0 },
+        exit: { opacity: 0, scale: 0.95 },
     };
 
     return (
-        <section id="services" ref={containerRef} className="relative py-28 lg:py-36 overflow-hidden">
-            {/* Background */}
-            <motion.div
-                className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/5 to-black"
-                style={{ y: backgroundY }}
-            />
+        <section id="what-we-do" className="relative py-24 lg:py-32 overflow-hidden min-h-screen flex items-center">
 
-            {/* Animated orbs */}
-            <motion.div
-                animate={{ x: [0, 40, 0], y: [0, -20, 0] }}
-                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-3xl"
-            />
-            <motion.div
-                animate={{ x: [0, -30, 0], y: [0, 25, 0] }}
-                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-3xl"
-            />
+            {/* Interactive Particle Background overlaying the site's existing dark bg */}
+            <ParticlesBackground />
 
-            {/* Active glow that shifts with tab */}
-            <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-20 pointer-events-none"
-                animate={{
-                    background: activeTab === 0
-                        ? 'radial-gradient(circle, rgba(6,182,212,0.3), transparent)'
-                        : activeTab === 1
-                            ? 'radial-gradient(circle, rgba(168,85,247,0.3), transparent)'
-                            : 'radial-gradient(circle, rgba(236,72,153,0.3), transparent)',
-                }}
-                transition={{ duration: 0.8 }}
-            />
+            {/* Glowing Ambient Orbs */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
 
-            <div className="relative z-10 max-w-6xl mx-auto px-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+
                 {/* Section Header */}
-                <RevealOnScroll>
-                    <div className="text-center mb-16">
-                        <div className="flex items-center justify-center gap-4 mb-6">
-                            <div className="h-px w-12 bg-cyan-500" />
-                            <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">What We Do</span>
-                            <div className="h-px w-12 bg-cyan-500" />
+                <BlurFadeIn delay={0.1}>
+                    <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-24">
+                        <div className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-sm font-medium text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+                            <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                            Innovation Engine
                         </div>
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                            Everything your business{' '}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
-                                needs to grow
+                        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
+                            Everything your business <br className="hidden sm:block" />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                                needs to grow.
                             </span>
                         </h2>
                     </div>
-                </RevealOnScroll>
+                </BlurFadeIn>
 
-                {/* Tab Buttons */}
+                {/* Tab Buttons (Glassmorphic with Sliding Pill via Framer Motion) */}
                 <BlurFadeIn delay={0.2}>
-                    <div className="flex flex-wrap justify-center gap-3 mb-16">
-                        {services.map((service, i) => {
-                            const Icon = service.icon;
-                            const isActive = i === activeTab;
-                            return (
-                                <motion.button
-                                    key={service.id}
-                                    onClick={() => handleTabChange(i)}
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.97 }}
-                                    className={`relative flex items-center gap-2.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-300 ${isActive
-                                        ? 'text-white shadow-lg'
-                                        : 'text-white/50 hover:text-white/80 bg-white/[0.03] border border-white/[0.08]'
-                                        }`}
-                                >
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="activeTab"
-                                            className={`absolute inset-0 rounded-full bg-gradient-to-r ${service.gradient}`}
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                        />
-                                    )}
-                                    <span className="relative z-10 flex items-center gap-2.5">
-                                        <Icon size={18} />
-                                        {service.label}
-                                    </span>
-                                </motion.button>
-                            );
-                        })}
+                    <div className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar mb-16 pb-4 sm:pb-0">
+                        <div className="relative flex space-x-1 bg-white/5 border border-white/10 backdrop-blur-md p-1.5 rounded-2xl min-w-max">
+                            {tabsData.map((tab) => {
+                                const isActive = activeTabId === tab.id;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTabId(tab.id)}
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-semibold transition-colors duration-300 w-48 text-center ${isActive ? 'text-white' : 'text-slate-400 hover:text-white'
+                                            }`}
+                                    >
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="activeTabBg"
+                                                className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} rounded-xl ${tab.neonShadow} -z-10`}
+                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                            />
+                                        )}
+                                        {tab.title}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
                 </BlurFadeIn>
 
-                {/* Active Service Content — directional slide */}
-                <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                        key={active.id}
-                        custom={direction}
-                        variants={contentVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                        className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
-                    >
-                        {/* Left — Text */}
-                        <div>
-                            <motion.h3
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1, duration: 0.5 }}
-                                className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight"
-                            >
-                                {active.headline}
-                            </motion.h3>
-                            <motion.p
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2, duration: 0.5 }}
-                                className="text-lg text-gray-400 leading-relaxed mb-8"
-                            >
-                                {active.description}
-                            </motion.p>
-
+                {/* Tab Content Container */}
+                <div className="relative perspective-1000 min-h-[500px]">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeData.id}
+                            className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center"
+                        >
+                            {/* Text Content */}
                             <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3, duration: 0.5 }}
+                                variants={contentVariants}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                className="lg:col-span-5 order-2 lg:order-1"
                             >
+                                <h3 className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight">
+                                    {activeData.heading.split('to')[0]} to <br />
+                                    <span className={`text-transparent bg-clip-text bg-gradient-to-r ${activeData.textGradient}`}>
+                                        {activeData.heading.split('to')[1].trim()}
+                                    </span>
+                                </h3>
+                                <p className="text-lg text-slate-300 mb-8 leading-relaxed font-light">
+                                    {activeData.description}
+                                </p>
+
+                                <ul className="space-y-5 mb-10">
+                                    {activeData.features.map((feature, i) => (
+                                        <motion.li
+                                            key={i}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.1 + 0.2 }}
+                                            className="flex items-center text-slate-200 group cursor-default"
+                                        >
+                                            <div className={`flex-shrink-0 w-8 h-8 rounded-lg ${activeData.bgGlowClass} border ${activeData.borderClass} flex items-center justify-center mr-4 group-hover:scale-110 transition-all duration-300`}>
+                                                <Check className={`w-4 h-4 ${activeData.colorClass}`} />
+                                            </div>
+                                            <span className="group-hover:translate-x-1 transition-transform duration-300">{feature}</span>
+                                        </motion.li>
+                                    ))}
+                                </ul>
+
                                 <MagneticButton
-                                    className={`group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${active.gradient} rounded-full text-white text-sm font-semibold uppercase tracking-wider`}
+                                    className={`group relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white transition-all duration-300 bg-white/5 border border-white/10 rounded-2xl overflow-hidden`}
                                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                                 >
+                                    <div className={`absolute inset-0 bg-gradient-to-r ${activeData.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10`} />
                                     Get Started
-                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                                 </MagneticButton>
                             </motion.div>
-                        </div>
 
-                        {/* Right — Feature Cards with stagger */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <AnimatePresence mode="wait">
-                                {active.features.map((feat, i) => (
-                                    <FeatureCard
-                                        key={`${active.id}-${feat.text}`}
-                                        feat={feat}
-                                        active={active}
-                                        index={i}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
+                            {/* Image Content with Tilt */}
+                            <motion.div
+                                variants={imageVariants}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                className="lg:col-span-7 order-1 lg:order-2 perspective-1000"
+                            >
+                                <TiltCard className="w-full">
+                                    <div className="relative w-full rounded-3xl p-2 bg-white/5 border border-white/10 backdrop-blur-md">
+                                        {/* Image Glow */}
+                                        <div className={`absolute inset-0 bg-gradient-to-tr ${activeData.gradient} rounded-3xl opacity-20 blur-2xl transition-opacity duration-500`} />
+
+                                        <img
+                                            src={activeData.image}
+                                            alt={activeData.title}
+                                            className="relative rounded-2xl w-full h-[300px] sm:h-[400px] object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 filter brightness-90 contrast-125"
+                                        />
+
+                                        {/* Floating overlay component */}
+                                        {activeData.floatingOverlay}
+                                    </div>
+                                </TiltCard>
+                            </motion.div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             </div>
+
+            {/* Tailwind classes that might be injected dynamically */}
+            <div className="hidden shadow-[0_0_20px_rgba(59,130,246,0.5)] shadow-[0_0_20px_rgba(168,85,247,0.5)] shadow-[0_0_20px_rgba(20,184,166,0.5)]" />
         </section>
     );
 };

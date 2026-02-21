@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Plus, Stethoscope, Dumbbell, Building2, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Stethoscope, Dumbbell, Building2, ArrowRight, Utensils } from 'lucide-react';
 import { MagneticButton } from './UIComponents';
 
 // Industry images
@@ -14,7 +14,7 @@ const WorkSection = () => {
 
     const projects = [
         {
-            id: 1,
+            id: "medical",
             title: "Dental & Medical",
             subtitle: "Healthcare",
             description: "Patient booking systems, trust-building case studies, and serene aesthetics that convert visitors into appointments.",
@@ -26,7 +26,7 @@ const WorkSection = () => {
             gradient: "from-cyan-500 to-blue-500"
         },
         {
-            id: 2,
+            id: "fitness",
             title: "Fitness & Gyms",
             subtitle: "Wellness",
             description: "High-energy visuals, membership portals, and class scheduling integrations designed to fill your facility.",
@@ -38,7 +38,19 @@ const WorkSection = () => {
             gradient: "from-purple-500 to-pink-500"
         },
         {
-            id: 3,
+            id: "food",
+            title: "Food & Restaurants",
+            subtitle: "Culinary",
+            description: "Mouth-watering digital menus, table reservation systems, and local SEO to drive foot traffic.",
+            stat: "+210%",
+            statLabel: "Online Orders",
+            imgAlt: "Food & Restaurants decorative",
+            icon: Utensils,
+            image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800",
+            gradient: "from-yellow-500 to-orange-500"
+        },
+        {
+            id: "real-estate",
             title: "Real Estate",
             subtitle: "Property",
             description: "Immersive property tours, agent profiles, and lead capture forms wrapped in luxury design for high-ticket sales.",
@@ -50,6 +62,22 @@ const WorkSection = () => {
             gradient: "from-orange-500 to-red-500"
         }
     ];
+
+    const scrollToSection = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            const offset = 80; // Account for fixed navigational elements
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = element.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     const handlePrev = () => {
         setActiveIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
@@ -231,10 +259,12 @@ const WorkSection = () => {
                                                                 </div>
                                                             </div>
 
-                                                            <MagneticButton className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-white font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 group/btn">
-                                                                View Examples
-                                                                <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                                                            </MagneticButton>
+                                                            <div onClick={() => scrollToSection(card.id)} className="w-full">
+                                                                <MagneticButton className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-white font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 group/btn cursor-pointer">
+                                                                    View Examples
+                                                                    <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                                                                </MagneticButton>
+                                                            </div>
                                                         </>
                                                     )}
                                                 </div>
