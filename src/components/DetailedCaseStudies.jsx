@@ -1,6 +1,7 @@
 ﻿import React, { useRef } from 'react';
 import { LayoutGrid, ChevronDown, Users, ArrowRight, Phone, TrendingUp, Monitor } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AnimatedHeadline } from './UIComponents';
 
 const DetailedCaseStudies = () => {
     // Helper function for tilt effect
@@ -41,9 +42,11 @@ const DetailedCaseStudies = () => {
                         <span className="text-pink-400 text-xs font-bold tracking-[0.2em] uppercase">Example Projects</span>
                     </div>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                        <h1 className="font-display font-bold text-4xl md:text-6xl max-w-2xl leading-tight text-white">
-                            How We Help Local Businesses
-                        </h1>
+                        <AnimatedHeadline>
+                            <h1 className="font-display font-bold text-4xl md:text-6xl max-w-2xl leading-tight text-white">
+                                How We Help Local Businesses
+                            </h1>
+                        </AnimatedHeadline>
                         <p className="text-gray-400 max-w-md text-sm leading-relaxed">
                             These example projects show our approach to helping local businesses succeed online through strategic design and development.
                         </p>

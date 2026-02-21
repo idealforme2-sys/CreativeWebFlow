@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, MessageCircle, TrendingUp, CheckCircle } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, ParallaxContainer } from './UIComponents';
+import { SectionHeader, RevealOnScroll, ParallaxContainer, AnimatedHeadline } from './UIComponents';
 
 // Local macro images
 import professionalImg from '../assets/aboutus/trusty.png';
@@ -62,7 +62,7 @@ const GlassCard = ({ point, index }) => {
         >
             {/* Card container */}
             <div
-                className="relative h-[520px] rounded-3xl overflow-hidden flex flex-col justify-end p-10 transition-all duration-500"
+                className="relative h-[420px] rounded-3xl overflow-hidden flex flex-col justify-end p-8 transition-all duration-500"
                 style={{
                     background: 'rgba(255, 255, 255, 0.02)',
                     backdropFilter: 'blur(20px)',
@@ -70,21 +70,14 @@ const GlassCard = ({ point, index }) => {
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
             >
-                {/* Liquid morphing border — visible on hover */}
+                {/* Clean hover glow border */}
                 <div
-                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{
-                        padding: '1.5px',
-                        background: `linear-gradient(135deg, ${point.accentColor}, transparent 60%)`,
-                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                        WebkitMaskComposite: 'xor',
-                        maskComposite: 'exclude',
-                        animation: 'pulse-border 2s infinite ease-in-out',
-                    }}
+                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none border border-transparent group-hover:border-white/20"
+                    style={{ boxShadow: `inset 0 0 20px ${point.glowColor}` }}
                 />
 
                 {/* Background image */}
-                <div className="absolute inset-0 -z-10 opacity-80 transition-transform duration-500 group-hover:scale-105">
+                <div className="absolute inset-0 -z-10 opacity-70 transition-transform duration-500 group-hover:scale-105">
                     <img
                         src={point.image}
                         alt={point.title}
@@ -130,13 +123,6 @@ const GlassCard = ({ point, index }) => {
 const AboutSection = () => {
     return (
         <section id="about" className="relative py-24 lg:py-32 overflow-hidden">
-            {/* Keyframes for pulse-border animation */}
-            <style>{`
-                @keyframes pulse-border {
-                    0%, 100% { opacity: 1; filter: brightness(1); }
-                    50% { opacity: 0.8; filter: brightness(1.5); }
-                }
-            `}</style>
 
             {/* Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/10 to-black" />
@@ -148,19 +134,26 @@ const AboutSection = () => {
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <RevealOnScroll>
-                    <SectionHeader
-                        label="About Us"
-                        title={
-                            <>
+                    <div className="max-w-3xl text-center mx-auto mb-12 flex items-center justify-center flex-col">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
+                            whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                            className="flex items-center gap-4 mb-6"
+                        >
+                            <div className="h-px w-12 bg-cyan-500" />
+                            <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">About Us</span>
+                        </motion.div>
+                        <AnimatedHeadline>
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
                                 We don't just build websites.{' '}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
                                     We help local businesses grow.
                                 </span>
-                            </>
-                        }
-                        align="center"
-                        className="mb-12"
-                    />
+                            </h2>
+                        </AnimatedHeadline>
+                    </div>
                 </RevealOnScroll>
 
                 {/* Main Description */}

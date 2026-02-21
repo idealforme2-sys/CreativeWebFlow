@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Smartphone, Lock, Quote, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { RevealOnScroll } from './UIComponents';
+import { RevealOnScroll, AnimatedHeadline } from './UIComponents';
 
 // Import local images for commitment cards (Stitch 3D abstract assets)
 import speedImg from '../assets/commitments/speed_bolt.png';
@@ -93,17 +93,19 @@ const SocialProofSection = () => {
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 {/* Header */}
-                <div className="text-center mb-24 relative">
+                <div className="text-center mb-24 relative flex flex-col items-center">
                     <div className="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                         <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff]"></span>
                         <span className="text-xs tracking-[0.3em] font-bold text-slate-200 uppercase">Core Architecture</span>
                     </div>
-                    <h2 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight text-white">
-                        Built on Promises <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-[#bd00ff] to-[#00f0ff] bg-[length:200%_auto] animate-shimmer">
-                            We Actually Keep
-                        </span>
-                    </h2>
+                    <AnimatedHeadline>
+                        <h2 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight text-white">
+                            Built on Promises <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-[#bd00ff] to-[#00f0ff] bg-[length:200%_auto] animate-shimmer">
+                                We Actually Keep
+                            </span>
+                        </h2>
+                    </AnimatedHeadline>
                     <p className="mt-4 text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
                         High-fidelity engineering for the modern web. We focus on the metrics that matter most to your growth.
                     </p>
@@ -120,62 +122,62 @@ const SocialProofSection = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.7, delay: i * 0.2 }}
-                                className="group relative rounded-3xl overflow-hidden h-[580px] border border-white/10 bg-white/[0.02] backdrop-blur-sm hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-500"
+                                className="h-full"
                             >
-                                {/* Background Image with Floating Animation */}
-                                <div className="absolute inset-0 z-0">
-                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050508]/20 to-[#050508]/90 z-10" />
-                                    <motion.img
-                                        animate={{
-                                            y: [0, -20, 0],
-                                            rotateX: [0, 2, 0],
-                                            rotateY: [0, -2, 0]
-                                        }}
-                                        transition={{
-                                            duration: 6,
-                                            repeat: Infinity,
-                                            ease: "easeInOut",
-                                            delay: item.floatDelay
-                                        }}
-                                        alt={item.label}
-                                        className="w-full h-full object-cover opacity-80 mix-blend-screen scale-110 group-hover:scale-125 transition-transform duration-1000"
-                                        src={item.image}
-                                    />
-                                    {/* Ambient Glow Spot */}
-                                    <div className="absolute top-0 right-0 p-10 opacity-30">
-                                        <div className="w-64 h-64 blur-[100px] rounded-full mix-blend-screen" style={{ backgroundColor: item.neonColor }}></div>
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="relative z-20 h-full flex flex-col justify-between pt-12">
-                                    <div className="px-8 text-center">
-                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 mb-6 backdrop-blur-xl shadow-lg">
-                                            <Icon className="text-3xl" style={{ color: item.neonColor }} />
+                                <div className="group relative rounded-3xl overflow-hidden h-[460px] border border-white/10 bg-white/[0.02] backdrop-blur-sm hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] flex flex-col transition-all duration-500">
+                                    {/* Background Image with Floating Animation */}
+                                    <div className="absolute inset-0 z-0">
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050508]/20 to-[#050508]/90 z-10" />
+                                        <motion.img
+                                            animate={{
+                                                y: [0, -10, 0],
+                                            }}
+                                            transition={{
+                                                duration: 6,
+                                                repeat: Infinity,
+                                                ease: "easeInOut",
+                                                delay: item.floatDelay
+                                            }}
+                                            alt={item.label}
+                                            className="w-full h-full object-cover opacity-60 mix-blend-screen scale-100 group-hover:scale-105 group-hover:opacity-80 transition-all duration-700"
+                                            src={item.image}
+                                        />
+                                        {/* Ambient Glow Spot */}
+                                        <div className="absolute top-0 right-0 p-10 opacity-30">
+                                            <div className="w-64 h-64 blur-[100px] rounded-full mix-blend-screen" style={{ backgroundColor: item.neonColor }}></div>
                                         </div>
-                                        <div className="relative">
-                                            <h3
-                                                className="text-8xl font-bold text-white tracking-tighter drop-shadow-2xl"
-                                                style={{
-                                                    textShadow: `0 0 15px ${item.neonColor}80`,
-                                                    WebkitTextStroke: '1px rgba(255,255,255,0.1)'
-                                                }}
-                                            >
-                                                {item.value}
-                                            </h3>
-                                            <div className="absolute -inset-1 blur-xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ backgroundColor: `${item.neonColor}33` }}></div>
-                                        </div>
-                                        <p className="font-bold tracking-widest uppercase text-sm mt-2 opacity-80" style={{ color: item.neonColor }}>
-                                            {item.label}
-                                        </p>
                                     </div>
 
-                                    {/* Frosted Bottom Panel */}
-                                    <div className="p-8 backdrop-blur-xl bg-black/40 border-t border-white/15">
-                                        <h4 className="text-2xl font-bold text-white mb-3">{item.title}</h4>
-                                        <p className="text-slate-300 text-sm leading-relaxed font-light">
-                                            {item.description}
-                                        </p>
+                                    {/* Content */}
+                                    <div className="relative z-20 h-full flex flex-col pt-12">
+                                        <div className="px-8 text-center flex-1">
+                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 mb-6 backdrop-blur-xl shadow-lg">
+                                                <Icon className="text-3xl" style={{ color: item.neonColor }} />
+                                            </div>
+                                            <div className="relative">
+                                                <h3
+                                                    className="text-8xl font-bold text-white tracking-tighter drop-shadow-2xl"
+                                                    style={{
+                                                        textShadow: `0 0 15px ${item.neonColor}80`,
+                                                        WebkitTextStroke: '1px rgba(255,255,255,0.1)'
+                                                    }}
+                                                >
+                                                    {item.value}
+                                                </h3>
+                                                <div className="absolute -inset-1 blur-xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ backgroundColor: `${item.neonColor}33` }}></div>
+                                            </div>
+                                            <p className="font-bold tracking-widest uppercase text-sm mt-2 opacity-80" style={{ color: item.neonColor }}>
+                                                {item.label}
+                                            </p>
+                                        </div>
+
+                                        {/* Frosted Bottom Panel */}
+                                        <div className="p-8 backdrop-blur-xl bg-black/40 border-t border-white/15 h-full mt-auto">
+                                            <h4 className="text-2xl font-bold text-white mb-3">{item.title}</h4>
+                                            <p className="text-slate-300 text-sm leading-relaxed font-light line-clamp-3">
+                                                {item.description}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -254,7 +256,7 @@ const SocialProofSection = () => {
                     </div>
                 </RevealOnScroll>
             </div>
-        </section>
+        </section >
     );
 };
 

@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Fingerprint, Layout, Terminal, Zap } from 'lucide-react';
+import { AnimatedHeadline, ParticlesBackground } from './UIComponents';
 
 // Import local images directly
 import discoveryImg from '../assets/process/discovery.png';
@@ -149,13 +150,14 @@ const ProcessSection = () => {
 
     return (
         // The outer container establishes the total scrolling height (e.g., 400vh for 4 cards)
-        <section ref={targetRef} className="relative bg-[#050505] h-[400vh]">
+        <section ref={targetRef} className="relative bg-transparent h-[400vh]">
 
             {/* The sticky inner container stays in view while we scroll down */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between py-[4vh] md:py-[6vh] overflow-hidden">
+                <ParticlesBackground />
 
                 {/* Background Gradients */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-[#050505] pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
 
                 {/* 1. Header Area - Flows naturally at the top */}
                 <div className="w-full px-6 flex-shrink-0 z-20">
@@ -169,12 +171,14 @@ const ProcessSection = () => {
                         <span className="inline-block text-cyan-400 text-xs font-bold tracking-[0.2em] uppercase mb-3 md:mb-4 cyan-glow-text">
                             How It Works
                         </span>
-                        <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 md:mb-4 tracking-tight">
-                            From Idea to Launch in{' '}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
-                                4 Simple Steps
-                            </span>
-                        </h2>
+                        <AnimatedHeadline>
+                            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 md:mb-4 tracking-tight">
+                                From Idea to Launch in{' '}
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                                    4 Simple Steps
+                                </span>
+                            </h2>
+                        </AnimatedHeadline>
                         <p className="text-white/60 max-w-2xl mx-auto text-sm md:text-lg leading-relaxed hidden md:block">
                             Our streamlined approach ensures your vision is translated into a pixel-perfect digital experience with speed and precision.
                         </p>
