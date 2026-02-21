@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Plus, Stethoscope, Dumbbell, Building2, ArrowRight, Utensils } from 'lucide-react';
-import { MagneticButton } from './UIComponents';
 
 // Industry images
 import dentalImg from '../assets/industries/dental-medical.png';
@@ -261,10 +260,18 @@ const WorkSection = () => {
                                                             </div>
 
                                                             <div className="w-full">
-                                                                <MagneticButton onClick={() => scrollToSection(card.id)} className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-white font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 group/btn cursor-pointer relative z-50">
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        scrollToSection(card.id);
+                                                                    }}
+                                                                    className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-500/50 rounded-xl text-white font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 group/btn cursor-pointer relative z-50 shadow-xl"
+                                                                >
                                                                     View Examples
                                                                     <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                                                                </MagneticButton>
+                                                                </motion.button>
                                                             </div>
                                                         </>
                                                     )}

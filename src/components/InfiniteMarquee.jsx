@@ -11,11 +11,13 @@ const InfiniteMarquee = () => {
     ];
 
     return (
-        <div className="relative pt-16 pb-8 bg-gradient-to-b from-black via-[#0a0a12] to-black border-y border-white/5 overflow-hidden">
-            {/* Gradient fade edges */}
-            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
-
+        <div
+            className="relative pt-16 pb-8 bg-gradient-to-b from-black via-[#0a0a12] to-black overflow-hidden"
+            style={{
+                maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+            }}
+        >
             {/* Row 1 - Moving Right */}
             <div className="relative overflow-hidden mb-3">
                 <motion.div

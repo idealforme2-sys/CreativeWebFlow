@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { AnimatedHeadline, RevealOnScroll } from './UIComponents';
+import { AnimatedHeadline, RevealOnScroll, SectionParticles } from './UIComponents';
 
 const features = [
     {
@@ -113,7 +113,7 @@ const FeatureCard = ({ feature, index }) => {
             animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
             transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.02 }}
-            className="group relative rounded-3xl p-6 bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm cursor-default overflow-hidden"
+            className="group relative rounded-3xl p-6 bg-slate-900/90 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_8px_20px_rgba(0,0,0,0.5)] backdrop-blur-md cursor-default overflow-hidden transition-all duration-500 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_15px_30px_rgba(0,0,0,0.6)]"
         >
             {/* Hover glow */}
             <div
@@ -163,16 +163,42 @@ const FeatureCard = ({ feature, index }) => {
 };
 
 const WhyChooseUs = () => {
-    // We duplicate the 6 cards four times (24 cards total) to ensure the row is long enough
-    // to cover ultrawide monitors seamlessly before looping.
-    const row1 = [...features, ...features, ...features, ...features];
-    const row2 = [...features.slice().reverse(), ...features.slice().reverse(), ...features.slice().reverse(), ...features.slice().reverse()];
+    // Split features into two distinct rows to keep DOM size smaller, avoiding GPU glitches.
+    const r1Base = features.slice(0, 4);
+    const r2Base = features.slice(4, 8);
+
+    // Duplicate exactly 4 times (16 cards total per track) to fill screens without exceeding browser texture limits.
+    const row1 = [...r1Base, ...r1Base, ...r1Base, ...r1Base];
+    const row2 = [...r2Base, ...r2Base, ...r2Base, ...r2Base];
 
     return (
         <section className="relative py-24 lg:py-32 overflow-hidden bg-black/20 pb-40">
-            {/* Ambient background */}
-            <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
-            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
+            {/* Ambient Particles */}
+            <SectionParticles color="rgba(6,182,212,0.3)" count={25} />
+
+            {/* Custom CSS for rock-solid hardware-accelerated infinite Marquee without React jitter */}
+            <style>{`
+                @keyframes marquee-left {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-25%); }
+                }
+                @keyframes marquee-right {
+                    0% { transform: translateX(-25%); }
+                    100% { transform: translateX(0); }
+                }
+                .animate-marquee-left {
+                    animation: marquee-left 45s linear infinite;
+                }
+                .animate-marquee-right {
+                    animation: marquee-right 45s linear infinite;
+                }
+                .hover-pause:hover .animate-marquee-left,
+                .hover-pause:hover .animate-marquee-right {
+                    animation-play-state: paused;
+                }
+            `}</style>
+
+            {/* Removed GPU-intensive blur backgrounds that cause black box artifacting on Some devices */}
 
             {/* Header */}
             <div className="max-w-7xl mx-auto px-6 mb-20 relative z-20">
@@ -209,42 +235,34 @@ const WhyChooseUs = () => {
                 </RevealOnScroll>
             </div>
 
-            {/* Framer Motion Velocity Marquee Container */}
-            <div className="relative w-full flex flex-col gap-6 md:gap-8 z-10 rotate-[-2deg] scale-[1.05]">
-                {/* Fade edges */}
-                <div className="absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
-                <div className="absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-[#0a0f1c] to-transparent z-20 pointer-events-none" />
-
+            {/* Pure CSS Velocity Marquee Container */}
+            <div
+                className="relative w-full flex flex-col gap-6 md:gap-8 z-10 rotate-[-2deg] scale-[1.05] hover-pause"
+                style={{
+                    maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+                }}
+            >
                 {/* Row 1 (Moves Left) */}
-                <div className="flex w-max overflow-hidden" style={{ perspective: 1000, transformStyle: "preserve-3d" }}>
-                    <motion.div
-                        className="flex w-max will-change-transform"
-                        style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
-                        animate={{ x: [0, "-50%"] }}
-                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    >
+                <div className="flex w-full overflow-hidden">
+                    <div className="flex w-max animate-marquee-left">
                         {row1.map((feature, i) => (
                             <div key={`row1-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
                                 <FeatureCard feature={feature} index={i} />
                             </div>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Row 2 (Moves Right) */}
-                <div className="flex w-max overflow-hidden" style={{ perspective: 1000, transformStyle: "preserve-3d" }}>
-                    <motion.div
-                        className="flex w-max will-change-transform"
-                        style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
-                        animate={{ x: ["-50%", 0] }}
-                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    >
+                <div className="flex w-full overflow-hidden">
+                    <div className="flex w-max animate-marquee-right">
                         {row2.map((feature, i) => (
                             <div key={`row2-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
                                 <FeatureCard feature={feature} index={i} />
                             </div>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
             </div>
 

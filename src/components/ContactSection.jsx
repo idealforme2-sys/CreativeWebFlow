@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, AnimatedHeadline } from './UIComponents';
+import { SectionHeader, RevealOnScroll, AnimatedHeadline, SectionParticles } from './UIComponents';
 import { RainbowButton } from './MagicUI';
 
 const ContactSection = () => {
@@ -38,6 +38,7 @@ const ContactSection = () => {
         <section id="contact" className="relative py-32 lg:py-40 overflow-hidden">
             {/* Background */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-cyan-950/5 to-black" />
+            <SectionParticles color="rgba(236,72,153,0.3)" count={30} />
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-cyan-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl" />
             {/* Subtle grid */}
             <div className="absolute inset-0 opacity-[0.03]" style={{
@@ -85,7 +86,7 @@ const ContactSection = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                                className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm"
+                                className="flex items-center gap-3 px-5 py-3 rounded-full bg-slate-900/80 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-md"
                             >
                                 <div className="w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                                     <Icon size={14} className="text-cyan-400" />
@@ -102,7 +103,7 @@ const ContactSection = () => {
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
                     {/* Contact Form — Premium Glass */}
                     <RevealOnScroll delay={0.1}>
-                        <div className="relative p-8 md:p-10 border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl rounded-3xl overflow-hidden group">
+                        <div className="relative p-8 md:p-10 border border-white/10 bg-slate-900/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-3xl overflow-hidden group hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_15px_40px_rgba(0,0,0,0.6)] transition-all duration-500">
                             {/* Corner accents */}
                             <div className="absolute top-0 left-0 w-20 h-20 border-t border-l border-cyan-500/30 rounded-tl-3xl pointer-events-none" />
                             <div className="absolute bottom-0 right-0 w-20 h-20 border-b border-r border-purple-500/30 rounded-br-3xl pointer-events-none" />
@@ -154,7 +155,7 @@ const ContactSection = () => {
                                                     onFocus={() => setFocusedField(field.name)}
                                                     onBlur={() => setFocusedField(null)}
                                                     required={field.required}
-                                                    className="w-full px-4 py-4 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-white/[0.06] transition-all duration-300"
+                                                    className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300"
                                                     placeholder={field.placeholder}
                                                 />
                                                 {focusedField === field.name && (
@@ -180,7 +181,7 @@ const ContactSection = () => {
                                                 onChange={handleChange}
                                                 onFocus={() => setFocusedField('company')}
                                                 onBlur={() => setFocusedField(null)}
-                                                className="w-full px-4 py-4 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-white/[0.06] transition-all duration-300"
+                                                className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300"
                                                 placeholder="Your Company"
                                             />
                                         </div>
@@ -195,7 +196,7 @@ const ContactSection = () => {
                                                 onChange={handleChange}
                                                 onFocus={() => setFocusedField('budget')}
                                                 onBlur={() => setFocusedField(null)}
-                                                className="w-full px-4 py-4 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white/50 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-white/[0.06] transition-all duration-300 appearance-none cursor-pointer"
+                                                className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white/50 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300 appearance-none cursor-pointer"
                                                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
                                             >
                                                 <option value="" className="bg-[#0a0a1a]">Select budget...</option>
@@ -219,7 +220,7 @@ const ContactSection = () => {
                                             onBlur={() => setFocusedField(null)}
                                             required
                                             rows={5}
-                                            className="w-full px-4 py-4 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-white/[0.06] transition-all duration-300 resize-none"
+                                            className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300 resize-none"
                                             placeholder="Tell us about your project, goals, and timeline..."
                                         />
                                     </div>
@@ -270,7 +271,7 @@ const ContactSection = () => {
                                 <motion.a
                                     href="mailto:hello@creativewebflow.com"
                                     whileHover={{ x: 8, borderColor: 'rgba(0,240,255,0.3)' }}
-                                    className="flex items-center gap-4 p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-cyan-500/5 transition-all group"
+                                    className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-900/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] hover:bg-cyan-900/40 transition-all duration-300 group"
                                 >
                                     <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-shadow">
                                         <Mail size={20} />
@@ -331,7 +332,7 @@ const ResponseTimeline = () => {
     ];
 
     return (
-        <div ref={ref} className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+        <div ref={ref} className="p-6 rounded-2xl border border-white/10 bg-slate-900/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
             <h4 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-6 flex items-center gap-2">
                 <Rocket size={14} className="text-cyan-400" />
                 What happens next

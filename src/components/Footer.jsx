@@ -33,7 +33,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="relative bg-black pt-32 pb-8 border-t border-white/5 overflow-hidden">
+        <footer className="relative bg-black pt-32 pb-8 overflow-hidden">
             {/* Gradient line at top */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
 
@@ -117,7 +117,7 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar — with animated logo */}
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
                         <AnimatedLogo size={32} />

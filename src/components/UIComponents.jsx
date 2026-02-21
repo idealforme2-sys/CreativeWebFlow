@@ -568,3 +568,46 @@ export const ParticlesBackground = () => {
 
     return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-auto" />;
 };
+
+// Ambient particles that fade in per-section based on scroll
+export const SectionParticles = ({ type = 'dust', color = 'rgba(6,182,212,0.3)', count = 20 }) => {
+    const isEmber = type === 'ember';
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ margin: "-100px", amount: 0.1 }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        >
+            {[...Array(count)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    animate={{
+                        y: [isEmber ? '100%' : '0%', isEmber ? '-50%' : '50%'],
+                        x: [isEmber ? '0%' : '10%', isEmber ? '10%' : '-10%'],
+                        opacity: [0, Math.random() * 0.5 + 0.2, 0],
+                        scale: isEmber ? [0, Math.random() * 1.5 + 0.5, 0] : [1, Math.random() * 2, 1]
+                    }}
+                    transition={{
+                        duration: Math.random() * 10 + 10,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: Math.random() * 5
+                    }}
+                    className={`absolute rounded-full ${isEmber ? 'bg-orange-500' : ''}`}
+                    style={{
+                        left: `${Math.random() * 100}%`,
+                        top: isEmber ? '120%' : `${Math.random() * 100}%`,
+                        width: isEmber ? `${Math.random() * 4 + 2}px` : `${Math.random() * 6 + 2}px`,
+                        height: isEmber ? `${Math.random() * 4 + 2}px` : `${Math.random() * 6 + 2}px`,
+                        backgroundColor: isEmber ? undefined : color,
+                        filter: `blur(${Math.random() * 4}px)`,
+                        boxShadow: isEmber ? `0 0 ${Math.random() * 10 + 5}px rgba(249,115,22,0.8)` : 'none'
+                    }}
+                />
+            ))}
+        </motion.div>
+    );
+};

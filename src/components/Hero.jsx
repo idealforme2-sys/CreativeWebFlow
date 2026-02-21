@@ -218,57 +218,63 @@ const Hero = () => {
                     variants={itemVariants}
                     className="flex flex-col sm:flex-row items-center gap-5 justify-center"
                 >
-                    {/* Primary CTA — Pulsing glow ring */}
-                    <div className="relative group">
-                        {/* Pulsing glow ring behind button */}
-                        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full blur-md opacity-40 group-hover:opacity-70 transition-opacity duration-500 animate-pulse" />
-                        <RainbowButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-                            <span className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.12em]">
-                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L4 7l8 5 8-5-8-5z" /><path d="M4 12l8 5 8-5" /><path d="M4 17l8 5 8-5" /></svg>
+                    {/* Primary CTA — Premium Glassmorphic with Animated Beam */}
+                    <div className="relative group cursor-pointer" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+                        {/* Outer ambient glow */}
+                        <div className="absolute -inset-1.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-700 animate-pulse" />
+
+                        {/* Button body */}
+                        <div className="relative px-8 py-4 bg-slate-900/80 backdrop-blur-xl rounded-full border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_10px_30px_rgba(0,0,0,0.5)] overflow-hidden">
+                            {/* Sweeping animated beam border */}
+                            <div
+                                className="absolute inset-0 rounded-full opacity-50 transition-opacity duration-500 group-hover:opacity-100"
+                                style={{
+                                    background: 'conic-gradient(from 0deg at 50% 50%, transparent 60%, #06b6d4 80%, #a855f7 90%, transparent 100%)',
+                                    animation: 'spin 3s linear infinite',
+                                }}
+                            />
+                            {/* Inner knockout for the beam to only show on edges */}
+                            <div className="absolute inset-[1px] bg-slate-900/90 rounded-full z-0" />
+
+                            {/* Inner top highlight */}
+                            <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent z-10" />
+
+                            <span className="relative z-10 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.15em] text-white">
+                                <svg className="w-4 h-4 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L4 7l8 5 8-5-8-5z" /><path d="M4 12l8 5 8-5" /><path d="M4 17l8 5 8-5" /></svg>
                                 Get More Customers
                                 <motion.span
-                                    animate={{ x: [0, 6, 0] }}
+                                    animate={{ x: [0, 8, 0] }}
                                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                                    className="text-lg"
+                                    className="text-lg text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"
                                 >
                                     →
                                 </motion.span>
                             </span>
-                        </RainbowButton>
+
+                            {/* Hover shimmer sweep */}
+                            <motion.div
+                                className="absolute inset-0 z-20 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] translate-x-[-150%]"
+                                whileHover={{ translateX: ['-150%', '150%'] }}
+                                transition={{ duration: 0.7, ease: "easeInOut" }}
+                            />
+                        </div>
                     </div>
 
-                    {/* Secondary CTA — Gradient border with shimmer */}
+                    {/* Secondary CTA — Deep Architectural Style */}
                     <motion.a
                         href="#work"
                         onClick={(e) => {
                             e.preventDefault();
                             document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="relative px-8 py-3.5 text-white rounded-full text-sm font-bold uppercase tracking-[0.12em] overflow-hidden group"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="relative px-8 py-4 rounded-full text-sm font-bold uppercase tracking-[0.15em] overflow-hidden group border border-white/5 bg-black/40 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_8px_20px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-white/20 hover:bg-black/60"
                     >
-                        {/* Animated gradient border */}
-                        <div
-                            className="absolute inset-0 rounded-full p-[1.5px]"
-                            style={{
-                                background: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
-                                backgroundSize: '300% 100%',
-                                animation: 'lava-wave 4s ease-in-out infinite',
-                                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                                WebkitMaskComposite: 'xor',
-                                maskComposite: 'exclude',
-                            }}
-                        />
-                        {/* Inner fill */}
-                        <div className="absolute inset-[1.5px] bg-black/90 rounded-full group-hover:bg-black/70 transition-colors duration-300" />
-                        {/* Shimmer */}
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12"
-                            animate={{ x: ['-200%', '200%'] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-                        />
-                        <span className="relative z-10">View Our Work</span>
+                        {/* Hover glow behind text */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/0 via-purple-500/10 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md" />
+
+                        <span className="relative z-10 text-white/80 group-hover:text-white transition-colors duration-300">View Our Work</span>
                     </motion.a>
                 </motion.div>
 

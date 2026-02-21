@@ -114,8 +114,8 @@ function App() {
                         {/* Hero Section */}
                         <Hero />
 
-                        {/* Content sections */}
-                        <div className="relative z-20 bg-black/50 backdrop-blur-sm border-t border-white/10 shadow-[0_-50px_100px_black]">
+                        {/* Content sections: Removed backdrop-blur-sm and changed bg-black/50 to bg-black/20 so the Digital Rain cyberpunk background shines through globally */}
+                        <div className="relative z-20 bg-black/20 shadow-[0_-50px_100px_black]">
                             {/* Marquee Transition */}
                             <InfiniteMarquee />
 

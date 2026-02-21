@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Building2, Stethoscope, Store, Rocket } from 'lucide-react';
+import { SectionParticles } from './UIComponents';
 
 const WhoWeHelp = () => {
     const clients = [
@@ -11,7 +12,8 @@ const WhoWeHelp = () => {
     ];
 
     return (
-        <section className="relative py-24 bg-black/50 backdrop-blur-sm border-t border-white/5">
+        <section className="relative py-24 bg-black/50 backdrop-blur-sm">
+            <SectionParticles type="ember" count={15} />
             <div className="max-w-6xl mx-auto px-6">
                 {/* Section Header */}
                 <motion.div

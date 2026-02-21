@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award, ExternalLink } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
-import { AnimatedHeadline, RevealOnScroll } from './UIComponents';
+import { AnimatedHeadline, RevealOnScroll, SectionParticles } from './UIComponents';
 
 const caseStudies = [
     {
@@ -157,8 +157,9 @@ const DetailedCaseStudies = () => {
     const [activeIndex, setActiveIndex] = useState(0);
 
     return (
-        <div className="relative z-10 font-sans antialiased bg-black/20 border-t border-white/5">
+        <div className="relative z-10 font-sans antialiased bg-black/20">
             {/* Background atmospherics */}
+            <SectionParticles color="rgba(168,85,247,0.3)" count={30} />
             <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-60">
                 <div className="absolute top-[10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[20%] right-[-5%] w-[40%] h-[60%] bg-blue-900/10 rounded-full blur-[120px]" />

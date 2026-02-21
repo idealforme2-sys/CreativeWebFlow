@@ -56,7 +56,7 @@ const DigitalRain = () => {
     return (
         <canvas
             ref={canvasRef}
-            className="fixed inset-0 w-full h-full pointer-events-none mix-blend-screen opacity-30"
+            className="fixed inset-0 w-full h-full pointer-events-none mix-blend-screen opacity-50"
             style={{ zIndex: 1 }}
         />
     );

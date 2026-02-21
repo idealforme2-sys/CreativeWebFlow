@@ -175,7 +175,6 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                 shoot();
                 e.preventDefault();
             }
-            if (e.key === 'Escape') onClose();
         };
         const handleKeyUp = (e) => {
             game.keys[e.key.toLowerCase()] = false;
@@ -505,6 +504,16 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         };
     }, [isActive, gameStarted, onClose]);
 
+    // Handle Escape key globally for the overlay, even during tutorial
+    useEffect(() => {
+        if (!isActive) return;
+        const handleGlobalKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleGlobalKeyDown);
+        return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    }, [isActive, onClose]);
+
     if (!isActive) return null;
 
     return (
@@ -518,7 +527,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-md"
+                        className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-md cursor-default pointer-events-auto"
                     >
                         <motion.div
                             initial={{ scale: 0.8 }}
