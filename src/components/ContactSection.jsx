@@ -1,8 +1,141 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, AnimatedHeadline, SectionParticles } from './UIComponents';
+import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles, Users, TrendingUp, Calendar } from 'lucide-react';
+import { RevealOnScroll, SectionParticles } from './UIComponents';
 import { RainbowButton } from './MagicUI';
+
+// Animated counter for stats
+const StatCounter = ({ value, suffix = '', label, icon: Icon }) => {
+    const [count, setCount] = useState(0);
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
+    
+    useEffect(() => {
+        if (isInView) {
+            const duration = 2000;
+            const steps = 60;
+            const increment = value / steps;
+            let current = 0;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= value) {
+                    setCount(value);
+                    clearInterval(timer);
+                } else {
+                    setCount(Math.floor(current));
+                }
+            }, duration / steps);
+            return () => clearInterval(timer);
+        }
+    }, [isInView, value]);
+    
+    return (
+        <div ref={ref} className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+                {Icon && <Icon size={16} className="text-cyan-400" />}
+                <span className="text-2xl md:text-3xl font-bold text-white">
+                    {count}{suffix}
+                </span>
+            </div>
+            <p className="text-xs text-white/40 uppercase tracking-wider">{label}</p>
+        </div>
+    );
+};
+
+// Live notification toast
+const LiveNotification = ({ name, industry, time }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: 50, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 50, scale: 0.9 }}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/90 border border-white/10 backdrop-blur-md shadow-lg"
+        >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                {name.charAt(0)}
+            </div>
+            <div className="flex-1">
+                <p className="text-sm text-white/90">
+                    <span className="font-semibold">{name}</span>
+                    <span className="text-white/50"> from </span>
+                    <span className="text-cyan-400">{industry}</span>
+                </p>
+                <p className="text-xs text-white/40">{time}</p>
+            </div>
+        </motion.div>
+    );
+};
+
+// Typing animation for header
+const TypingText = ({ texts, className }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [displayText, setDisplayText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+    
+    useEffect(() => {
+        const currentText = texts[currentIndex];
+        const timeout = setTimeout(() => {
+            if (!isDeleting) {
+                if (displayText.length < currentText.length) {
+                    setDisplayText(currentText.slice(0, displayText.length + 1));
+                } else {
+                    setTimeout(() => setIsDeleting(true), 2000);
+                }
+            } else {
+                if (displayText.length > 0) {
+                    setDisplayText(displayText.slice(0, -1));
+                } else {
+                    setIsDeleting(false);
+                    setCurrentIndex((prev) => (prev + 1) % texts.length);
+                }
+            }
+        }, isDeleting ? 50 : 100);
+        
+        return () => clearTimeout(timeout);
+    }, [displayText, isDeleting, currentIndex, texts]);
+    
+    return (
+        <span className={className}>
+            {displayText}
+            <span className="animate-pulse">|</span>
+        </span>
+    );
+};
+
+// Progress steps component
+const FormProgress = ({ currentStep, totalSteps }) => {
+    const steps = ['Details', 'Project', 'Submit'];
+    
+    return (
+        <div className="flex items-center justify-center gap-2 mb-6">
+            {steps.map((step, i) => (
+                <React.Fragment key={i}>
+                    <div className="flex items-center gap-2">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                            i < currentStep 
+                                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white' 
+                                : i === currentStep 
+                                    ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
+                                    : 'bg-white/5 border border-white/10 text-white/30'
+                        }`}>
+                            {i < currentStep ? '✓' : i + 1}
+                        </div>
+                        <span className={`text-xs font-medium hidden sm:block ${
+                            i <= currentStep ? 'text-white/70' : 'text-white/30'
+                        }`}>
+                            {step}
+                        </span>
+                    </div>
+                    {i < steps.length - 1 && (
+                        <div className={`w-8 h-0.5 rounded-full transition-all duration-300 ${
+                            i < currentStep ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-white/10'
+                        }`} />
+                    )}
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
 
 const ContactSection = () => {
     const [formData, setFormData] = useState({
@@ -15,6 +148,41 @@ const ContactSection = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationData, setNotificationData] = useState({ name: '', industry: '', time: '' });
+    
+    const sectionRef = useRef(null);
+    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+    // Simulate live notifications
+    useEffect(() => {
+        const notifications = [
+            { name: 'Sarah M.', industry: 'Dental', time: 'Just now' },
+            { name: 'Mike R.', industry: 'Real Estate', time: '2 min ago' },
+            { name: 'Lisa K.', industry: 'Fitness', time: '5 min ago' },
+        ];
+        
+        const showRandomNotification = () => {
+            const random = notifications[Math.floor(Math.random() * notifications.length)];
+            setNotificationData(random);
+            setShowNotification(true);
+            setTimeout(() => setShowNotification(false), 4000);
+        };
+        
+        const interval = setInterval(showRandomNotification, 15000);
+        setTimeout(showRandomNotification, 3000);
+        
+        return () => clearInterval(interval);
+    }, []);
+
+    // Update progress step based on form completion
+    useEffect(() => {
+        const filledFields = [formData.name, formData.email, formData.budget, formData.message].filter(Boolean).length;
+        if (filledFields >= 4) setCurrentStep(2);
+        else if (filledFields >= 2) setCurrentStep(1);
+        else setCurrentStep(0);
+    }, [formData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,22 +202,76 @@ const ContactSection = () => {
         { icon: Zap, label: 'Fast Turnaround', desc: 'Projects ship quickly' },
     ];
 
+    const headerTexts = [
+        'Ready to Launch?',
+        "Let's Build.",
+        'Your Success Starts Here'
+    ];
+
     return (
-        <section id="contact" className="relative py-32 lg:py-40 overflow-hidden">
+        <section id="contact" ref={sectionRef} className="relative py-32 lg:py-40 overflow-hidden">
             {/* Background */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-cyan-950/5 to-black" />
             <SectionParticles color="rgba(236,72,153,0.3)" count={30} />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-cyan-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl" />
+            
+            {/* Animated gradient orbs */}
+            <motion.div
+                animate={{ 
+                    x: [0, 50, 0],
+                    y: [0, -30, 0],
+                    scale: [1, 1.1, 1],
+                }}
+                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none"
+            />
+            <motion.div
+                animate={{ 
+                    x: [0, -50, 0],
+                    y: [0, 30, 0],
+                    scale: [1, 0.9, 1],
+                }}
+                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"
+            />
+            
             {/* Subtle grid */}
             <div className="absolute inset-0 opacity-[0.03]" style={{
                 backgroundImage: 'linear-gradient(rgba(0,240,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.4) 1px, transparent 1px)',
                 backgroundSize: '80px 80px',
             }} />
 
+            {/* Live notification popup */}
+            <AnimatePresence>
+                {showNotification && (
+                    <motion.div
+                        className="fixed bottom-6 right-6 z-50"
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                    >
+                        <LiveNotification {...notificationData} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <div className="relative z-10 max-w-7xl mx-auto px-6">
-                {/* Header */}
+                {/* Header - Mixed Copy Approach */}
                 <RevealOnScroll>
-                    <div className="text-center max-w-3xl mx-auto mb-6">
+                    <div className="text-center max-w-3xl mx-auto mb-8">
+                        {/* Animated badge */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.6 }}
+                            className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-amber-500/10 border border-amber-500/20"
+                        >
+                            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                            <span className="text-xs font-semibold text-amber-300">
+                                Limited spots: 2 available this month
+                            </span>
+                        </motion.div>
+                        
+                        {/* Main headline with typing effect */}
                         <motion.div
                             initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
                             whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
@@ -57,23 +279,38 @@ const ContactSection = () => {
                             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                             className="flex items-center gap-4 mb-6 justify-center"
                         >
-                            <div className="h-px w-12 bg-cyan-500" />
-                            <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Get in Touch</span>
-                            <div className="h-px w-12 bg-cyan-500" />
+                            <div className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-500" />
+                            <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Start Your Project</span>
+                            <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500" />
                         </motion.div>
-                        <AnimatedHeadline>
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
-                                Let's Build Something{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
-                                    Amazing Together
-                                </span>
-                            </h2>
-                        </AnimatedHeadline>
-                        <p className="text-white/50 text-lg mt-4">
-                            Tell us about your project and we'll get back to you within 24 hours.
+                        
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
+                            <TypingText 
+                                texts={headerTexts}
+                                className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"
+                            />
+                        </h2>
+                        
+                        <p className="text-white/50 text-lg mt-4 mb-2">
+                            Most local businesses blend in. <span className="text-white/70 font-medium">Yours won't.</span>
+                        </p>
+                        <p className="text-white/40 text-base">
+                            Join 127+ businesses who transformed their online presence.
                         </p>
                     </div>
                 </RevealOnScroll>
+
+                {/* Stats row */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="flex flex-wrap justify-center gap-8 md:gap-16 mb-12 py-6 border-y border-white/5"
+                >
+                    <StatCounter value={127} suffix="+" label="Projects Launched" icon={Rocket} />
+                    <StatCounter value={98} suffix="%" label="Client Satisfaction" icon={Users} />
+                    <StatCounter value={340} suffix="%" label="Avg. ROI Increase" icon={TrendingUp} />
+                </motion.div>
 
                 {/* Trust Badges Row */}
                 <div className="flex flex-wrap justify-center gap-4 mb-16">
@@ -132,11 +369,16 @@ const ContactSection = () => {
                                 </motion.div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                                    {/* Form header */}
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Sparkles size={18} className="text-cyan-400" />
-                                        <p className="text-sm font-semibold text-white/70">Start your project</p>
+                                    {/* Form header with progress */}
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-3">
+                                            <Sparkles size={18} className="text-cyan-400" />
+                                            <p className="text-sm font-semibold text-white/70">Start your project</p>
+                                        </div>
                                     </div>
+                                    
+                                    {/* Progress steps */}
+                                    <FormProgress currentStep={currentStep} totalSteps={3} />
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         {[
@@ -164,6 +406,16 @@ const ContactSection = () => {
                                                         className="absolute -inset-[1px] rounded-xl border border-cyan-500/30 pointer-events-none"
                                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                                     />
+                                                )}
+                                                {/* Checkmark for filled fields */}
+                                                {formData[field.name] && (
+                                                    <motion.div
+                                                        initial={{ scale: 0 }}
+                                                        animate={{ scale: 1 }}
+                                                        className="absolute right-3 top-9"
+                                                    >
+                                                        <CheckCircle2 size={16} className="text-emerald-400" />
+                                                    </motion.div>
                                                 )}
                                             </div>
                                         ))}
@@ -293,9 +545,9 @@ const ContactSection = () => {
 
                             {/* Limited availability badge */}
                             <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/[0.05] border border-amber-500/10">
-                                <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                                <Calendar size={18} className="text-amber-400 flex-shrink-0" />
                                 <p className="text-sm text-amber-300/70">
-                                    <span className="font-semibold text-amber-300">Limited spots:</span> We take on a limited number of project to ensure quality.
+                                    <span className="font-semibold text-amber-300">Limited spots:</span> We take on a limited number of projects to ensure quality.
                                 </p>
                             </div>
                         </div>

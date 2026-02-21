@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import TechHUD from './TechHUD';
-import { RainbowButton } from './MagicUI';
 import { ShootingStars } from './UIComponents';
 
 // Morphing grid background for depth
@@ -62,6 +61,237 @@ const FloatingOrbs = () => (
         />
     </div>
 );
+
+// Animated counter component
+const AnimatedCounter = ({ value, suffix = '', duration = 2 }) => {
+    const [count, setCount] = useState(0);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    let start = 0;
+                    const end = parseFloat(value);
+                    const increment = end / (duration * 60);
+                    const timer = setInterval(() => {
+                        start += increment;
+                        if (start >= end) {
+                            setCount(end);
+                            clearInterval(timer);
+                        } else {
+                            setCount(Math.floor(start * 10) / 10);
+                        }
+                    }, 1000 / 60);
+                    return () => clearInterval(timer);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+    }, [value, duration]);
+
+    return <span ref={ref}>{count}{suffix}</span>;
+};
+
+// Enhanced Trust Metric Card
+const TrustMetricCard = ({ icon, value, suffix, label, gradient, delay = 0 }) => {
+    const ref = useRef(null);
+    const isInView = useScroll().scrollY;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+            className="group relative px-5 py-3 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-md hover:border-white/20 transition-all duration-300"
+        >
+            {/* Glow effect */}
+            <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${gradient}`}
+                style={{ filter: 'blur(20px)' }} />
+
+            <div className="relative flex items-center gap-3">
+                {/* Icon */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center border border-white/10">
+                    {icon}
+                </div>
+
+                {/* Value and Label */}
+                <div>
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-bold text-white">
+                            <AnimatedCounter value={value} suffix={suffix} />
+                        </span>
+                    </div>
+                    <p className="text-xs text-white/50 font-medium">{label}</p>
+                </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                    className={`h-full ${gradient}`}
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: 1.5, delay: delay + 0.5, ease: [0.16, 1, 0.3, 1] }}
+                />
+            </div>
+        </motion.div>
+    );
+};
+
+// Primary CTA Button with enhanced effects
+const PrimaryCTA = ({ onClick }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <motion.div
+            className="relative cursor-pointer"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={onClick}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+        >
+            {/* Outer glow ring */}
+            <motion.div
+                className="absolute -inset-2 rounded-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-30 blur-xl"
+                animate={{
+                    opacity: isHovered ? 0.6 : 0.3,
+                    scale: isHovered ? 1.05 : 1,
+                }}
+                transition={{ duration: 0.3 }}
+            />
+
+            {/* Animated border */}
+            <div className="absolute inset-0 rounded-full overflow-hidden">
+                <div
+                    className="absolute inset-0 opacity-60"
+                    style={{
+                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 60%, #06b6d4 80%, #a855f7 90%, transparent 100%)',
+                        animation: 'spin 3s linear infinite',
+                    }}
+                />
+            </div>
+
+            {/* Button body */}
+            <div className="relative px-8 py-4 bg-slate-900/90 backdrop-blur-xl rounded-full border border-white/10 overflow-hidden">
+                {/* Inner knockout */}
+                <div className="absolute inset-[2px] bg-slate-900/95 rounded-full" />
+
+                {/* Top highlight */}
+                <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+
+                {/* Content */}
+                <div className="relative flex items-center gap-3">
+                    {/* Icon */}
+                    <motion.div
+                        animate={{ rotate: isHovered ? 360 : 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="w-5 h-5 text-cyan-400"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 2L4 7l8 5 8-5-8-5z" />
+                            <path d="M4 12l8 5 8-5" />
+                            <path d="M4 17l8 5 8-5" />
+                        </svg>
+                    </motion.div>
+
+                    {/* Text */}
+                    <span className="text-sm font-bold uppercase tracking-[0.15em] text-white">
+                        Get More Customers
+                    </span>
+
+                    {/* Animated arrow */}
+                    <motion.span
+                        animate={{ x: isHovered ? [0, 8, 0] : 0 }}
+                        transition={{ duration: 1, repeat: isHovered ? Infinity : 0 }}
+                        className="text-lg text-purple-400"
+                    >
+                        →
+                    </motion.span>
+                </div>
+
+                {/* Shimmer effect */}
+                <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg]"
+                    animate={{ x: isHovered ? ['-150%', '150%'] : '-150%' }}
+                    transition={{ duration: 0.7 }}
+                />
+            </div>
+
+            {/* Particle trail on hover */}
+            {isHovered && (
+                <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                        <motion.div
+                            key={i}
+                            className="w-1 h-1 rounded-full bg-cyan-400"
+                            initial={{ opacity: 0, x: 0 }}
+                            animate={{ opacity: [0, 1, 0], x: [0, 20] }}
+                            transition={{ duration: 0.5, delay: i * 0.1, repeat: Infinity }}
+                        />
+                    ))}
+                </div>
+            )}
+        </motion.div>
+    );
+};
+
+// Secondary CTA Button
+const SecondaryCTA = ({ onClick }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <motion.a
+            href="#work"
+            onClick={onClick}
+            className="relative group overflow-hidden"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+        >
+            {/* Background glow */}
+            <motion.div
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/0 via-purple-500/20 to-pink-500/0"
+                animate={{ opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+            />
+
+            {/* Button body */}
+            <div className="relative px-8 py-4 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-all duration-300 group-hover:border-white/30">
+                {/* Content */}
+                <div className="flex items-center gap-3">
+                    {/* Eye icon */}
+                    <motion.div
+                        animate={{ scale: isHovered ? 1.1 : 1 }}
+                        className="w-5 h-5 text-white/60"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </motion.div>
+
+                    {/* Text */}
+                    <span className="text-sm font-bold uppercase tracking-[0.15em] text-white/80 group-hover:text-white transition-colors">
+                        View Our Work
+                    </span>
+                </div>
+
+                {/* Bottom accent line */}
+                <motion.div
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400"
+                    animate={{ width: isHovered ? '60%' : 0 }}
+                    transition={{ duration: 0.3 }}
+                />
+            </div>
+        </motion.a>
+    );
+};
 
 const Hero = () => {
     const { scrollY } = useScroll();
@@ -165,7 +395,7 @@ const Hero = () => {
                 {/* Rotating Word with gradient + glow */}
                 <motion.div
                     variants={itemVariants}
-                    className="mb-16 h-[1.3em] relative"
+                    className="mb-12 h-[1.3em] relative"
                     style={{ y: bgY, opacity: headingOpacity, scale: headingScale }}
                 >
                     <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[1.05]">
@@ -198,86 +428,47 @@ const Hero = () => {
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-semibold">real customers</span>.
                 </motion.p>
 
-                {/* Trust signals — refined with glowing pips */}
+                {/* Enhanced Trust Metrics */}
                 <motion.div
                     variants={itemVariants}
-                    className="flex flex-wrap items-center gap-6 text-sm text-white/40 mb-12 justify-center"
+                    className="flex flex-wrap items-center justify-center gap-4 mb-12"
                 >
-                    {[
-                        { label: 'Fast Loading', color: 'bg-cyan-400', shadow: 'shadow-[0_0_10px_rgba(6,182,212,1)]' },
-                        { label: 'Mobile-First', color: 'bg-purple-400', shadow: 'shadow-[0_0_10px_rgba(168,85,247,1)]' },
-                        { label: 'Built to Convert', color: 'bg-pink-400', shadow: 'shadow-[0_0_10px_rgba(236,72,153,1)]' },
-                    ].map((item) => (
-                        <span key={item.label} className="flex items-center gap-2 hover:text-white/70 transition-colors duration-300 cursor-default">
-                            <span className={`w-1.5 h-1.5 rounded-full ${item.color} ${item.shadow}`} />
-                            {item.label}
-                        </span>
-                    ))}
+                    <TrustMetricCard
+                        icon={<span className="text-lg">⚡</span>}
+                        value="0.8"
+                        suffix="s"
+                        label="Load Time"
+                        gradient="bg-cyan-500/20"
+                        delay={0.1}
+                    />
+                    <TrustMetricCard
+                        icon={<span className="text-lg">📱</span>}
+                        value="100"
+                        suffix="%"
+                        label="Mobile Ready"
+                        gradient="bg-purple-500/20"
+                        delay={0.2}
+                    />
+                    <TrustMetricCard
+                        icon={<span className="text-lg">📈</span>}
+                        value="340"
+                        suffix="%"
+                        label="Avg. ROI"
+                        gradient="bg-pink-500/20"
+                        delay={0.3}
+                    />
                 </motion.div>
 
-                {/* CTA Buttons — premium with glow & effects */}
+                {/* CTA Buttons — Enhanced */}
                 <motion.div
                     variants={itemVariants}
                     className="flex flex-col sm:flex-row items-center gap-5 justify-center"
                 >
-                    {/* Primary CTA — Premium Glassmorphic with Animated Beam */}
-                    <div className="relative group cursor-pointer" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-                        {/* Outer ambient glow */}
-                        <div className="absolute -inset-1.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-700 animate-pulse" />
-
-                        {/* Button body */}
-                        <div className="relative px-8 py-4 bg-slate-900/80 backdrop-blur-xl rounded-full border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_10px_30px_rgba(0,0,0,0.5)] overflow-hidden">
-                            {/* Sweeping animated beam border */}
-                            <div
-                                className="absolute inset-0 rounded-full opacity-50 transition-opacity duration-500 group-hover:opacity-100"
-                                style={{
-                                    background: 'conic-gradient(from 0deg at 50% 50%, transparent 60%, #06b6d4 80%, #a855f7 90%, transparent 100%)',
-                                    animation: 'spin 3s linear infinite',
-                                }}
-                            />
-                            {/* Inner knockout for the beam to only show on edges */}
-                            <div className="absolute inset-[1px] bg-slate-900/90 rounded-full z-0" />
-
-                            {/* Inner top highlight */}
-                            <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent z-10" />
-
-                            <span className="relative z-10 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.15em] text-white">
-                                <svg className="w-4 h-4 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L4 7l8 5 8-5-8-5z" /><path d="M4 12l8 5 8-5" /><path d="M4 17l8 5 8-5" /></svg>
-                                Get More Customers
-                                <motion.span
-                                    animate={{ x: [0, 8, 0] }}
-                                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                                    className="text-lg text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"
-                                >
-                                    →
-                                </motion.span>
-                            </span>
-
-                            {/* Hover shimmer sweep */}
-                            <motion.div
-                                className="absolute inset-0 z-20 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] translate-x-[-150%]"
-                                whileHover={{ translateX: ['-150%', '150%'] }}
-                                transition={{ duration: 0.7, ease: "easeInOut" }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Secondary CTA — Deep Architectural Style */}
-                    <motion.a
-                        href="#work"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="relative px-8 py-4 rounded-full text-sm font-bold uppercase tracking-[0.15em] overflow-hidden group border border-white/5 bg-black/40 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_8px_20px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-white/20 hover:bg-black/60"
-                    >
-                        {/* Hover glow behind text */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/0 via-purple-500/10 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md" />
-
-                        <span className="relative z-10 text-white/80 group-hover:text-white transition-colors duration-300">View Our Work</span>
-                    </motion.a>
+                    <PrimaryCTA onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} />
+                    <SecondaryCTA onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
+                    }} />
                 </motion.div>
 
                 {/* Social proof micro-stat */}
@@ -319,6 +510,14 @@ const Hero = () => {
 
             {/* Decorative Bottom Fade */}
             <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
+
+            {/* Global styles for animations */}
+            <style>{`
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+            `}</style>
         </section>
     );
 };
