@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { Users, ArrowRight, Phone, TrendingUp, Monitor, ExternalLink, Target, Lightbulb, Award } from 'lucide-react';
+﻿import React, { useState, useEffect, useRef } from 'react';
+import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award, ExternalLink } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { AnimatedHeadline, RevealOnScroll } from './UIComponents';
 
@@ -18,7 +18,6 @@ const caseStudies = [
         goal: 'Get more membership inquiries',
         solution: 'Clear messaging, mobile-first layout, strong call-to-action placement ensuring potential members find what they need instantly.',
         result: 'Improved engagement and more contact requests.',
-        layout: 'image-left',
     },
     {
         id: 'medical',
@@ -34,7 +33,6 @@ const caseStudies = [
         goal: 'Increase appointment bookings',
         solution: 'Easy online booking system integration, trust signals through testimonials, and a clean professional design.',
         result: 'Streamlined booking process and significant patient growth.',
-        layout: 'image-right',
     },
     {
         id: 'food',
@@ -50,7 +48,6 @@ const caseStudies = [
         goal: 'Drive more online orders',
         solution: 'Mobile-optimized menu, clear ordering process flow, and enhanced location visibility for customers.',
         result: 'Increased online visibility and expanded customer reach.',
-        layout: 'image-left',
     },
     {
         id: 'real-estate',
@@ -66,166 +63,112 @@ const caseStudies = [
         goal: 'Establish a premium digital presence',
         solution: 'High-end dark mode aesthetics, smooth animations, and optimized performance to showcase brand quality.',
         result: 'A striking brand identity that captivates luxury clients.',
-        layout: 'image-right',
     }
 ];
 
-const CaseStudyCard = ({ study, index }) => {
-    const ref = React.useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { margin: "-40% 0px -40% 0px" });
     const Icon = study.icon;
-    const isImageLeft = study.layout === 'image-left';
 
-    const infoContent = (
-        <motion.div
-            initial={{ opacity: 0, x: isImageLeft ? 40 : -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className={`lg:col-span-5 space-y-6 ${isImageLeft ? 'order-1 lg:order-2 pl-0 lg:pl-12' : 'order-1 pr-0 lg:pr-12'}`}
-        >
-            <div className="relative">
-                {/* Large faded number */}
-                <span className="font-black text-[100px] leading-none text-white/[0.03] absolute -top-12 -left-6 select-none pointer-events-none">{study.number}</span>
+    useEffect(() => {
+        if (isInView) {
+            setActiveIndex(index);
+        }
+    }, [isInView, index, setActiveIndex]);
 
-                {/* Goal */}
-                <div className="relative mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Target size={12} className="text-white/30" />
-                        <h4 className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">Goal</h4>
-                    </div>
-                    <p className="text-xl font-semibold text-white leading-snug">{study.goal}</p>
-                </div>
+    return (
+        <div ref={ref} className="min-h-[90vh] flex flex-col justify-center py-20 pr-0 lg:pr-12">
 
-                {/* Solution */}
-                <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Lightbulb size={12} className="text-white/30" />
-                        <h4 className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">Solution</h4>
-                    </div>
-                    <p className="text-white/50 leading-relaxed text-sm">{study.solution}</p>
-                </div>
-
-                {/* Result — gradient card */}
-                <motion.div
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    className={`bg-gradient-to-r ${study.gradient} p-5 rounded-2xl shadow-lg border border-white/10 relative overflow-hidden`}
-                >
-                    <div className="absolute inset-0 bg-black/20 rounded-2xl" />
-                    <div className="relative">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Award size={12} className="text-white/70" />
-                            <h4 className="text-[10px] font-bold tracking-[0.2em] text-white/70 uppercase">Result</h4>
-                        </div>
-                        <p className="text-white font-semibold">{study.result}</p>
-                    </div>
-                </motion.div>
-
-                {/* Visit button */}
-                <div className="mt-6">
-                    <motion.button
-                        onClick={() => window.open(study.url, '_blank')}
-                        whileHover={{ scale: 1.05, x: 4 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="group flex items-center gap-3 px-5 py-3 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/20 transition-all text-sm font-semibold text-white/70 hover:text-white"
-                    >
-                        <span>View Live Site</span>
-                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </motion.button>
-                </div>
-            </div>
-        </motion.div>
-    );
-
-    const imageContent = (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className={`lg:col-span-7 ${isImageLeft ? 'order-2 lg:order-1' : 'order-2'}`}
-        >
-            <motion.div
-                whileHover={{ y: -8, scale: 1.01 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden cursor-pointer group"
-                onClick={() => window.open(study.url, '_blank')}
-            >
-                {/* Ambient glow */}
-                <div
-                    className="absolute -inset-4 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl -z-10"
-                    style={{ background: `radial-gradient(ellipse at center, ${study.glowColor}, transparent 70%)` }}
-                />
-
-                {/* Card border */}
-                <div className="absolute inset-0 rounded-3xl border border-white/[0.08] group-hover:border-white/15 transition-colors duration-500 z-20 pointer-events-none" />
-
-                {/* Live iframe */}
-                <div className="absolute inset-0 z-0 bg-slate-900">
+            {/* Mobile View: Iframe Preview (Hidden on Desktop) */}
+            <div className="block lg:hidden w-full aspect-[4/3] rounded-3xl overflow-hidden mb-10 relative border border-white/10 shadow-2xl">
+                <div className="absolute inset-0 z-0 bg-slate-900 pointer-events-none">
                     <iframe
                         src={study.url}
-                        className="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none border-0 opacity-50 group-hover:opacity-90 transition-opacity duration-700"
+                        className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0"
                         title={`${study.title} Preview`}
                         loading="lazy"
                     />
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:from-black/40 group-hover:via-transparent group-hover:to-transparent transition-all duration-700 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
                 </div>
-
-                {/* Card header */}
-                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between z-10 pointer-events-none">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h4 className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase mb-1">{study.category}</h4>
-                            <h3 className="text-2xl md:text-3xl font-bold text-white">{study.title}</h3>
-                        </div>
-                        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${study.gradient} flex items-center justify-center shadow-lg`}>
-                            <Icon className="text-white" size={20} />
-                        </div>
-                    </div>
-
-                    {/* Hover CTA */}
-                    <motion.div
-                        className="absolute inset-0 flex items-center justify-center"
+                {/* Mobile Visit Button */}
+                <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-sm">
+                    <button
+                        onClick={() => window.open(study.url, '_blank')}
+                        className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-sm uppercase tracking-wider hover:bg-white/20 transition-colors"
                     >
-                        <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                            <ExternalLink size={18} className="text-white" />
-                            <span className="text-white font-bold text-sm uppercase tracking-wider">Visit Site</span>
-                        </div>
-                    </motion.div>
+                        <ExternalLink size={18} /> Visit Site
+                    </button>
+                </div>
+            </div>
 
-                    {/* Footer info */}
-                    <div className="flex justify-between items-end text-[10px] font-mono text-white/30">
-                        <span>{study.domain}</span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            Live
-                        </span>
+            <div className="relative z-20">
+                {/* Large faded number */}
+                <span className="font-black text-[120px] leading-none text-white/[0.03] absolute -top-16 -left-8 select-none pointer-events-none">
+                    {study.number}
+                </span>
+
+                {/* Header block */}
+                <div className="flex justify-between items-start mb-10 relative z-10">
+                    <div>
+                        <h4 className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase mb-2">{study.category}</h4>
+                        <h3 className="text-4xl md:text-5xl font-bold text-white">{study.title}</h3>
+                    </div>
+                    <div className={`hidden md:flex w-14 h-14 rounded-2xl bg-gradient-to-br ${study.gradient} items-center justify-center shadow-lg`}>
+                        <Icon className="text-white" size={24} />
                     </div>
                 </div>
-            </motion.div>
-        </motion.div>
-    );
 
-    return (
-        <div ref={ref} id={study.id} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {infoContent}
-            {imageContent}
+                {/* Goal */}
+                <div className="relative mb-8 pt-6 border-t border-white/5">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Target size={14} className="text-white/30" />
+                        <h4 className="text-[11px] font-bold tracking-[0.2em] text-white/40 uppercase">The Goal</h4>
+                    </div>
+                    <p className="text-xl md:text-2xl font-medium text-white/90 leading-snug">{study.goal}</p>
+                </div>
+
+                {/* Solution */}
+                <div className="mb-10">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Lightbulb size={14} className="text-white/30" />
+                        <h4 className="text-[11px] font-bold tracking-[0.2em] text-white/40 uppercase">Our Solution</h4>
+                    </div>
+                    <p className="text-white/50 leading-relaxed text-base md:text-lg">{study.solution}</p>
+                </div>
+
+                {/* Result — gradient card */}
+                <div className={`bg-gradient-to-r ${study.gradient} p-6 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/20 rounded-2xl" />
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Award size={14} className="text-white/80" />
+                            <h4 className="text-[11px] font-bold tracking-[0.2em] text-white/80 uppercase drop-shadow-sm">The Result</h4>
+                        </div>
+                        <p className="text-white font-bold text-lg drop-shadow-md">{study.result}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
 
 const DetailedCaseStudies = () => {
+    const [activeIndex, setActiveIndex] = useState(0);
+
     return (
-        <div className="relative z-10 font-sans antialiased text-gray-100">
+        <div className="relative z-10 font-sans antialiased bg-black/20 border-t border-white/5">
             {/* Background atmospherics */}
-            <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[10%] right-[-5%] w-[40%] h-[60%] bg-blue-900/10 rounded-full blur-[120px]" />
+            <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-60">
+                <div className="absolute top-[10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[20%] right-[-5%] w-[40%] h-[60%] bg-blue-900/10 rounded-full blur-[120px]" />
             </div>
 
             <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 lg:py-32">
+
                 {/* Section Header */}
                 <RevealOnScroll>
-                    <header className="mb-20 lg:mb-28">
+                    <header className="mb-20">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -233,29 +176,105 @@ const DetailedCaseStudies = () => {
                             className="flex items-center gap-4 mb-6"
                         >
                             <div className="h-px w-12 bg-gradient-to-r from-pink-500 to-transparent" />
-                            <span className="text-pink-400 text-[10px] font-bold tracking-[0.25em] uppercase">Example Projects</span>
+                            <span className="text-pink-400 text-[10px] font-bold tracking-[0.25em] uppercase">Proven Results</span>
                         </motion.div>
                         <div className="max-w-3xl">
                             <AnimatedHeadline>
                                 <h2 className="font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-8">
-                                    How We Help Local<br className="hidden md:block" />{' '}
+                                    Engineering Success<br className="hidden md:block" />{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
-                                        Businesses
+                                        Stories
                                     </span>
                                 </h2>
                             </AnimatedHeadline>
                             <p className="text-white/50 text-base md:text-lg leading-relaxed max-w-xl">
-                                These example projects show our approach to helping local businesses succeed online through strategic design and development.
+                                Deep dives into how we've transformed local brands into digital powerhouses through strategic design, development, and conversion optimization.
                             </p>
                         </div>
                     </header>
                 </RevealOnScroll>
 
-                {/* Case studies */}
-                <div className="space-y-28 lg:space-y-36">
-                    {caseStudies.map((study, i) => (
-                        <CaseStudyCard key={study.id} study={study} index={i} />
-                    ))}
+                {/* Two Column Scroll Layout */}
+                <div className="flex flex-col lg:flex-row relative">
+
+                    {/* Left Column: Text Items */}
+                    <div className="w-full lg:w-[40%] xl:w-[35%] relative z-20 pb-[20vh]">
+                        {caseStudies.map((study, index) => (
+                            <CaseStudyTextItem
+                                key={`study-${study.id}`}
+                                study={study}
+                                index={index}
+                                setActiveIndex={setActiveIndex}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Right Column: Sticky Media (Desktop Only) */}
+                    <div className="hidden lg:block lg:w-[60%] xl:w-[65%] h-[80vh] sticky top-[10vh] left-0 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl ml-auto bg-slate-950">
+
+                        {/* Dynamic ambient background based on active item */}
+                        <div
+                            className="absolute inset-0 z-0 transition-all duration-1000 blur-3xl opacity-30"
+                            style={{ background: caseStudies[activeIndex].glowColor }}
+                        />
+
+                        {/* Iframes Stack */}
+                        {caseStudies.map((study, index) => {
+                            const isActive = activeIndex === index;
+                            return (
+                                <motion.div
+                                    key={`media-${study.id}`}
+                                    className="absolute inset-0 z-10"
+                                    initial={false}
+                                    animate={{
+                                        opacity: isActive ? 1 : 0,
+                                        scale: isActive ? 1 : 1.05
+                                    }}
+                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                    style={{ pointerEvents: isActive ? 'auto' : 'none' }}
+                                >
+                                    {/* Live iframe container */}
+                                    <div className="absolute inset-4 rounded-[2rem] overflow-hidden bg-slate-900 shadow-inner">
+                                        <iframe
+                                            src={study.url}
+                                            className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0"
+                                            title={`${study.title} Preview`}
+                                            loading="lazy"
+                                        />
+
+                                        {/* Gradients to blend edges */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/30 pointer-events-none" />
+
+                                    </div>
+
+                                    {/* Overlay Action Area */}
+                                    <div className="absolute inset-0 flex flex-col justify-end p-10 pointer-events-none z-20">
+                                        <div className="flex justify-between items-end">
+                                            {/* Status Badge */}
+                                            <div className="flex flex-col gap-2">
+                                                <span className="text-xs font-mono text-white/40">{study.domain}</span>
+                                                <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md w-fit">
+                                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                                                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Integration</span>
+                                                </span>
+                                            </div>
+
+                                            {/* Interactive Button */}
+                                            <button
+                                                onClick={() => window.open(study.url, '_blank')}
+                                                className="group pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 transition-all shadow-xl"
+                                            >
+                                                <ExternalLink size={20} className="text-white" />
+                                                <span className="text-white font-bold text-sm uppercase tracking-wider">Explore Project</span>
+                                                <ArrowRight size={18} className="text-white group-hover:translate-x-1 transition-transform ml-2" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+
                 </div>
             </section>
         </div>
