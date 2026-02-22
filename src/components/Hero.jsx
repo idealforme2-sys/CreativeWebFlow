@@ -95,7 +95,7 @@ const PrimaryCTA = ({ onClick }) => {
 
                 {/* Button */}
                 <div className="relative z-10 w-full cursor-pointer">
-                    <PulsatingButton className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-white/20 bg-slate-900/90">
+                    <PulsatingButton className="w-full sm:w-auto">
                         <span className="flex items-center justify-center gap-2 drop-shadow-md">
                             {/* Icon */}
                             <motion.span

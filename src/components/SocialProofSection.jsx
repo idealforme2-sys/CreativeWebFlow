@@ -196,50 +196,71 @@ const SocialProofSection = () => {
                         </div>
 
                         {/* Testimonial Display */}
-                        <div className="relative glass-card rounded-2xl p-8 md:p-12 min-h-[280px] flex flex-col justify-center border border-white/10 bg-white/5 backdrop-blur-sm">
-                            <Quote className="absolute top-6 left-6 w-8 h-8 text-cyan-500/20" />
+                        <div className="relative rounded-3xl p-8 md:p-14 min-h-[350px] flex flex-col justify-center border border-white/10 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+                            {/* Animated Background Glow */}
+                            <div className="absolute -inset-24 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 blur-[80px] z-0" />
+
+                            <Quote className="absolute top-8 left-8 w-16 h-16 text-white/5 rotate-180 z-0" />
 
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={currentTestimonial}
-                                    initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                                    exit={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
-                                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                                    className="text-center"
+                                    initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                                    exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
+                                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                    className="relative z-10 flex flex-col items-center text-center"
                                 >
-                                    <p className="text-lg md:text-xl text-white/80 leading-relaxed mb-8 italic">
+                                    {/* Stars */}
+                                    <div className="flex gap-1 mb-6">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <svg key={star} className="w-5 h-5 text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        ))}
+                                    </div>
+
+                                    <p className="text-xl md:text-3xl font-medium text-white leading-relaxed mb-10 max-w-3xl">
                                         "{testimonials[currentTestimonial].quote}"
                                     </p>
-                                    <div>
-                                        <p className="text-white font-semibold text-lg">
-                                            {testimonials[currentTestimonial].name}
-                                        </p>
-                                        <p className="text-cyan-400 text-sm">
-                                            {testimonials[currentTestimonial].business}
-                                        </p>
-                                        <p className="text-white/40 text-xs mt-1 uppercase tracking-wider">
-                                            {testimonials[currentTestimonial].industry}
-                                        </p>
+
+                                    <div className="flex items-center gap-4">
+                                        {/* Avatar placeholder */}
+                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 p-[2px] shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                                            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-lg">
+                                                {testimonials[currentTestimonial].name.charAt(0)}
+                                            </div>
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="text-white font-bold text-lg tracking-wide">
+                                                {testimonials[currentTestimonial].name}
+                                            </p>
+                                            <p className="text-cyan-400 font-medium text-sm">
+                                                {testimonials[currentTestimonial].business}
+                                            </p>
+                                            <p className="text-white/40 text-xs mt-0.5 uppercase tracking-widest font-bold">
+                                                {testimonials[currentTestimonial].industry}
+                                            </p>
+                                        </div>
                                     </div>
                                 </motion.div>
                             </AnimatePresence>
 
                             {/* Navigation Buttons */}
-                            <div className="flex justify-center gap-4 mt-8">
+                            <div className="relative z-10 flex justify-center gap-4 mt-12">
                                 <button
                                     onClick={prevTestimonial}
-                                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white"
+                                    className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white backdrop-blur-md"
                                     aria-label="Previous testimonial"
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
-                                <div className="flex gap-2 items-center">
+                                <div className="flex gap-3 items-center">
                                     {testimonials.map((_, idx) => (
                                         <button
                                             key={idx}
                                             onClick={() => setCurrentTestimonial(idx)}
-                                            className={`w-2 h-2 rounded-full transition-all duration-300 ${currentTestimonial === idx ? 'w-6 bg-cyan-400' : 'bg-white/20 hover:bg-white/40'
+                                            className={`h-2 rounded-full transition-all duration-500 ${currentTestimonial === idx ? 'w-8 bg-gradient-to-r from-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(0,240,255,0.5)]' : 'w-2 bg-white/20 hover:bg-white/40'
                                                 }`}
                                             aria-label={`Go to testimonial ${idx + 1}`}
                                         />
@@ -247,7 +268,7 @@ const SocialProofSection = () => {
                                 </div>
                                 <button
                                     onClick={nextTestimonial}
-                                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white"
+                                    className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white backdrop-blur-md"
                                     aria-label="Next testimonial"
                                 >
                                     <ChevronRight size={20} />
