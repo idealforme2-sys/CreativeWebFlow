@@ -82,57 +82,59 @@ const PrimaryCTA = ({ onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <motion.div
-            className="relative cursor-pointer"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onClick={onClick}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-        >
-            {/* Outer glow ring */}
+        <MagneticWrapper strength={0.2}>
             <motion.div
-                className="absolute -inset-1 rounded-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-20 blur-lg"
-                animate={{
-                    opacity: isHovered ? 0.4 : 0.2,
-                    scale: isHovered ? 1.05 : 1,
-                }}
-                transition={{ duration: 0.3 }}
-            />
+                className="relative cursor-pointer"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                onClick={onClick}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+            >
+                {/* Outer glow ring */}
+                <motion.div
+                    className="absolute -inset-1 rounded-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-20 blur-lg"
+                    animate={{
+                        opacity: isHovered ? 0.4 : 0.2,
+                        scale: isHovered ? 1.05 : 1,
+                    }}
+                    transition={{ duration: 0.3 }}
+                />
 
-            {/* Button body */}
-            <div className="relative px-6 py-3 bg-slate-900/90 backdrop-blur-xl rounded-full border border-white/10 overflow-hidden">
-                {/* Content */}
-                <div className="relative flex items-center gap-2">
-                    {/* Icon */}
-                    <motion.span
-                        animate={{ rotate: isHovered ? 360 : 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="text-cyan-400"
-                    >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 2L4 7l8 5 8-5-8-5z" />
-                            <path d="M4 12l8 5 8-5" />
-                            <path d="M4 17l8 5 8-5" />
-                        </svg>
-                    </motion.span>
+                {/* Button body */}
+                <div className="relative px-6 py-3 bg-slate-900/90 backdrop-blur-xl rounded-full border border-white/10 overflow-hidden">
+                    {/* Content */}
+                    <div className="relative flex items-center gap-2">
+                        {/* Icon */}
+                        <motion.span
+                            animate={{ rotate: isHovered ? 360 : 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="text-cyan-400"
+                        >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2L4 7l8 5 8-5-8-5z" />
+                                <path d="M4 12l8 5 8-5" />
+                                <path d="M4 17l8 5 8-5" />
+                            </svg>
+                        </motion.span>
 
-                    {/* Text */}
-                    <span className="text-sm font-bold uppercase tracking-wider text-white">
-                        Get More Customers
-                    </span>
+                        {/* Text */}
+                        <span className="text-sm font-bold uppercase tracking-wider text-white">
+                            Get More Customers
+                        </span>
 
-                    {/* Animated arrow */}
-                    <motion.span
-                        animate={{ x: isHovered ? [0, 5, 0] : 0 }}
-                        transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
-                        className="text-purple-400"
-                    >
-                        →
-                    </motion.span>
+                        {/* Animated arrow */}
+                        <motion.span
+                            animate={{ x: isHovered ? [0, 5, 0] : 0 }}
+                            transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
+                            className="text-purple-400"
+                        >
+                            →
+                        </motion.span>
+                    </div>
                 </div>
-            </div>
-        </motion.div>
+            </motion.div>
+        </MagneticWrapper>
     );
 };
 
@@ -141,46 +143,46 @@ const SecondaryCTA = ({ onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <motion.a
-            href="#work"
-            onClick={onClick}
-            className="relative group"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-        >
-            <div className="px-6 py-3 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-all duration-300 group-hover:border-white/30">
-                <div className="flex items-center gap-2">
-                    {/* Eye Icon */}
-                    <motion.svg
-                        className="w-4 h-4 text-white/60 group-hover:text-cyan-400 transition-colors"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        animate={{ scale: isHovered ? 1.1 : 1 }}
-                    >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </motion.svg>
+        <MagneticWrapper strength={0.2}>
+            <motion.a
+                href="#work"
+                onClick={onClick}
+                className="relative group block"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div className="px-6 py-3 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-all duration-300 group-hover:border-white/30">
+                    <div className="flex items-center gap-2">
+                        {/* Eye Icon */}
+                        <motion.svg
+                            className="w-4 h-4 text-white/60 group-hover:text-cyan-400 transition-colors"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            animate={{ scale: isHovered ? 1.1 : 1 }}
+                        >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </motion.svg>
 
-                    {/* Text */}
-                    <span className="text-sm font-bold uppercase tracking-wider text-white/80 group-hover:text-white transition-colors">
-                        View Our Work
-                    </span>
+                        {/* Text */}
+                        <span className="text-sm font-bold uppercase tracking-wider text-white/80 group-hover:text-white transition-colors">
+                            View Our Work
+                        </span>
+                    </div>
+
+                    {/* Bottom accent line */}
+                    <motion.div
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400"
+                        animate={{ width: isHovered ? '60%' : 0 }}
+                        transition={{ duration: 0.3 }}
+                    />
                 </div>
-
-                {/* Bottom accent line */}
-                <motion.div
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400"
-                    animate={{ width: isHovered ? '60%' : 0 }}
-                    transition={{ duration: 0.3 }}
-                />
-            </div>
-        </motion.a>
+            </motion.a>
+        </MagneticWrapper>
     );
 };
 
@@ -345,10 +347,10 @@ const Hero = () => {
                             </div>
                         ))}
                     </div>
-                    <div className="text-xs text-white/50">
-                        <span className="text-white/70 font-medium">Trusted by local businesses</span>
-                        <span className="mx-1">·</span>
-                        <span className="text-emerald-400">★ 5.0</span>
+                    <div className="text-sm font-semibold tracking-wide text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.8)]">
+                        <span className="text-white hover:text-cyan-400 transition-colors">Trusted by local businesses</span>
+                        <span className="mx-2 text-cyan-400">·</span>
+                        <span className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">★ 5.0</span>
                     </div>
                 </motion.div>
             </motion.div>

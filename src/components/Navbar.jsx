@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
+import { MagneticWrapper } from './UIComponents';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -179,27 +180,29 @@ const Navbar = () => {
                         </div>
 
                         {/* CTA Button */}
-                        <motion.button
-                            onClick={() => scrollToSection('#contact')}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="hidden lg:flex items-center gap-2 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] text-white relative overflow-hidden group"
-                            style={{
-                                background: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(168,85,247,0.15))',
-                                border: '1px solid rgba(6,182,212,0.25)',
-                            }}
-                        >
-                            {/* Hover glow fill */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
-                            {/* Shimmer */}
-                            <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent -skew-x-12"
-                                animate={{ x: ['-200%', '200%'] }}
-                                transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-                            />
-                            <Sparkles size={12} className="relative z-10 text-cyan-400" />
-                            <span className="relative z-10">Start Project</span>
-                        </motion.button>
+                        <MagneticWrapper strength={0.2} className="hidden lg:block">
+                            <motion.button
+                                onClick={() => scrollToSection('#contact')}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] text-white relative overflow-hidden group"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(168,85,247,0.15))',
+                                    border: '1px solid rgba(6,182,212,0.25)',
+                                }}
+                            >
+                                {/* Hover glow fill */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
+                                {/* Shimmer */}
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent -skew-x-12"
+                                    animate={{ x: ['-200%', '200%'] }}
+                                    transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                                />
+                                <Sparkles size={12} className="relative z-10 text-cyan-400" />
+                                <span className="relative z-10">Start Project</span>
+                            </motion.button>
+                        </MagneticWrapper>
 
                         {/* Mobile Menu Button */}
                         <motion.button
