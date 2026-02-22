@@ -161,9 +161,9 @@ const AboutSection = () => {
                 {/* Main Description */}
                 <div className="max-w-3xl mx-auto text-center mb-16">
                     <RevealOnScroll>
-                        <p className="text-lg md:text-xl text-white/80 leading-relaxed mb-6">
+                        <div className="text-lg md:text-xl text-white/80 leading-relaxed mb-6">
                             <TextReveal>Creative WebFlow is a digital agency focused on helping small businesses attract more customers through clean design, clear messaging, and conversion-focused websites.</TextReveal>
-                        </p>
+                        </div>
                     </RevealOnScroll>
                     <RevealOnScroll delay={0.2}>
                         <p className="text-base md:text-lg text-white/50">

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import TechHUD from './TechHUD';
-import { ShootingStars } from './UIComponents';
+import { ShootingStars, MagneticWrapper } from './UIComponents';
 import { Meteors } from './magicui/Meteors';
 import { LineShadowText } from './magicui/LineShadowText';
 
