@@ -4,6 +4,7 @@ import TechHUD from './TechHUD';
 import { ShootingStars, MagneticWrapper } from './UIComponents';
 import { Meteors } from './magicui/Meteors';
 import { LineShadowText } from './magicui/LineShadowText';
+import { PulsatingButton } from './magicui/PulsatingButton';
 
 // GlitchText removed to restore pristine typography
 
@@ -69,7 +70,7 @@ const FloatingOrbs = () => (
 // Compact Trust Metric
 const CompactMetric = ({ icon, value, label, color }) => {
     return (
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-md border border-white/30 hover:border-white/50 hover:bg-slate-800/80 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             <span className="text-sm">{icon}</span>
             <span className={`text-sm font-semibold ${color}`}>{value}</span>
             <span className="text-xs text-white/50">{label}</span>
@@ -83,57 +84,47 @@ const PrimaryCTA = ({ onClick }) => {
 
     return (
         <MagneticWrapper strength={0.2}>
-            <motion.div
-                className="relative cursor-pointer"
+            <div
+                className="relative group w-full"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 onClick={onClick}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
             >
-                {/* Outer glow ring */}
-                <motion.div
-                    className="absolute -inset-1 rounded-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-20 blur-lg"
-                    animate={{
-                        opacity: isHovered ? 0.4 : 0.2,
-                        scale: isHovered ? 1.05 : 1,
-                    }}
-                    transition={{ duration: 0.3 }}
-                />
+                {/* Glowing shadow behind button from ContactSection */}
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-40 blur-xl group-hover:opacity-75 transition-opacity duration-500" />
 
-                {/* Button body */}
-                <div className="relative px-6 py-3 bg-slate-900/90 backdrop-blur-xl rounded-full border border-white/10 overflow-hidden">
-                    {/* Content */}
-                    <div className="relative flex items-center gap-2">
-                        {/* Icon */}
-                        <motion.span
-                            animate={{ rotate: isHovered ? 360 : 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="text-cyan-400"
-                        >
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M12 2L4 7l8 5 8-5-8-5z" />
-                                <path d="M4 12l8 5 8-5" />
-                                <path d="M4 17l8 5 8-5" />
-                            </svg>
-                        </motion.span>
+                {/* Button */}
+                <div className="relative z-10 w-full cursor-pointer">
+                    <PulsatingButton className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-white/20 bg-slate-900/90">
+                        <span className="flex items-center justify-center gap-2 drop-shadow-md">
+                            {/* Icon */}
+                            <motion.span
+                                animate={{ rotate: isHovered ? 360 : 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="text-cyan-400"
+                            >
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 2L4 7l8 5 8-5-8-5z" />
+                                    <path d="M4 12l8 5 8-5" />
+                                    <path d="M4 17l8 5 8-5" />
+                                </svg>
+                            </motion.span>
 
-                        {/* Text */}
-                        <span className="text-sm font-bold uppercase tracking-wider text-white">
-                            Get More Customers
+                            <span className="text-sm font-bold uppercase tracking-wider text-white">
+                                Get More Customers
+                            </span>
+
+                            <motion.span
+                                animate={{ x: isHovered ? [0, 5, 0] : 0 }}
+                                transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
+                                className="text-purple-400"
+                            >
+                                →
+                            </motion.span>
                         </span>
-
-                        {/* Animated arrow */}
-                        <motion.span
-                            animate={{ x: isHovered ? [0, 5, 0] : 0 }}
-                            transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
-                            className="text-purple-400"
-                        >
-                            →
-                        </motion.span>
-                    </div>
+                    </PulsatingButton>
                 </div>
-            </motion.div>
+            </div>
         </MagneticWrapper>
     );
 };

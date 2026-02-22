@@ -170,7 +170,7 @@ const ServicesShowcase = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
-                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-semibold transition-colors duration-300 w-52 text-center flex items-center justify-center gap-2 ${isActive ? 'text-white' : 'text-slate-400 hover:text-white'
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 ${isActive ? 'text-white' : 'text-slate-200/90 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
                                         {isActive && (
