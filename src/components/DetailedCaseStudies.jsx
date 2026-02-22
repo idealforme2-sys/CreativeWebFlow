@@ -1,7 +1,8 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award, ExternalLink } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
-import { AnimatedHeadline, RevealOnScroll, SectionParticles, TyphoonVortex } from './UIComponents';
+import { RevealOnScroll, SectionParticles, TyphoonVortex } from './UIComponents';
+import { Highlighter } from './magicui/Highlighter';
 
 const caseStudies = [
     {
@@ -180,16 +181,18 @@ const DetailedCaseStudies = () => {
                             <span className="text-pink-400 text-[10px] font-bold tracking-[0.25em] uppercase">Proven Results</span>
                         </motion.div>
                         <div className="max-w-3xl">
-                            <AnimatedHeadline>
-                                <h2 className="font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-8">
-                                    Engineering Success<br className="hidden md:block" />{' '}
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
-                                        Stories
-                                    </span>
-                                </h2>
-                            </AnimatedHeadline>
-                            <p className="text-white/50 text-base md:text-lg leading-relaxed max-w-xl">
-                                Deep dives into how we've transformed local brands into digital powerhouses through strategic design, development, and conversion optimization.
+                            {/* <AnimatedHeadline> */}
+                            <h2 className="font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-8">
+                                Engineering Success<br className="hidden md:block" />{' '}
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
+                                    Stories
+                                </span>
+                            </h2>
+                            {/* </AnimatedHeadline> */}
+                            <p className="text-lg md:text-xl text-white/60 leading-relaxed font-light mt-6 mx-auto max-w-2xl">
+                                Deep dives into how we've transformed local brands into{' '}
+                                <Highlighter action="highlight" color="#a855f7" delay={0.2}>digital powerhouses</Highlighter> through{' '}
+                                <Highlighter action="underline" color="#06b6d4" delay={0.4}>strategic design, development, and conversion optimization</Highlighter>.
                             </p>
                         </div>
                     </header>

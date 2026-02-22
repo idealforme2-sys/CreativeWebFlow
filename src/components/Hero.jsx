@@ -95,7 +95,7 @@ const PrimaryCTA = ({ onClick }) => {
 
                 {/* Button */}
                 <div className="relative z-10 w-full cursor-pointer">
-                    <PulsatingButton className="w-full sm:w-auto">
+                    <PulsatingButton className="w-full sm:w-auto !px-6 !py-2.5">
                         <span className="flex items-center justify-center gap-2 drop-shadow-md">
                             {/* Icon */}
                             <motion.span
@@ -103,14 +103,14 @@ const PrimaryCTA = ({ onClick }) => {
                                 transition={{ duration: 0.5 }}
                                 className="text-cyan-400"
                             >
-                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M12 2L4 7l8 5 8-5-8-5z" />
                                     <path d="M4 12l8 5 8-5" />
                                     <path d="M4 17l8 5 8-5" />
                                 </svg>
                             </motion.span>
 
-                            <span className="text-sm font-bold uppercase tracking-wider text-white">
+                            <span className="text-xs font-bold uppercase tracking-wider text-white">
                                 Get More Customers
                             </span>
 
@@ -222,10 +222,22 @@ const Hero = () => {
 
     return (
         <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-24 pb-12">
+            {/* Custom Animation for Text Gleam */}
+            <style>{`
+                @keyframes text-shine {
+                    0% { background-position: 200% center; }
+                    100% { background-position: -200% center; }
+                }
+                .animate-text-shine {
+                    animation: text-shine 4s linear infinite;
+                }
+            `}</style>
             {/* Layered backgrounds */}
             <MorphGrid />
             <FloatingOrbs />
-            <Meteors number={30} />
+            <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+                <Meteors number={80} />
+            </div>
             <ShootingStars count={25} color="#bd00ff" />
             <TechHUD />
 
@@ -297,11 +309,11 @@ const Hero = () => {
                 {/* Sub-headline */}
                 <motion.p
                     variants={itemVariants}
-                    className="text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto mb-8 leading-relaxed"
+                    className="text-lg md:text-xl font-medium max-w-2xl mx-auto mb-8 leading-relaxed animate-text-shine bg-[linear-gradient(110deg,#a1a1aa,35%,#ffffff,50%,#a1a1aa,65%)] bg-[length:250%_100%] bg-clip-text text-transparent"
                 >
                     We design and build high-performance websites for local businesses
                     that turn visitors into{' '}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-semibold">real customers</span>.
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-semibold drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">real customers</span>.
                 </motion.p>
 
                 {/* Compact Trust Metrics */}

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Shield, MessageCircle, TrendingUp, CheckCircle } from 'lucide-react';
 import { SectionHeader, RevealOnScroll, ParallaxContainer, AnimatedHeadline, TyphoonVortex } from './UIComponents';
 import { TextReveal } from './magicui/TextReveal';
+import { Highlighter } from './magicui/Highlighter';
 
 // Local macro images
 import professionalImg from '../assets/aboutus/trusty.png';
@@ -62,19 +63,17 @@ const GlassCard = ({ point, index }) => {
             className="relative group"
         >
             {/* Card container */}
-            <div
-                className="relative h-[420px] rounded-3xl overflow-hidden flex flex-col justify-end p-8 transition-all duration-500"
-                style={{
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                }}
-            >
-                {/* Clean hover glow border */}
+            <div className="relative z-10 p-8 h-full rounded-[2rem] bg-gradient-to-br from-[#050508]/80 to-[#0A0A0F]/90 border border-white/5 overflow-hidden group hover:border-white/10 transition-colors duration-500 shadow-2xl backdrop-blur-md">
+
+                {/* Crystal Mirror Shine Layer */}
+                <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+                    <div className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-mirror-shine drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+                </div>
+
+                {/* Ambient glow matching accent color */}
                 <div
-                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none border border-transparent group-hover:border-white/20"
-                    style={{ boxShadow: `inset 0 0 20px ${point.glowColor}` }}
+                    className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{ boxShadow: `inset 0 0 40px ${point.glowColor}` }}
                 />
 
                 {/* Background image */}
@@ -109,7 +108,7 @@ const GlassCard = ({ point, index }) => {
                 </div>
 
                 {/* Text content — bottom */}
-                <div className="relative z-10">
+                <div className="relative z-10 mt-auto"> {/* Added mt-auto to push content to bottom */}
                     <h3 className="text-2xl font-bold text-white mb-3">{point.title}</h3>
                     <p className="text-gray-400 text-base leading-relaxed font-light">
                         {point.description}
@@ -123,9 +122,19 @@ const GlassCard = ({ point, index }) => {
 /* ── About Section ──────────────────────────────────────────── */
 const AboutSection = () => {
     return (
-        <section id="about" className="relative py-24 lg:py-32 overflow-hidden">
+        <section id="about" className="relative py-24 lg:py-32 bg-[#020205] overflow-hidden">
+            {/* Custom Keyframes for Crystal Mirror Shine effect */}
+            <style>{`
+                @keyframes mirror-shine {
+                    0% { transform: translateX(-300%) skewX(-25deg); }
+                    100% { transform: translateX(300%) skewX(-25deg); }
+                }
+                .animate-mirror-shine {
+                    animation: mirror-shine 2.5s infinite linear;
+                }
+            `}</style>
 
-            {/* Background Elements */}
+            {/* Enhanced Background Effects */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/10 to-black z-0" />
             <TyphoonVortex color="#06b6d4" speed={40} />
             <ParallaxContainer speed={0.2} className="absolute inset-0 z-0">
@@ -161,13 +170,21 @@ const AboutSection = () => {
                 {/* Main Description */}
                 <div className="max-w-3xl mx-auto text-center mb-16">
                     <RevealOnScroll>
-                        <div className="text-lg md:text-xl text-white/80 leading-relaxed mb-6">
-                            <span className="font-medium text-white/90 drop-shadow-sm">Creative WebFlow is a digital agency focused on helping small businesses attract more customers through clean design, clear messaging, and conversion-focused websites.</span>
-                        </div>
-                    </RevealOnScroll>
-                    <RevealOnScroll delay={0.2}>
-                        <p className="text-base md:text-lg text-white/50">
-                            We focus on what matters most to your business:
+                        <p className="text-white/60 text-lg sm:text-xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md">
+                            <span className="font-medium text-white/90 drop-shadow-sm">Creative WebFlow is a digital agency focused on helping small businesses </span>
+                            <Highlighter action="highlight" color="#06b6d4" delay={0.2}>
+                                attract more customers
+                            </Highlighter>
+                            <span className="font-medium text-white/90 drop-shadow-sm"> through clean design, clear messaging, and </span>
+                            <Highlighter action="highlight" color="#a855f7" delay={0.4}>
+                                conversion-focused websites
+                            </Highlighter>.
+                            <br /><br />
+                            <span className="font-medium text-white/90 drop-shadow-sm">We focus on </span>
+                            <Highlighter action="underline" color="#ec4899" delay={0.6}>
+                                what matters most
+                            </Highlighter>
+                            <span className="font-medium text-white/90 drop-shadow-sm"> to your business:</span>
                         </p>
                     </RevealOnScroll>
                 </div>

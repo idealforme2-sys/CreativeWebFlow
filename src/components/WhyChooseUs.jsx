@@ -212,9 +212,11 @@ const WhyChooseUs = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="text-white/40 max-w-2xl mx-auto text-lg leading-relaxed"
+                            className="text-white/60 text-lg sm:text-xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md"
                         >
-                            We don't just build websites; we build growth engines. Here's how we differ from the rest.
+                            We don't just build websites; we build{' '}
+                            <Highlighter action="highlight" color="#ec4899" delay={0.2}>growth engines</Highlighter>. Here's how we{' '}
+                            <Highlighter action="underline" color="#06b6d4" delay={0.4}>differ from the rest</Highlighter>.
                         </motion.p>
                     </div>
                 </RevealOnScroll>

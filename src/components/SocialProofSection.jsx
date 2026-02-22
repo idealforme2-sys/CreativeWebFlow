@@ -89,7 +89,7 @@ const SocialProofSection = () => {
                     100% { transform: translateX(300%) skewX(-25deg); }
                 }
                 .animate-mirror-shine {
-                    animation: mirror-shine 5s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    animation: mirror-shine 2.5s infinite linear;
                 }
             `}</style>
             {/* Background - adjusted for transparency */}
