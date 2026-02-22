@@ -163,7 +163,8 @@ const ContactSection = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Dispatch to client's default email agent
+        window.location.href = `mailto:ventureforbusiness@gmail.com?subject=New Inquiry from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company || 'N/A'}\nBudget: ${formData.budget || 'N/A'}\n\nProject Details:\n${formData.message}`)}`;
         setIsSubmitting(false);
         setSubmitted(true);
     };
@@ -471,12 +472,15 @@ const ContactSection = () => {
                                     <Mail size={18} />
                                 </div>
                                 <div className="flex-1">
-                                    <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">
-                                        Email
-                                    </div>
-                                    <div className="text-white font-medium text-sm group-hover:text-cyan-400 transition-colors">
-                                        hello@creativewebflow.com
-                                    </div>
+                                    <address className="not-italic text-white/60 text-sm md:text-base space-y-4">
+                                        <p className="mb-4">Or email us directly at:</p>
+                                        <a
+                                            href="mailto:ventureforbusiness@gmail.com"
+                                            className="group/link inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                                        >
+                                            ventureforbusiness@gmail.com
+                                        </a>
+                                    </address>
                                 </div>
                                 <ArrowUpRight size={16} className="text-white/30 group-hover:text-cyan-400 transition-colors" />
                             </motion.a>

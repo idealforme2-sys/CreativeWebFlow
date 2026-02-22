@@ -108,8 +108,8 @@ const Footer = () => {
                         <h4 className="text-xs font-mono text-white uppercase tracking-widest mb-6">Office</h4>
                         <address className="not-italic text-gray-400 text-sm space-y-2">
                             <p className="pt-2">
-                                <a href="mailto:hello@creativewebflow.com" className="hover:text-cyan-400 transition-colors">
-                                    hello@creativewebflow.com
+                                <a href="mailto:ventureforbusiness@gmail.com" className="hover:text-cyan-400 transition-colors">
+                                    ventureforbusiness@gmail.com
                                 </a>
                             </p>
                         </address>

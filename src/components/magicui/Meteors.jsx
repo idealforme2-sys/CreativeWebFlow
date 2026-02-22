@@ -6,8 +6,8 @@ export const Meteors = ({ number = 20, className = "" }) => {
     useEffect(() => {
         setMeteors(
             new Array(number).fill(true).map(() => ({
-                top: Math.floor(Math.random() * -100) + "px",
-                left: Math.floor(Math.random() * window.innerWidth) + "px",
+                top: Math.floor(Math.random() * window.innerHeight * 0.8) + "px",
+                left: Math.floor(Math.random() * window.innerWidth * 1.5) + "px",
                 animationDelay: Math.random() * (0.8 - 0.2) + 0.2 + "s",
                 animationDuration: Math.floor(Math.random() * (10 - 2) + 2) + "s",
             }))

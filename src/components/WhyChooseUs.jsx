@@ -148,13 +148,13 @@ const FeatureCard = ({ feature }) => {
 };
 
 const WhyChooseUs = () => {
-    // Split features into two distinct rows to keep DOM size smaller, avoiding GPU glitches.
-    const r1Base = features.slice(0, 4);
-    const r2Base = features.slice(4, 8);
+    // Use all 6 features to prevent duplicate clustering
+    const r1Base = features;
+    const r2Base = [...features.slice(3), ...features.slice(0, 3)]; // Offset by 3
 
-    // Duplicate exactly 4 times (16 cards total per track) to fill screens without exceeding browser texture limits.
-    const row1 = [...r1Base, ...r1Base, ...r1Base, ...r1Base];
-    const row2 = [...r2Base, ...r2Base, ...r2Base, ...r2Base];
+    // Duplicate 3 times (18 cards total per track) to fill screens
+    const row1 = [...r1Base, ...r1Base, ...r1Base];
+    const row2 = [...r2Base, ...r2Base, ...r2Base];
 
     return (
         <section className="relative py-24 lg:py-32 overflow-hidden bg-black/20 pb-40">

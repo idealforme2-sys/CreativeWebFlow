@@ -81,6 +81,17 @@ const SocialProofSection = () => {
     return (
         // Restored transparency: bg-transparent instead of opaque
         <section className="relative py-24 lg:py-32 overflow-hidden bg-transparent">
+            {/* Custom Keyframes for Crystal Mirror Shine effect */}
+            <style>{`
+                @keyframes mirror-shine {
+                    0% { transform: translateX(-300%) skewX(-25deg); }
+                    60% { transform: translateX(300%) skewX(-25deg); }
+                    100% { transform: translateX(300%) skewX(-25deg); }
+                }
+                .animate-mirror-shine {
+                    animation: mirror-shine 5s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                }
+            `}</style>
             {/* Background - adjusted for transparency */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-purple-950/20 to-black/80 z-0" />
             <FloatingOrbs count={4} color1="#00f0ff" color2="#bd00ff" />
@@ -126,6 +137,11 @@ const SocialProofSection = () => {
                                 className="h-full"
                             >
                                 <div className="group relative rounded-3xl overflow-hidden h-[460px] border border-white/10 bg-white/[0.02] backdrop-blur-sm hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] flex flex-col transition-all duration-500">
+                                    {/* Crystal Mirror Shine Layer (Looping Animation) */}
+                                    <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+                                        <div className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-mirror-shine drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+                                    </div>
+
                                     {/* Background Image with Floating Animation */}
                                     <div className="absolute inset-0 z-0">
                                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050508]/20 to-[#050508]/90 z-10" />

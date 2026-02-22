@@ -297,7 +297,7 @@ const Hero = () => {
                 {/* Sub-headline */}
                 <motion.p
                     variants={itemVariants}
-                    className="text-base md:text-lg text-white/60 max-w-2xl mx-auto mb-6 leading-relaxed"
+                    className="text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto mb-8 leading-relaxed"
                 >
                     We design and build high-performance websites for local businesses
                     that turn visitors into{' '}
