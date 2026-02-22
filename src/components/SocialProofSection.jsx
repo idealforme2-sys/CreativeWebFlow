@@ -196,7 +196,7 @@ const SocialProofSection = () => {
                         </div>
 
                         {/* Testimonial Display */}
-                        <div className="relative rounded-3xl p-8 md:p-14 min-h-[350px] flex flex-col justify-center border border-white/10 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+                        <div className="relative rounded-3xl p-8 md:p-14 min-h-[350px] flex flex-col justify-center border border-white/20 bg-slate-900 shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden">
                             {/* Animated Background Glow */}
                             <div className="absolute -inset-24 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 blur-[80px] z-0" />
 
