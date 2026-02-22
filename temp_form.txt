@@ -1,0 +1,150 @@
+﻿import React, { useState, useEffect, useRef } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles, Calendar } from 'lucide-react';
+import { RevealOnScroll, SectionParticles } from './UIComponents';
+import { PulsatingButton } from './magicui/PulsatingButton';
+
+// Floating particles for the form background
+const FormParticles = () => {
+    const particles = Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 4 + 2,
+        duration: Math.random() * 10 + 10,
+        delay: Math.random() * 5,
+    }));
+
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {particles.map((p) => (
+                <motion.div
+                    key={p.id}
+                    className="absolute rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-400/20"
+                    style={{
+                        left: `${p.x}%`,
+                        top: `${p.y}%`,
+                        width: p.size,
+                        height: p.size,
+                    }}
+                    animate={{
+                        y: [0, -30, 0],
+                        x: [0, 10, 0],
+                        opacity: [0.2, 0.5, 0.2],
+                    }}
+                    transition={{
+                        duration: p.duration,
+                        delay: p.delay,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
+
+// Animated gradient border
+const AnimatedBorder = ({ children, className }) => {
+    return (
+        <div className={`relative ${className}`}>
+            <div
+                className="absolute inset-0 rounded-3xl opacity-50"
+                style={{
+                    background: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
+                    backgroundSize: '300% 100%',
+                    animation: 'borderFlow 4s linear infinite',
+                }}
+            />
+            <div className="absolute inset-[1px] bg-slate-900/95 rounded-3xl" />
+            <div className="relative z-10">{children}</div>
+            <style>{`
+                @keyframes borderFlow {
+                    0% { background-position: 0% 50%; }
+                    100% { background-position: 300% 50%; }
+                }
+            `}</style>
+        </div>
+    );
+};
+
+// Typing animation for header
+const TypingText = ({ texts, className }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [displayText, setDisplayText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+        const currentText = texts[currentIndex];
+        const timeout = setTimeout(() => {
+            if (!isDeleting) {
+                if (displayText.length < currentText.length) {
+                    setDisplayText(currentText.slice(0, displayText.length + 1));
+                } else {
+                    setTimeout(() => setIsDeleting(true), 2000);
+                }
+            } else {
+                if (displayText.length > 0) {
+                    setDisplayText(displayText.slice(0, -1));
+                } else {
+                    setIsDeleting(false);
+                    setCurrentIndex((prev) => (prev + 1) % texts.length);
+                }
+            }
+        }, isDeleting ? 50 : 100);
+
+        return () => clearTimeout(timeout);
+    }, [displayText, isDeleting, currentIndex, texts]);
+
+    return (
+        <span className={className}>
+            {displayText}
+            <span className="animate-pulse">|</span>
+        </span>
+    );
+};
+
+// Progress steps component
+const FormProgress = ({ currentStep }) => {
+    const steps = ['Details', 'Project', 'Submit'];
+
+    return (
+        <div className="flex items-center justify-center gap-2 mb-6">
+            {steps.map((step, i) => (
+                <React.Fragment key={i}>
+                    <div className="flex items-center gap-2">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${i < currentStep
+                            ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
+                            : i === currentStep
+                                ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
+                                : 'bg-white/5 border border-white/10 text-white/30'
+                            }`}>
+                            {i < currentStep ? 'Ô£ô' : i + 1}
+                        </div>
+                        <span className={`text-[10px] font-medium hidden sm:block ${i <= currentStep ? 'text-white/70' : 'text-white/30'
+                            }`}>
+                            {step}
+                        </span>
+                    </div>
+                    {i < steps.length - 1 && (
+                        <div className={`w-6 h-0.5 rounded-full transition-all duration-300 ${i < currentStep ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-white/10'
+                            }`} />
+                    )}
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
+
+const ContactSection = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        company: '',
+        budget: '',
+        message: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [focusedField, setFocusedField] = useState(null);
+    const [currentStep, setCurrentStep] = useState(0);

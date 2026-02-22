@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, Smartphone, ArrowUpRight, Clock, Zap, CheckCircle2, Sparkles, Calendar, Rocket } from 'lucide-react';
+import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles, Calendar } from 'lucide-react';
 import { RevealOnScroll, SectionParticles } from './UIComponents';
-import { Highlighter } from './magicui/Highlighter';
 import { PulsatingButton } from './magicui/PulsatingButton';
 
 // Floating particles for the form background
@@ -23,8 +22,8 @@ const FormParticles = () => {
                     key={p.id}
                     className="absolute rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-400/20"
                     style={{
-                        left: `${p.x}% `,
-                        top: `${p.y}% `,
+                        left: `${p.x}%`,
+                        top: `${p.y}%`,
                         width: p.size,
                         height: p.size,
                     }}
@@ -48,7 +47,7 @@ const FormParticles = () => {
 // Animated gradient border
 const AnimatedBorder = ({ children, className }) => {
     return (
-        <div className={`relative ${className} `}>
+        <div className={`relative ${className}`}>
             <div
                 className="absolute inset-0 rounded-3xl opacity-50"
                 style={{
@@ -60,12 +59,11 @@ const AnimatedBorder = ({ children, className }) => {
             <div className="absolute inset-[1px] bg-slate-900/95 rounded-3xl" />
             <div className="relative z-10">{children}</div>
             <style>{`
-@keyframes borderFlow {
-    0 % { background- position: 0 % 50 %;
-}
-100 % { background- position: 300 % 50 %; }
+                @keyframes borderFlow {
+                    0% { background-position: 0% 50%; }
+                    100% { background-position: 300% 50%; }
                 }
-`}</style>
+            `}</style>
         </div>
     );
 };
@@ -115,22 +113,22 @@ const FormProgress = ({ currentStep }) => {
             {steps.map((step, i) => (
                 <React.Fragment key={i}>
                     <div className="flex items-center gap-2">
-                        <div className={`w - 5 h - 5 rounded - full flex items - center justify - center text - [10px] font - bold transition - all duration - 300 ${i < currentStep
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${i < currentStep
                             ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
                             : i === currentStep
                                 ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
                                 : 'bg-white/5 border border-white/10 text-white/30'
-                            } `}>
+                            }`}>
                             {i < currentStep ? '✓' : i + 1}
                         </div>
-                        <span className={`text - [10px] font - medium hidden sm:block ${i <= currentStep ? 'text-white/70' : 'text-white/30'
-                            } `}>
+                        <span className={`text-[10px] font-medium hidden sm:block ${i <= currentStep ? 'text-white/70' : 'text-white/30'
+                            }`}>
                             {step}
                         </span>
                     </div>
                     {i < steps.length - 1 && (
-                        <div className={`w - 6 h - 0.5 rounded - full transition - all duration - 300 ${i < currentStep ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-white/10'
-                            } `} />
+                        <div className={`w-6 h-0.5 rounded-full transition-all duration-300 ${i < currentStep ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-white/10'
+                            }`} />
                     )}
                 </React.Fragment>
             ))}
@@ -165,8 +163,7 @@ const ContactSection = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Dispatch to client's default email agent
-        window.location.href = `mailto:ventureforbusiness @gmail.com?subject = New Inquiry from ${encodeURIComponent(formData.name)}& body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company || 'N/A'}\nBudget: ${formData.budget || 'N/A'}\n\nProject Details:\n${formData.message}`)} `;
+        await new Promise(resolve => setTimeout(resolve, 1500));
         setIsSubmitting(false);
         setSubmitted(true);
     };
@@ -176,7 +173,7 @@ const ContactSection = () => {
     };
 
     const trustBadges = [
-        { icon: CheckCircle, label: 'Secure & Private', desc: 'Your data is encrypted' },
+        { icon: Shield, label: 'Secure & Private', desc: 'Your data is encrypted' },
         { icon: Clock, label: '24hr Response', desc: 'We reply within a day' },
         { icon: Zap, label: 'Fast Turnaround', desc: 'Projects ship quickly' },
     ];
@@ -257,12 +254,11 @@ const ContactSection = () => {
                         </h2>
 
                         {/* IMPROVED: Better visibility text */}
-                        <p className="text-lg md:text-xl text-white/80 leading-relaxed font-light mt-6">
-                            Most local businesses blend in.{' '}
-                            <Highlighter action="highlight" color="#06b6d4" delay={0.2}>Yours won't.</Highlighter>
-                            <br />
-                            Join 10+ businesses who{' '}
-                            <Highlighter action="underline" color="#a855f7" delay={0.4}>transformed their online presence.</Highlighter>
+                        <p className="text-white/70 text-lg mt-4 mb-2 font-medium">
+                            Most local businesses blend in. <span className="text-cyan-400">Yours won't.</span>
+                        </p>
+                        <p className="text-white/60 text-base">
+                            Join <span className="text-white font-semibold">10+</span> businesses who transformed their online presence.
                         </p>
                     </div>
                 </RevealOnScroll>
@@ -467,7 +463,7 @@ const ContactSection = () => {
 
                             {/* Contact Details */}
                             <motion.a
-                                href="mailto:ventureforbusiness@gmail.com"
+                                href="mailto:hello@creativewebflow.com"
                                 whileHover={{ x: 8, borderColor: 'rgba(0,240,255,0.3)' }}
                                 className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-900/80 hover:bg-cyan-900/40 transition-all duration-300 group"
                             >
@@ -475,14 +471,12 @@ const ContactSection = () => {
                                     <Mail size={18} />
                                 </div>
                                 <div className="flex-1">
-                                    <address className="not-italic text-white/60 text-sm md:text-base space-y-4">
-                                        <p className="mb-4">Or email us directly at:</p>
-                                        <span
-                                            className="group/link inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-                                        >
-                                            ventureforbusiness@gmail.com
-                                        </span>
-                                    </address>
+                                    <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">
+                                        Email
+                                    </div>
+                                    <div className="text-white font-medium text-sm group-hover:text-cyan-400 transition-colors">
+                                        hello@creativewebflow.com
+                                    </div>
                                 </div>
                                 <ArrowUpRight size={16} className="text-white/30 group-hover:text-cyan-400 transition-colors" />
                             </motion.a>
@@ -548,7 +542,7 @@ const ResponseTimeline = () => {
                         {i < steps.length - 1 && (
                             <div className="absolute left-4 top-10 w-px h-6 bg-gradient-to-b from-white/10 to-transparent" />
                         )}
-                        <div className={`flex - shrink - 0 w - 8 h - 8 rounded - lg bg - gradient - to - br ${step.color} flex items - center justify - center text - sm shadow - lg`}>
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br ${step.color} flex items-center justify-center text-sm shadow-lg`}>
                             {step.emoji}
                         </div>
                         <div className="pb-4">
