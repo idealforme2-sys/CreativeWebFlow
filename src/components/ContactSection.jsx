@@ -1,68 +1,70 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles, Users, TrendingUp, Calendar } from 'lucide-react';
+import { Send, Mail, ArrowUpRight, Rocket, Shield, Clock, Zap, CheckCircle2, Sparkles, Calendar } from 'lucide-react';
 import { RevealOnScroll, SectionParticles } from './UIComponents';
-import { RainbowButton } from './MagicUI';
+import { PulsatingButton } from './magicui/PulsatingButton';
 
-// Animated counter for stats
-const StatCounter = ({ value, suffix = '', label, icon: Icon }) => {
-    const [count, setCount] = useState(0);
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true });
-    
-    useEffect(() => {
-        if (isInView) {
-            const duration = 2000;
-            const steps = 60;
-            const increment = value / steps;
-            let current = 0;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= value) {
-                    setCount(value);
-                    clearInterval(timer);
-                } else {
-                    setCount(Math.floor(current));
-                }
-            }, duration / steps);
-            return () => clearInterval(timer);
-        }
-    }, [isInView, value]);
-    
+// Floating particles for the form background
+const FormParticles = () => {
+    const particles = Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 4 + 2,
+        duration: Math.random() * 10 + 10,
+        delay: Math.random() * 5,
+    }));
+
     return (
-        <div ref={ref} className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-1">
-                {Icon && <Icon size={16} className="text-cyan-400" />}
-                <span className="text-2xl md:text-3xl font-bold text-white">
-                    {count}{suffix}
-                </span>
-            </div>
-            <p className="text-xs text-white/40 uppercase tracking-wider">{label}</p>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {particles.map((p) => (
+                <motion.div
+                    key={p.id}
+                    className="absolute rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-400/20"
+                    style={{
+                        left: `${p.x}%`,
+                        top: `${p.y}%`,
+                        width: p.size,
+                        height: p.size,
+                    }}
+                    animate={{
+                        y: [0, -30, 0],
+                        x: [0, 10, 0],
+                        opacity: [0.2, 0.5, 0.2],
+                    }}
+                    transition={{
+                        duration: p.duration,
+                        delay: p.delay,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                />
+            ))}
         </div>
     );
 };
 
-// Live notification toast
-const LiveNotification = ({ name, industry, time }) => {
+// Animated gradient border
+const AnimatedBorder = ({ children, className }) => {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 50, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 50, scale: 0.9 }}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/90 border border-white/10 backdrop-blur-md shadow-lg"
-        >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
-                {name.charAt(0)}
-            </div>
-            <div className="flex-1">
-                <p className="text-sm text-white/90">
-                    <span className="font-semibold">{name}</span>
-                    <span className="text-white/50"> from </span>
-                    <span className="text-cyan-400">{industry}</span>
-                </p>
-                <p className="text-xs text-white/40">{time}</p>
-            </div>
-        </motion.div>
+        <div className={`relative ${className}`}>
+            <div
+                className="absolute inset-0 rounded-3xl opacity-50"
+                style={{
+                    background: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
+                    backgroundSize: '300% 100%',
+                    animation: 'borderFlow 4s linear infinite',
+                }}
+            />
+            <div className="absolute inset-[1px] bg-slate-900/95 rounded-3xl" />
+            <div className="relative z-10">{children}</div>
+            <style>{`
+                @keyframes borderFlow {
+                    0% { background-position: 0% 50%; }
+                    100% { background-position: 300% 50%; }
+                }
+            `}</style>
+        </div>
     );
 };
 
@@ -71,7 +73,7 @@ const TypingText = ({ texts, className }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [displayText, setDisplayText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
-    
+
     useEffect(() => {
         const currentText = texts[currentIndex];
         const timeout = setTimeout(() => {
@@ -90,10 +92,10 @@ const TypingText = ({ texts, className }) => {
                 }
             }
         }, isDeleting ? 50 : 100);
-        
+
         return () => clearTimeout(timeout);
     }, [displayText, isDeleting, currentIndex, texts]);
-    
+
     return (
         <span className={className}>
             {displayText}
@@ -103,33 +105,30 @@ const TypingText = ({ texts, className }) => {
 };
 
 // Progress steps component
-const FormProgress = ({ currentStep, totalSteps }) => {
+const FormProgress = ({ currentStep }) => {
     const steps = ['Details', 'Project', 'Submit'];
-    
+
     return (
         <div className="flex items-center justify-center gap-2 mb-6">
             {steps.map((step, i) => (
                 <React.Fragment key={i}>
                     <div className="flex items-center gap-2">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                            i < currentStep 
-                                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white' 
-                                : i === currentStep 
-                                    ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
-                                    : 'bg-white/5 border border-white/10 text-white/30'
-                        }`}>
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${i < currentStep
+                            ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
+                            : i === currentStep
+                                ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
+                                : 'bg-white/5 border border-white/10 text-white/30'
+                            }`}>
                             {i < currentStep ? '✓' : i + 1}
                         </div>
-                        <span className={`text-xs font-medium hidden sm:block ${
-                            i <= currentStep ? 'text-white/70' : 'text-white/30'
-                        }`}>
+                        <span className={`text-[10px] font-medium hidden sm:block ${i <= currentStep ? 'text-white/70' : 'text-white/30'
+                            }`}>
                             {step}
                         </span>
                     </div>
                     {i < steps.length - 1 && (
-                        <div className={`w-8 h-0.5 rounded-full transition-all duration-300 ${
-                            i < currentStep ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-white/10'
-                        }`} />
+                        <div className={`w-6 h-0.5 rounded-full transition-all duration-300 ${i < currentStep ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-white/10'
+                            }`} />
                     )}
                 </React.Fragment>
             ))}
@@ -149,32 +148,9 @@ const ContactSection = () => {
     const [submitted, setSubmitted] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
     const [currentStep, setCurrentStep] = useState(0);
-    const [showNotification, setShowNotification] = useState(false);
-    const [notificationData, setNotificationData] = useState({ name: '', industry: '', time: '' });
-    
+
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-
-    // Simulate live notifications
-    useEffect(() => {
-        const notifications = [
-            { name: 'Sarah M.', industry: 'Dental', time: 'Just now' },
-            { name: 'Mike R.', industry: 'Real Estate', time: '2 min ago' },
-            { name: 'Lisa K.', industry: 'Fitness', time: '5 min ago' },
-        ];
-        
-        const showRandomNotification = () => {
-            const random = notifications[Math.floor(Math.random() * notifications.length)];
-            setNotificationData(random);
-            setShowNotification(true);
-            setTimeout(() => setShowNotification(false), 4000);
-        };
-        
-        const interval = setInterval(showRandomNotification, 15000);
-        setTimeout(showRandomNotification, 3000);
-        
-        return () => clearInterval(interval);
-    }, []);
 
     // Update progress step based on form completion
     useEffect(() => {
@@ -213,10 +189,10 @@ const ContactSection = () => {
             {/* Background */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-cyan-950/5 to-black" />
             <SectionParticles color="rgba(236,72,153,0.3)" count={30} />
-            
+
             {/* Animated gradient orbs */}
             <motion.div
-                animate={{ 
+                animate={{
                     x: [0, 50, 0],
                     y: [0, -30, 0],
                     scale: [1, 1.1, 1],
@@ -225,7 +201,7 @@ const ContactSection = () => {
                 className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none"
             />
             <motion.div
-                animate={{ 
+                animate={{
                     x: [0, -50, 0],
                     y: [0, 30, 0],
                     scale: [1, 0.9, 1],
@@ -233,29 +209,15 @@ const ContactSection = () => {
                 transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"
             />
-            
+
             {/* Subtle grid */}
             <div className="absolute inset-0 opacity-[0.03]" style={{
                 backgroundImage: 'linear-gradient(rgba(0,240,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.4) 1px, transparent 1px)',
                 backgroundSize: '80px 80px',
             }} />
 
-            {/* Live notification popup */}
-            <AnimatePresence>
-                {showNotification && (
-                    <motion.div
-                        className="fixed bottom-6 right-6 z-50"
-                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
-                    >
-                        <LiveNotification {...notificationData} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
             <div className="relative z-10 max-w-7xl mx-auto px-6">
-                {/* Header - Mixed Copy Approach */}
+                {/* Header */}
                 <RevealOnScroll>
                     <div className="text-center max-w-3xl mx-auto mb-8">
                         {/* Animated badge */}
@@ -270,7 +232,7 @@ const ContactSection = () => {
                                 Limited spots: 2 available this month
                             </span>
                         </motion.div>
-                        
+
                         {/* Main headline with typing effect */}
                         <motion.div
                             initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
@@ -283,34 +245,23 @@ const ContactSection = () => {
                             <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Start Your Project</span>
                             <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500" />
                         </motion.div>
-                        
+
                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
-                            <TypingText 
+                            <TypingText
                                 texts={headerTexts}
                                 className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"
                             />
                         </h2>
-                        
-                        <p className="text-white/50 text-lg mt-4 mb-2">
-                            Most local businesses blend in. <span className="text-white/70 font-medium">Yours won't.</span>
+
+                        {/* IMPROVED: Better visibility text */}
+                        <p className="text-white/70 text-lg mt-4 mb-2 font-medium">
+                            Most local businesses blend in. <span className="text-cyan-400">Yours won't.</span>
                         </p>
-                        <p className="text-white/40 text-base">
-                            Join 127+ businesses who transformed their online presence.
+                        <p className="text-white/60 text-base">
+                            Join <span className="text-white font-semibold">10+</span> businesses who transformed their online presence.
                         </p>
                     </div>
                 </RevealOnScroll>
-
-                {/* Stats row */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="flex flex-wrap justify-center gap-8 md:gap-16 mb-12 py-6 border-y border-white/5"
-                >
-                    <StatCounter value={127} suffix="+" label="Projects Launched" icon={Rocket} />
-                    <StatCounter value={98} suffix="%" label="Client Satisfaction" icon={Users} />
-                    <StatCounter value={340} suffix="%" label="Avg. ROI Increase" icon={TrendingUp} />
-                </motion.div>
 
                 {/* Trust Badges Row */}
                 <div className="flex flex-wrap justify-center gap-4 mb-16">
@@ -338,180 +289,172 @@ const ContactSection = () => {
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
-                    {/* Contact Form — Premium Glass */}
+                    {/* Contact Form — Premium Glass with Particles */}
                     <RevealOnScroll delay={0.1}>
-                        <div className="relative p-8 md:p-10 border border-white/10 bg-slate-900/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-3xl overflow-hidden group hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_15px_40px_rgba(0,0,0,0.6)] transition-all duration-500">
-                            {/* Corner accents */}
-                            <div className="absolute top-0 left-0 w-20 h-20 border-t border-l border-cyan-500/30 rounded-tl-3xl pointer-events-none" />
-                            <div className="absolute bottom-0 right-0 w-20 h-20 border-b border-r border-purple-500/30 rounded-br-3xl pointer-events-none" />
+                        <AnimatedBorder className="rounded-3xl">
+                            <div className="relative p-8 md:p-10 overflow-hidden">
+                                {/* Floating particles inside form */}
+                                <FormParticles />
 
-                            {/* Gradient glow that follows focus */}
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/5 via-purple-500/5 to-pink-500/5 rounded-full blur-[80px]" />
-                            </div>
+                                {/* Corner accents */}
+                                <div className="absolute top-0 left-0 w-16 h-16 border-t border-l border-cyan-500/30 rounded-tl-3xl pointer-events-none" />
+                                <div className="absolute bottom-0 right-0 w-16 h-16 border-b border-r border-purple-500/30 rounded-br-3xl pointer-events-none" />
 
-                            {submitted ? (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    className="text-center py-16"
-                                >
+                                {submitted ? (
                                     <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-                                        className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.3)]"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-16 relative z-10"
                                     >
-                                        <CheckCircle2 size={36} className="text-white" />
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                                            className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.3)]"
+                                        >
+                                            <CheckCircle2 size={32} className="text-white" />
+                                        </motion.div>
+                                        <h3 className="text-xl font-bold text-white mb-3">Message Sent!</h3>
+                                        <p className="text-white/50">We'll get back to you within 24 hours.</p>
                                     </motion.div>
-                                    <h3 className="text-2xl font-bold text-white mb-3">Message Sent!</h3>
-                                    <p className="text-white/50">We'll get back to you within 24 hours.</p>
-                                </motion.div>
-                            ) : (
-                                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                                    {/* Form header with progress */}
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <Sparkles size={18} className="text-cyan-400" />
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+                                        {/* Form header with progress */}
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <Sparkles size={16} className="text-cyan-400" />
                                             <p className="text-sm font-semibold text-white/70">Start your project</p>
                                         </div>
-                                    </div>
-                                    
-                                    {/* Progress steps */}
-                                    <FormProgress currentStep={currentStep} totalSteps={3} />
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        {[
-                                            { name: 'name', label: 'Your Name', placeholder: 'John Doe', type: 'text', required: true },
-                                            { name: 'email', label: 'Email Address', placeholder: 'john@company.com', type: 'email', required: true },
-                                        ].map((field) => (
-                                            <div key={field.name} className="relative">
-                                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                                    {field.label}
+                                        {/* Progress steps */}
+                                        <FormProgress currentStep={currentStep} />
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {[
+                                                { name: 'name', label: 'Your Name', placeholder: 'John Doe', type: 'text', required: true },
+                                                { name: 'email', label: 'Email Address', placeholder: 'john@company.com', type: 'email', required: true },
+                                            ].map((field) => (
+                                                <div key={field.name} className="relative">
+                                                    <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                                                        {field.label}
+                                                    </label>
+                                                    <input
+                                                        type={field.type}
+                                                        name={field.name}
+                                                        value={formData[field.name]}
+                                                        onChange={handleChange}
+                                                        onFocus={() => setFocusedField(field.name)}
+                                                        onBlur={() => setFocusedField(null)}
+                                                        required={field.required}
+                                                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300"
+                                                        placeholder={field.placeholder}
+                                                    />
+                                                    {formData[field.name] && (
+                                                        <motion.div
+                                                            initial={{ scale: 0 }}
+                                                            animate={{ scale: 1 }}
+                                                            className="absolute right-3 top-8"
+                                                        >
+                                                            <CheckCircle2 size={14} className="text-emerald-400" />
+                                                        </motion.div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                                                    Company (Optional)
                                                 </label>
                                                 <input
-                                                    type={field.type}
-                                                    name={field.name}
-                                                    value={formData[field.name]}
+                                                    type="text"
+                                                    name="company"
+                                                    value={formData.company}
                                                     onChange={handleChange}
-                                                    onFocus={() => setFocusedField(field.name)}
-                                                    onBlur={() => setFocusedField(null)}
-                                                    required={field.required}
-                                                    className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300"
-                                                    placeholder={field.placeholder}
+                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300"
+                                                    placeholder="Your Company"
                                                 />
-                                                {focusedField === field.name && (
-                                                    <motion.div
-                                                        layoutId="inputGlow"
-                                                        className="absolute -inset-[1px] rounded-xl border border-cyan-500/30 pointer-events-none"
-                                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                                    />
-                                                )}
-                                                {/* Checkmark for filled fields */}
-                                                {formData[field.name] && (
-                                                    <motion.div
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        className="absolute right-3 top-9"
-                                                    >
-                                                        <CheckCircle2 size={16} className="text-emerald-400" />
-                                                    </motion.div>
-                                                )}
                                             </div>
-                                        ))}
-                                    </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div>
-                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                                Company (Optional)
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="company"
-                                                value={formData.company}
-                                                onChange={handleChange}
-                                                onFocus={() => setFocusedField('company')}
-                                                onBlur={() => setFocusedField(null)}
-                                                className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300"
-                                                placeholder="Your Company"
-                                            />
+                                            <div>
+                                                <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                                                    Budget Range
+                                                </label>
+                                                <select
+                                                    name="budget"
+                                                    value={formData.budget}
+                                                    onChange={handleChange}
+                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white/50 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300 appearance-none cursor-pointer"
+                                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
+                                                >
+                                                    <option value="" className="bg-[#0a0a1a]">Select budget...</option>
+                                                    <option value="200-500" className="bg-[#0a0a1a]">$200 – $500 (Starter)</option>
+                                                    <option value="500-1000" className="bg-[#0a0a1a]">$500 – $1,000 (Growth)</option>
+                                                    <option value="1000-3000" className="bg-[#0a0a1a]">$1,000 – $3,000 (Premium)</option>
+                                                    <option value="3000+" className="bg-[#0a0a1a]">$3,000+ (Enterprise)</option>
+                                                </select>
+                                            </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                                Budget Range
+                                            <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                                                Project Details
                                             </label>
-                                            <select
-                                                name="budget"
-                                                value={formData.budget}
+                                            <textarea
+                                                name="message"
+                                                value={formData.message}
                                                 onChange={handleChange}
-                                                onFocus={() => setFocusedField('budget')}
-                                                onBlur={() => setFocusedField(null)}
-                                                className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white/50 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300 appearance-none cursor-pointer"
-                                                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-                                            >
-                                                <option value="" className="bg-[#0a0a1a]">Select budget...</option>
-                                                <option value="200-500" className="bg-[#0a0a1a]">$200 – $500 (Starter)</option>
-                                                <option value="500-1000" className="bg-[#0a0a1a]">$500 – $1,000 (Growth)</option>
-                                                <option value="1000-3000" className="bg-[#0a0a1a]">$1,000 – $3,000 (Premium)</option>
-                                                <option value="3000+" className="bg-[#0a0a1a]">$3,000+ (Enterprise)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                            Project Details
-                                        </label>
-                                        <textarea
-                                            name="message"
-                                            value={formData.message}
-                                            onChange={handleChange}
-                                            onFocus={() => setFocusedField('message')}
-                                            onBlur={() => setFocusedField(null)}
-                                            required
-                                            rows={5}
-                                            className="w-full px-4 py-4 bg-black/60 border border-white/10 shadow-inner rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 focus:bg-black/80 transition-all duration-300 resize-none"
-                                            placeholder="Tell us about your project, goals, and timeline..."
-                                        />
-                                    </div>
-
-                                    <RainbowButton
-                                        onClick={() => { }}
-                                        className="w-full rounded-xl"
-                                    >
-                                        {isSubmitting ? (
-                                            <motion.div
-                                                animate={{ rotate: 360 }}
-                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full mx-auto"
+                                                required
+                                                rows={4}
+                                                className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300 resize-none"
+                                                placeholder="Tell us about your project, goals, and timeline..."
                                             />
-                                        ) : (
-                                            <span className="flex items-center justify-center gap-3 text-sm font-bold uppercase tracking-wider">
-                                                Send Message
-                                                <Send size={18} />
-                                            </span>
-                                        )}
-                                    </RainbowButton>
+                                        </div>
 
-                                    {/* Micro-reassurance below the button */}
-                                    <p className="text-center text-xs text-white/30 mt-3">
-                                        🔒 No spam. We respect your privacy. Unsubscribe anytime.
-                                    </p>
-                                </form>
-                            )}
-                        </div>
+                                        {/* Vibrant Animated Button Wrapper */}
+                                        <div className="relative group w-full mt-8">
+                                            {/* Glowing shadow behind button */}
+                                            <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-40 blur-xl group-hover:opacity-75 transition-opacity duration-500" />
+
+                                            {/* Button */}
+                                            <div className="relative z-10 w-full">
+                                                <PulsatingButton
+                                                    type="submit"
+                                                    className="w-full"
+                                                >
+                                                    {isSubmitting ? (
+                                                        <motion.div
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                            className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full mx-auto drop-shadow-md"
+                                                        />
+                                                    ) : (
+                                                        <span className="flex items-center justify-center gap-2 drop-shadow-md">
+                                                            Send Message
+                                                            <Send size={18} />
+                                                        </span>
+                                                    )}
+                                                </PulsatingButton>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-center text-[10px] text-white/30 mt-2">
+                                            🔒 No spam. We respect your privacy.
+                                        </p>
+                                    </form>
+                                )}
+                            </div>
+                        </AnimatedBorder>
                     </RevealOnScroll>
 
                     {/* Right Column — Info + Response Timeline */}
                     <RevealOnScroll delay={0.2}>
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-4">
+                                <h3 className="text-xl font-bold text-white mb-3">
                                     Ready to start your project?
                                 </h3>
-                                <p className="text-white/50 leading-relaxed">
+                                <p className="text-white/60 leading-relaxed text-sm">
                                     Whether you need a complete website overhaul, a new mobile app,
                                     or a digital marketing strategy, we're here to help transform your
                                     ideas into reality.
@@ -519,34 +462,32 @@ const ContactSection = () => {
                             </div>
 
                             {/* Contact Details */}
-                            <div className="space-y-4">
-                                <motion.a
-                                    href="mailto:hello@creativewebflow.com"
-                                    whileHover={{ x: 8, borderColor: 'rgba(0,240,255,0.3)' }}
-                                    className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-900/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] hover:bg-cyan-900/40 transition-all duration-300 group"
-                                >
-                                    <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-shadow">
-                                        <Mail size={20} />
+                            <motion.a
+                                href="mailto:hello@creativewebflow.com"
+                                whileHover={{ x: 8, borderColor: 'rgba(0,240,255,0.3)' }}
+                                className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-900/80 hover:bg-cyan-900/40 transition-all duration-300 group"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                                    <Mail size={18} />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">
+                                        Email
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="text-xs text-white/40 uppercase tracking-wider mb-1">
-                                            Email
-                                        </div>
-                                        <div className="text-white font-medium group-hover:text-cyan-400 transition-colors">
-                                            hello@creativewebflow.com
-                                        </div>
+                                    <div className="text-white font-medium text-sm group-hover:text-cyan-400 transition-colors">
+                                        hello@creativewebflow.com
                                     </div>
-                                    <ArrowUpRight size={18} className="text-white/30 group-hover:text-cyan-400 transition-colors" />
-                                </motion.a>
-                            </div>
+                                </div>
+                                <ArrowUpRight size={16} className="text-white/30 group-hover:text-cyan-400 transition-colors" />
+                            </motion.a>
 
                             {/* Response Timeline */}
                             <ResponseTimeline />
 
                             {/* Limited availability badge */}
                             <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/[0.05] border border-amber-500/10">
-                                <Calendar size={18} className="text-amber-400 flex-shrink-0" />
-                                <p className="text-sm text-amber-300/70">
+                                <Calendar size={16} className="text-amber-400 flex-shrink-0" />
+                                <p className="text-xs text-amber-300/70">
                                     <span className="font-semibold text-amber-300">Limited spots:</span> We take on a limited number of projects to ensure quality.
                                 </p>
                             </div>
@@ -584,9 +525,9 @@ const ResponseTimeline = () => {
     ];
 
     return (
-        <div ref={ref} className="p-6 rounded-2xl border border-white/10 bg-slate-900/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
-            <h4 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-6 flex items-center gap-2">
-                <Rocket size={14} className="text-cyan-400" />
+        <div ref={ref} className="p-5 rounded-2xl border border-white/10 bg-slate-900/80">
+            <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Rocket size={12} className="text-cyan-400" />
                 What happens next
             </h4>
             <div className="space-y-0">
@@ -595,19 +536,18 @@ const ResponseTimeline = () => {
                         key={step.title}
                         initial={{ opacity: 0, x: -20 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.5, delay: i * 0.3, ease: [0.16, 1, 0.3, 1] }}
-                        className="flex items-start gap-4 relative"
+                        transition={{ duration: 0.5, delay: i * 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex items-start gap-3 relative"
                     >
-                        {/* Timeline line */}
                         {i < steps.length - 1 && (
-                            <div className="absolute left-5 top-12 w-px h-8 bg-gradient-to-b from-white/10 to-transparent" />
+                            <div className="absolute left-4 top-10 w-px h-6 bg-gradient-to-b from-white/10 to-transparent" />
                         )}
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-lg shadow-lg`}>
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br ${step.color} flex items-center justify-center text-sm shadow-lg`}>
                             {step.emoji}
                         </div>
-                        <div className="pb-6">
-                            <p className="text-white font-semibold text-sm">{step.title}</p>
-                            <p className="text-white/40 text-xs mt-1">{step.desc}</p>
+                        <div className="pb-4">
+                            <p className="text-white font-semibold text-xs">{step.title}</p>
+                            <p className="text-white/40 text-[10px] mt-0.5">{step.desc}</p>
                         </div>
                     </motion.div>
                 ))}

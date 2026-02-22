@@ -14,7 +14,6 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import InfiniteMarquee from './components/InfiniteMarquee';
 import AboutSection from './components/AboutSection';
-import ProcessSection from './components/ProcessSection';
 import ServicesShowcase from './components/ServicesShowcase';
 import WorkSection from './components/WorkSection';
 import DetailedCaseStudies from './components/DetailedCaseStudies'; // New Component
@@ -121,9 +120,6 @@ function App() {
 
                             {/* About Us (absorbs Mission content) */}
                             <AboutSection />
-
-                            {/* Our Process */}
-                            <ProcessSection />
 
                             {/* Services — single interactive showcase */}
                             <ServicesShowcase />

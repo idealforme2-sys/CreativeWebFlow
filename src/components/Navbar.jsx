@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
 
@@ -14,7 +14,6 @@ const Navbar = () => {
         const handleScroll = () => {
             const y = window.scrollY;
             setIsScrolled(y > 50);
-            // Progress for retract effect (0 = top, 1 = fully retracted)
             const progress = Math.min(y / 300, 1);
             setScrollProgress(progress);
         };
@@ -47,7 +46,6 @@ const Navbar = () => {
         setActiveDropdown(null);
     };
 
-    // Dynamic horizontal retract: sides shrink toward center on scroll
     const horizontalPadding = isScrolled
         ? `${4 + scrollProgress * 8}%`
         : '0%';
@@ -75,9 +73,7 @@ const Navbar = () => {
                 >
                     {/* Animated gradient border on scroll */}
                     {isScrolled && (
-                        <div
-                            className="absolute inset-0 rounded-2xl -z-10 p-[1px] overflow-hidden"
-                        >
+                        <div className="absolute inset-0 rounded-2xl -z-10 p-[1px] overflow-hidden">
                             <div
                                 className="absolute inset-0 rounded-2xl"
                                 style={{
@@ -182,7 +178,7 @@ const Navbar = () => {
                             ))}
                         </div>
 
-                        {/* CTA Button — Enhanced with particle-like accents */}
+                        {/* CTA Button */}
                         <motion.button
                             onClick={() => scrollToSection('#contact')}
                             whileHover={{ scale: 1.05 }}
@@ -227,7 +223,7 @@ const Navbar = () => {
                 </div>
             </motion.nav>
 
-            {/* Mobile Menu — full-screen with stagger animations */}
+            {/* Mobile Menu */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div

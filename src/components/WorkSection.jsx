@@ -175,9 +175,8 @@ const WorkSection = () => {
                         <ChevronRight className="text-white group-hover:text-cyan-400" size={32} />
                     </button>
 
-                    {/* Stacked Cards */}
                     <div
-                        className="relative w-[380px] md:w-[450px] h-[600px]"
+                        className="relative w-[320px] md:w-[380px] h-[580px]"
                         style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
@@ -260,18 +259,17 @@ const WorkSection = () => {
                                                             </div>
 
                                                             <div className="w-full">
-                                                                <motion.button
-                                                                    whileHover={{ scale: 1.02 }}
-                                                                    whileTap={{ scale: 0.98 }}
-                                                                    onClick={(e) => {
+                                                                <button
+                                                                    type="button"
+                                                                    onPointerDown={(e) => {
                                                                         e.stopPropagation();
                                                                         scrollToSection(card.id);
                                                                     }}
-                                                                    className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-500/50 rounded-xl text-white font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 group/btn cursor-pointer relative z-50 shadow-xl"
+                                                                    className="w-full py-3 md:py-4 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-500/50 rounded-xl text-white font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 group/btn cursor-pointer relative z-50 shadow-xl"
                                                                 >
                                                                     View Examples
                                                                     <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                                                                </motion.button>
+                                                                </button>
                                                             </div>
                                                         </>
                                                     )}

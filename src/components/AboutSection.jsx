@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, MessageCircle, TrendingUp, CheckCircle } from 'lucide-react';
 import { SectionHeader, RevealOnScroll, ParallaxContainer, AnimatedHeadline, TyphoonVortex } from './UIComponents';
+import { TextReveal } from './magicui/TextReveal';
 
 // Local macro images
 import professionalImg from '../assets/aboutus/trusty.png';
@@ -160,10 +161,8 @@ const AboutSection = () => {
                 {/* Main Description */}
                 <div className="max-w-3xl mx-auto text-center mb-16">
                     <RevealOnScroll>
-                        <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-6">
-                            <span className="text-white font-semibold">Creative WebFlow</span> is a digital agency
-                            focused on helping small businesses attract more customers through clean design,
-                            clear messaging, and conversion-focused websites.
+                        <p className="text-lg md:text-xl text-white/80 leading-relaxed mb-6">
+                            <TextReveal>Creative WebFlow is a digital agency focused on helping small businesses attract more customers through clean design, clear messaging, and conversion-focused websites.</TextReveal>
                         </p>
                     </RevealOnScroll>
                     <RevealOnScroll delay={0.2}>
