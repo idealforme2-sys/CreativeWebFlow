@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, Smartphone, ArrowUpRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, Smartphone, ArrowUpRight, Clock, Zap } from 'lucide-react';
 import { RevealOnScroll, SectionParticles } from './UIComponents';
 import { Highlighter } from './magicui/Highlighter';
 import { PulsatingButton } from './magicui/PulsatingButton';
@@ -116,10 +116,10 @@ const FormProgress = ({ currentStep }) => {
                 <React.Fragment key={i}>
                     <div className="flex items-center gap-2">
                         <div className={`w - 5 h - 5 rounded - full flex items - center justify - center text - [10px] font - bold transition - all duration - 300 ${i < currentStep
-                                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
-                                : i === currentStep
-                                    ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
-                                    : 'bg-white/5 border border-white/10 text-white/30'
+                            ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
+                            : i === currentStep
+                                ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
+                                : 'bg-white/5 border border-white/10 text-white/30'
                             } `}>
                             {i < currentStep ? '✓' : i + 1}
                         </div>
