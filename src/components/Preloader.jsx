@@ -308,8 +308,8 @@ const Preloader = ({ onComplete }) => {
                                     />
                                 </motion.div>
 
-                                {/* Logo — contained with overflow hidden */}
-                                <div className="absolute z-10 flex items-center justify-center overflow-hidden rounded-full" style={{ width: 100, height: 100 }}>
+                                {/* Logo — unconstrained */}
+                                <div className="absolute z-10 flex items-center justify-center" style={{ width: 100, height: 100 }}>
                                     <AnimatedLogo size={85} />
                                 </div>
 
@@ -339,7 +339,6 @@ const Preloader = ({ onComplete }) => {
                                     <span style={{
                                         background: `linear-gradient(180deg, #ffffff ${100 - count}%, rgba(6,182,212,0.4) 100%)`,
                                         WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                                        filter: `drop-shadow(0 0 ${4 + count * 0.15}px rgba(6,182,212,${0.1 + count * 0.003}))`,
                                     }}>
                                         {String(count).padStart(3, '0')}
                                     </span>
@@ -453,7 +452,7 @@ const Preloader = ({ onComplete }) => {
                                     ))}
                                 </motion.div>
 
-                                <div className="overflow-hidden rounded-full" style={{ width: 120, height: 120 }}>
+                                <div style={{ width: 120, height: 120 }}>
                                     <AnimatedLogo size={110} />
                                 </div>
                             </motion.div>
