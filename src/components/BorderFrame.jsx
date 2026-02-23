@@ -109,6 +109,19 @@ const BorderFrame = () => {
                 let ty = v.base_y;
 
                 if (isNearEdge) {
+                    // Calculate distance to nearest corner to freeze the physics
+                    const inset = 2;
+                    let pinForce = 0;
+                    const dTL = Math.sqrt(Math.pow(v.base_x - inset, 2) + Math.pow(v.base_y - inset, 2));
+                    const dTR = Math.sqrt(Math.pow(v.base_x - (w - inset), 2) + Math.pow(v.base_y - inset, 2));
+                    const dBL = Math.sqrt(Math.pow(v.base_x - inset, 2) + Math.pow(v.base_y - (h - inset), 2));
+                    const dBR = Math.sqrt(Math.pow(v.base_x - (w - inset), 2) + Math.pow(v.base_y - (h - inset), 2));
+                    const minDist = Math.min(dTL, dTR, dBL, dBR);
+
+                    // Fully pin nodes within 60px of corners, smooth falloff up to 200px
+                    if (minDist < 60) pinForce = 1;
+                    else if (minDist < 200) pinForce = 1 - ((minDist - 60) / 140);
+
                     const dx = mouseX - v.base_x;
                     const dy = mouseY - v.base_y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -118,8 +131,8 @@ const BorderFrame = () => {
                         // Uses an ease-out bell curve for smooth bending
                         const force = Math.pow((magneticRadius - dist) / magneticRadius, 2);
                         const pullAmount = 0.35; // How strongly it pulls into the screen
-                        tx += dx * force * pullAmount;
-                        ty += dy * force * pullAmount;
+                        tx += dx * force * pullAmount * (1 - pinForce);
+                        ty += dy * force * pullAmount * (1 - pinForce);
                     }
                 }
 
@@ -186,12 +199,28 @@ const BorderFrame = () => {
         };
     }, []);
 
-    // Minimal colored corner accents matching the current user-approved aesthetic
+    // Perfectly aligned explicit corner paths (no rotation transforms needed)
     const corners = [
-        { top: 0, left: 0, rotate: 0, color: '#06b6d4' },
-        { top: 0, right: 0, rotate: 90, color: '#a855f7' },
-        { bottom: 0, right: 0, rotate: 180, color: '#ec4899' },
-        { bottom: 0, left: 0, rotate: 270, color: '#06b6d4' },
+        {
+            position: { top: 0, left: 0 },
+            color: '#06b6d4',
+            paths: ["M12 6 L24 6", "M6 12 L6 24"]
+        },
+        {
+            position: { top: 0, right: 0 },
+            color: '#a855f7',
+            paths: ["M16 6 L28 6", "M34 12 L34 24"]
+        },
+        {
+            position: { bottom: 0, right: 0 },
+            color: '#ec4899',
+            paths: ["M16 34 L28 34", "M34 16 L34 28"]
+        },
+        {
+            position: { bottom: 0, left: 0 },
+            color: '#06b6d4',
+            paths: ["M12 34 L24 34", "M6 16 L6 28"]
+        },
     ];
 
     return (
@@ -202,7 +231,7 @@ const BorderFrame = () => {
             {/* Elastic tracking line canvas */}
             <canvas
                 ref={canvasRef}
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 w-full h-full pointer-events-none"
             />
 
             {/* Premium Tech Corner Brackets */}
@@ -211,10 +240,7 @@ const BorderFrame = () => {
                     key={i}
                     className="absolute"
                     style={{
-                        top: c.top !== undefined ? c.top : 'auto',
-                        left: c.left !== undefined ? c.left : 'auto',
-                        right: c.right !== undefined ? c.right : 'auto',
-                        bottom: c.bottom !== undefined ? c.bottom : 'auto',
+                        ...c.position,
                         width: '40px',
                         height: '40px',
                         filter: `drop-shadow(0 0 10px ${c.color})`
@@ -225,14 +251,14 @@ const BorderFrame = () => {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        style={{ transform: `rotate(${c.rotate}deg)` }}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: i * 0.15 }}
                     >
-                        {/* Inner colored accent layer ONLY -- no white framing lines */}
-                        <path d="M12 6 L24 6" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
-                        <path d="M6 12 L6 24" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
+                        {/* Inner colored accent layer ONLY -- perfectly positioned to the true corner */}
+                        {c.paths.map((d, pathIdx) => (
+                            <path key={pathIdx} d={d} stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
+                        ))}
                     </motion.svg>
                 </div>
             ))}
