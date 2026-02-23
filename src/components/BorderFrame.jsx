@@ -27,7 +27,7 @@ const BorderFrame = () => {
 
         const buildVertices = () => {
             vertices = [];
-            const inset = 2; // Keep stroke thickness fully inside canvas
+            const inset = 6; // Set exact inset to match the corner bracket lines
             const boxW = w - inset * 2;
             const boxH = h - inset * 2;
             const perimeter = 2 * (boxW + boxH);
@@ -53,14 +53,18 @@ const BorderFrame = () => {
         };
 
         const resize = () => {
-            // Use current viewport dimensions (excluding scrollbars), fixes right/bottom clipping
-            w = document.documentElement.clientWidth;
-            h = window.innerHeight; // Keep innerHeight for bottom, but clientWidth for horizontal scrollbars
+            const parent = canvasRef.current?.parentElement;
+            if (!parent) return;
+            const rect = parent.getBoundingClientRect();
+            w = rect.width;
+            h = rect.height;
+
+            // Hardcode canvas CSS size to prevent native width: 100% from stretching under scrollbars
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
             canvas.width = w * dpr;
             canvas.height = h * dpr;
             ctx.scale(dpr, dpr);
-            canvas.style.width = w + 'px';
-            canvas.style.height = h + 'px';
             buildVertices();
         };
         resize();
@@ -110,7 +114,7 @@ const BorderFrame = () => {
 
                 if (isNearEdge) {
                     // Calculate distance to nearest corner to freeze the physics
-                    const inset = 2;
+                    const inset = 6;
                     let pinForce = 0;
                     const dTL = Math.sqrt(Math.pow(v.base_x - inset, 2) + Math.pow(v.base_y - inset, 2));
                     const dTR = Math.sqrt(Math.pow(v.base_x - (w - inset), 2) + Math.pow(v.base_y - inset, 2));
