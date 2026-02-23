@@ -53,13 +53,10 @@ const BorderFrame = () => {
         };
 
         const resize = () => {
-            const parent = canvasRef.current?.parentElement;
-            if (!parent) return;
-            const rect = parent.getBoundingClientRect();
-            w = rect.width;
-            h = rect.height;
+            // Use clientWidth to precisely avoid scrollbars on the right edge
+            w = document.documentElement.clientWidth;
+            h = window.innerHeight;
 
-            // Hardcode canvas CSS size to prevent native width: 100% from stretching under scrollbars
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
             canvas.width = w * dpr;
@@ -213,12 +210,12 @@ const BorderFrame = () => {
         },
         {
             position: { top: 0, right: 0 },
-            color: '#a855f7',
+            color: '#06b6d4',
             paths: ["M16 6 L28 6", "M34 12 L34 24"]
         },
         {
             position: { bottom: 0, right: 0 },
-            color: '#ec4899',
+            color: '#06b6d4',
             paths: ["M16 34 L28 34", "M34 16 L34 28"]
         },
         {
