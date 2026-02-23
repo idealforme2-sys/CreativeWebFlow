@@ -1,16 +1,150 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 /*
-  Premium constant glowing border.
-  A solid 2px line around the viewport that is continuously illuminated.
-  Uses the brand palette (cyan, purple, pink). The colors constantly flow
-  along all 4 edges simultaneously, creating a seamless, powerful neon glow
-  like a high-end gamer aesthetic.
+  Premium constant glowing border with Interactive Edge Clouds.
+  A solid 2px line around the viewport that is continuously illuminated (CSS).
+  A Canvas overlay tracks the mouse and emits soft, dissipating clouds when hovering near the edges.
 */
 
 const BorderFrame = () => {
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        let dpr = window.devicePixelRatio || 1;
+
+        const resize = () => {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Particle system for the fog/clouds
+        const particles = [];
+        let mouseX = -1000;
+        let mouseY = -1000;
+        let isNearEdge = false;
+
+        const handleMouseMove = (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Check if mouse is within 80px of any edge
+            const edgeThreshold = 80;
+            isNearEdge = (
+                mouseX < edgeThreshold ||
+                mouseX > w - edgeThreshold ||
+                mouseY < edgeThreshold ||
+                mouseY > h - edgeThreshold
+            );
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+
+        const spawnCloud = (mx, my) => {
+            // Colors matching the brand palette
+            const colors = ['#06b6d4', '#a855f7', '#ec4899'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            // Jitter the spawn position slightly
+            const x = mx + (Math.random() - 0.5) * 40;
+            const y = my + (Math.random() - 0.5) * 40;
+
+            // Initial size and growth rate
+            const size = 30 + Math.random() * 40;
+            const maxSize = size + 80 + Math.random() * 60;
+
+            // Slow, drifting movement
+            const vx = (Math.random() - 0.5) * 1.5;
+            const vy = (Math.random() - 0.5) * 1.5;
+
+            particles.push({
+                x, y,
+                vx, vy,
+                size,
+                maxSize,
+                life: 1.0,
+                decay: 0.005 + Math.random() * 0.01,
+                color
+            });
+        };
+
+        let frameId;
+        const render = () => {
+            ctx.clearRect(0, 0, w, h);
+
+            // Spawn particles if mouse is moving near the edge
+            // Use Math.random to limit spawn rate so it's a soft, airy cloud and not a solid block
+            if (isNearEdge && Math.random() < 0.4) {
+                spawnCloud(mouseX, mouseY);
+            }
+
+            // Update and draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.size += (p.maxSize - p.size) * 0.02; // ease out size growth
+                p.life -= p.decay;
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                // Smooth fade in and out curve based on life
+                const alpha = Math.sin(p.life * Math.PI) * 0.15; // Max opacity 15% for soft cloud feel
+
+                // Draw radial gradient cloud
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+
+                // Convert hex to rgb for rgba manipulation
+                // #06b6d4 -> 6, 182, 212
+                // #a855f7 -> 168, 85, 247
+                // #ec4899 -> 236, 72, 153
+                let r, g, b;
+                if (p.color === '#06b6d4') { r = 6; g = 182; b = 212; }
+                else if (p.color === '#a855f7') { r = 168; g = 85; b = 247; }
+                else { r = 236; g = 72; b = 153; }
+
+                grad.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
+                grad.addColorStop(0.5, `rgba(${r},${g},${b},${alpha * 0.5})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            frameId = requestAnimationFrame(render);
+        };
+        render();
+
+        return () => {
+            window.removeEventListener('resize', resize);
+            window.removeEventListener('mousemove', handleMouseMove);
+            cancelAnimationFrame(frameId);
+        };
+    }, []);
+
     return (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
+            {/* Interactive Cloud Overlay Canvas */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 pointer-events-none"
+                style={{ mixBlendMode: 'screen' }}
+            />
+
             {/* Very subtle inner vignette to make the edge glow pop */}
             <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(168,85,247,0.08)] pointer-events-none" />
 
