@@ -89,9 +89,9 @@ const BorderFrame = () => {
             ctx.clearRect(0, 0, w, h);
 
             // ─── Physics Update ───
-            const tension = 0.08;
-            const friction = 0.75;
-            const magneticRadius = 250; // How close mouse needs to be to pull the border
+            const tension = 0.04;  // Lowered for watery looseness (was 0.08)
+            const friction = 0.85; // Increased for longer traveling waves (was 0.75)
+            const magneticRadius = 250; // Distance to trigger ripple
 
             // Optimization: check if mouse is near ANY edge
             const isNearEdge = (
@@ -125,12 +125,35 @@ const BorderFrame = () => {
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < magneticRadius) {
-                        // Magnetic pull: stronger as you get closer to the edge node
-                        // Uses an ease-out bell curve for smooth bending
-                        const force = Math.pow((magneticRadius - dist) / magneticRadius, 2);
-                        const pullAmount = 0.35; // How strongly it pulls into the screen
-                        tx += dx * force * pullAmount * (1 - pinForce);
-                        ty += dy * force * pullAmount * (1 - pinForce);
+                        // Water Ripple Physics
+                        // Calculate a traveling sine wave based on distance and time
+                        const waveSpeed = globalTime * 12; // Speed of the ripple
+                        const ripplePhase = (dist * 0.04) - waveSpeed;
+                        const amplitude = 35; // How far the ripple bulges
+
+                        // Smooth falloff so the ripple gently dies out at the edges of the radius
+                        const falloff = Math.pow((magneticRadius - dist) / magneticRadius, 2);
+
+                        // The actual displacement force of the wave at this node
+                        const rippleForce = Math.sin(ripplePhase) * amplitude * falloff * (1 - pinForce);
+
+                        // Apply the ripple force perpendicularly (inward/outward) depending on which edge the node belongs to
+                        const isTopOrBottomEdge = v.base_y <= inset + 1 || v.base_y >= h - inset - 1;
+                        const isLeftOrRightEdge = v.base_x <= inset + 1 || v.base_x >= w - inset - 1;
+
+                        if (isTopOrBottomEdge && !isLeftOrRightEdge) {
+                            // On top/bottom edges, ripple vertically
+                            ty += (v.base_y <= inset + 1) ? rippleForce : -rippleForce;
+                        } else if (isLeftOrRightEdge && !isTopOrBottomEdge) {
+                            // On left/right edges, ripple horizontally
+                            tx += (v.base_x <= inset + 1) ? rippleForce : -rippleForce;
+                        } else {
+                            // Corners (though pinned, mathematically they ripple diagonally)
+                            const dirX = (v.base_x <= w / 2) ? 1 : -1;
+                            const dirY = (v.base_y <= h / 2) ? 1 : -1;
+                            tx += rippleForce * 0.707 * dirX;
+                            ty += rippleForce * 0.707 * dirY;
+                        }
                     }
                 }
 
