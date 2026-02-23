@@ -322,128 +322,259 @@ const ContactSection = () => {
                                         <p className="text-white/50">We'll get back to you within 24 hours.</p>
                                     </motion.div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
-                                        {/* Form header with progress */}
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <Sparkles size={16} className="text-cyan-400" />
-                                            <p className="text-sm font-semibold text-white/70">Start your project</p>
+                                    <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                                        <style>{`
+                                            @keyframes contact-border-glow {
+                                                0%, 100% { border-color: rgba(6,182,212,0.3); box-shadow: 0 0 0 0 rgba(6,182,212,0); }
+                                                50% { border-color: rgba(168,85,247,0.4); box-shadow: 0 0 12px rgba(168,85,247,0.1); }
+                                            }
+                                            @keyframes contact-submit-rotate {
+                                                0% { transform: rotate(0deg); }
+                                                100% { transform: rotate(360deg); }
+                                            }
+                                            .contact-input {
+                                                background: rgba(0,0,0,0.3);
+                                                border: 1px solid rgba(255,255,255,0.08);
+                                                border-radius: 14px;
+                                                padding: 14px 16px;
+                                                color: white;
+                                                width: 100%;
+                                                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                                                outline: none;
+                                                font-size: 14px;
+                                            }
+                                            .contact-input::placeholder { color: rgba(255,255,255,0.15); }
+                                            .contact-input:focus {
+                                                border-color: rgba(6,182,212,0.5);
+                                                box-shadow: 0 0 20px rgba(6,182,212,0.08), inset 0 1px 2px rgba(6,182,212,0.05);
+                                                background: rgba(6,182,212,0.03);
+                                            }
+                                        `}</style>
+
+                                        {/* Form header */}
+                                        <div className="flex items-center justify-between mb-1">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center border border-cyan-500/20">
+                                                    <Sparkles size={14} className="text-cyan-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-white/90">Start your project</p>
+                                                    <p className="text-[10px] text-white/40">Fill in the details below</p>
+                                                </div>
+                                            </div>
+                                            <FormProgress currentStep={currentStep} />
                                         </div>
 
-                                        {/* Progress steps */}
-                                        <FormProgress currentStep={currentStep} />
+                                        {/* Divider */}
+                                        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
+                                        {/* Name + Email row */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {[
-                                                { name: 'name', label: 'Your Name', placeholder: 'John Doe', type: 'text', required: true },
-                                                { name: 'email', label: 'Email Address', placeholder: 'john@company.com', type: 'email', required: true },
+                                                { name: 'name', label: 'Full Name', placeholder: 'John Doe', type: 'text', icon: '👤' },
+                                                { name: 'email', label: 'Email', placeholder: 'john@company.com', type: 'email', icon: '✉️' },
                                             ].map((field) => (
-                                                <div key={field.name} className="relative">
-                                                    <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
-                                                        {field.label}
+                                                <div key={field.name} className="relative group/input">
+                                                    <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                                        <span>{field.icon}</span> {field.label}
+                                                        <span className="text-pink-400/70">*</span>
                                                     </label>
-                                                    <input
-                                                        type={field.type}
-                                                        name={field.name}
-                                                        value={formData[field.name]}
-                                                        onChange={handleChange}
-                                                        onFocus={() => setFocusedField(field.name)}
-                                                        onBlur={() => setFocusedField(null)}
-                                                        required={field.required}
-                                                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300"
-                                                        placeholder={field.placeholder}
-                                                    />
-                                                    {formData[field.name] && (
+                                                    <div className="relative">
+                                                        <input
+                                                            type={field.type}
+                                                            name={field.name}
+                                                            value={formData[field.name]}
+                                                            onChange={handleChange}
+                                                            onFocus={() => setFocusedField(field.name)}
+                                                            onBlur={() => setFocusedField(null)}
+                                                            required
+                                                            className="contact-input"
+                                                            placeholder={field.placeholder}
+                                                        />
+                                                        {/* Animated bottom line */}
                                                         <motion.div
-                                                            initial={{ scale: 0 }}
-                                                            animate={{ scale: 1 }}
-                                                            className="absolute right-3 top-8"
-                                                        >
-                                                            <CheckCircle2 size={14} className="text-emerald-400" />
-                                                        </motion.div>
-                                                    )}
+                                                            className="absolute bottom-0 left-1/2 h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
+                                                            animate={{
+                                                                width: focusedField === field.name ? '90%' : '0%',
+                                                                x: '-50%',
+                                                            }}
+                                                            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                                        />
+                                                        {/* Checkmark */}
+                                                        <AnimatePresence>
+                                                            {formData[field.name] && (
+                                                                <motion.div
+                                                                    initial={{ scale: 0, rotate: -90 }}
+                                                                    animate={{ scale: 1, rotate: 0 }}
+                                                                    exit={{ scale: 0 }}
+                                                                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                                                                >
+                                                                    <CheckCircle2 size={15} className="text-emerald-400" style={{ filter: 'drop-shadow(0 0 4px rgba(52,211,153,0.5))' }} />
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
-                                                    Company (Optional)
-                                                </label>
+                                        {/* Company */}
+                                        <div className="relative">
+                                            <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                                <span>🏢</span> Company <span className="text-white/20 normal-case">(optional)</span>
+                                            </label>
+                                            <div className="relative">
                                                 <input
                                                     type="text"
                                                     name="company"
                                                     value={formData.company}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300"
+                                                    onFocus={() => setFocusedField('company')}
+                                                    onBlur={() => setFocusedField(null)}
+                                                    className="contact-input"
                                                     placeholder="Your Company"
                                                 />
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
-                                                    Budget Range
-                                                </label>
-                                                <select
-                                                    name="budget"
-                                                    value={formData.budget}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white/50 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300 appearance-none cursor-pointer"
-                                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-                                                >
-                                                    <option value="" className="bg-[#0a0a1a]">Select budget...</option>
-                                                    <option value="200-500" className="bg-[#0a0a1a]">$200 – $500 (Starter)</option>
-                                                    <option value="500-1000" className="bg-[#0a0a1a]">$500 – $1,000 (Growth)</option>
-                                                    <option value="1000-3000" className="bg-[#0a0a1a]">$1,000 – $3,000 (Premium)</option>
-                                                    <option value="3000+" className="bg-[#0a0a1a]">$3,000+ (Enterprise)</option>
-                                                </select>
+                                                <motion.div
+                                                    className="absolute bottom-0 left-1/2 h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
+                                                    animate={{ width: focusedField === 'company' ? '90%' : '0%', x: '-50%' }}
+                                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                                />
                                             </div>
                                         </div>
 
+                                        {/* Budget — Interactive Cards */}
                                         <div>
-                                            <label className="block text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
-                                                Project Details
+                                            <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-3">
+                                                <span>💰</span> Budget Range
                                             </label>
-                                            <textarea
-                                                name="message"
-                                                value={formData.message}
-                                                onChange={handleChange}
-                                                required
-                                                rows={4}
-                                                className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300 resize-none"
-                                                placeholder="Tell us about your project, goals, and timeline..."
-                                            />
-                                        </div>
-
-                                        {/* Vibrant Animated Button Wrapper */}
-                                        <div className="relative group w-full mt-8">
-                                            {/* Glowing shadow behind button */}
-                                            <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-40 blur-xl group-hover:opacity-75 transition-opacity duration-500" />
-
-                                            {/* Button */}
-                                            <div className="relative z-10 w-full">
-                                                <PulsatingButton
-                                                    type="submit"
-                                                    className="w-full"
-                                                >
-                                                    {isSubmitting ? (
-                                                        <motion.div
-                                                            animate={{ rotate: 360 }}
-                                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                            className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full mx-auto drop-shadow-md"
-                                                        />
-                                                    ) : (
-                                                        <span className="flex items-center justify-center gap-2 drop-shadow-md">
-                                                            Send Message
-                                                            <Send size={18} />
-                                                        </span>
-                                                    )}
-                                                </PulsatingButton>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {[
+                                                    { value: '200-500', label: 'Starter', price: '$200–$500', color: 'from-cyan-500/20 to-cyan-500/5', border: 'border-cyan-500/30', icon: '🌱' },
+                                                    { value: '500-1000', label: 'Growth', price: '$500–$1K', color: 'from-purple-500/20 to-purple-500/5', border: 'border-purple-500/30', icon: '📈' },
+                                                    { value: '1000-3000', label: 'Premium', price: '$1K–$3K', color: 'from-pink-500/20 to-pink-500/5', border: 'border-pink-500/30', icon: '💎' },
+                                                    { value: '3000+', label: 'Enterprise', price: '$3K+', color: 'from-amber-500/20 to-amber-500/5', border: 'border-amber-500/30', icon: '🚀' },
+                                                ].map((tier) => (
+                                                    <motion.button
+                                                        key={tier.value}
+                                                        type="button"
+                                                        onClick={() => setFormData(prev => ({ ...prev, budget: tier.value }))}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        className={`relative p-3 rounded-xl border text-left transition-all duration-300 overflow-hidden ${formData.budget === tier.value
+                                                                ? `bg-gradient-to-br ${tier.color} ${tier.border} shadow-lg`
+                                                                : 'bg-black/20 border-white/8 hover:border-white/15'
+                                                            }`}
+                                                    >
+                                                        {formData.budget === tier.value && (
+                                                            <motion.div
+                                                                layoutId="budgetActive"
+                                                                className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"
+                                                                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                                            />
+                                                        )}
+                                                        <div className="relative z-10">
+                                                            <div className="flex items-center gap-1.5 mb-1">
+                                                                <span className="text-sm">{tier.icon}</span>
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">{tier.label}</span>
+                                                            </div>
+                                                            <span className={`text-xs font-mono ${formData.budget === tier.value ? 'text-white/90' : 'text-white/40'}`}>{tier.price}</span>
+                                                        </div>
+                                                    </motion.button>
+                                                ))}
                                             </div>
                                         </div>
 
-                                        <p className="text-center text-[10px] text-white/30 mt-2">
-                                            🔒 No spam. We respect your privacy.
+                                        {/* Message */}
+                                        <div className="relative">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                                                    <span>📝</span> Project Details <span className="text-pink-400/70">*</span>
+                                                </label>
+                                                <span className={`text-[10px] font-mono transition-colors ${formData.message.length > 400 ? 'text-amber-400' : 'text-white/20'}`}>
+                                                    {formData.message.length}/500
+                                                </span>
+                                            </div>
+                                            <div className="relative">
+                                                <textarea
+                                                    name="message"
+                                                    value={formData.message}
+                                                    onChange={handleChange}
+                                                    onFocus={() => setFocusedField('message')}
+                                                    onBlur={() => setFocusedField(null)}
+                                                    required
+                                                    maxLength={500}
+                                                    rows={4}
+                                                    className="contact-input resize-none"
+                                                    placeholder="Tell us about your project, goals, and timeline..."
+                                                />
+                                                <motion.div
+                                                    className="absolute bottom-0 left-1/2 h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
+                                                    animate={{ width: focusedField === 'message' ? '95%' : '0%', x: '-50%' }}
+                                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Submit Button — Rotating Gradient Border */}
+                                        <motion.div
+                                            className="relative group w-full mt-4"
+                                            whileHover={{ scale: 1.01 }}
+                                            whileTap={{ scale: 0.99 }}
+                                        >
+                                            {/* Rotating border */}
+                                            <div
+                                                className="absolute -inset-[1px] rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"
+                                                style={{
+                                                    background: 'conic-gradient(from 0deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
+                                                    animation: 'contact-submit-rotate 3s linear infinite',
+                                                }}
+                                            />
+                                            {/* Inner bg */}
+                                            <div className="absolute inset-[1px] rounded-2xl bg-[#0a0f1c]/95" />
+
+                                            {/* Pulsing glow */}
+                                            <motion.div
+                                                className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 blur-xl pointer-events-none"
+                                                animate={{ opacity: [0.2, 0.5, 0.2] }}
+                                                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                                            />
+
+                                            {/* Shimmer */}
+                                            <motion.div className="absolute inset-[1px] rounded-2xl overflow-hidden pointer-events-none">
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -skew-x-12"
+                                                    animate={{ x: ['-200%', '200%'] }}
+                                                    transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                                                />
+                                            </motion.div>
+
+                                            <button
+                                                type="submit"
+                                                disabled={isSubmitting}
+                                                className="relative z-10 w-full py-4 rounded-2xl text-white font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-3 cursor-pointer"
+                                            >
+                                                {isSubmitting ? (
+                                                    <motion.div
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                                        className="w-5 h-5 border-2 border-white/30 border-t-cyan-400 rounded-full"
+                                                    />
+                                                ) : (
+                                                    <>
+                                                        <span style={{ textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>Send Message</span>
+                                                        <motion.div
+                                                            animate={{ x: [0, 4, 0] }}
+                                                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                                                        >
+                                                            <Send size={16} className="text-cyan-400" />
+                                                        </motion.div>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </motion.div>
+
+                                        <p className="text-center text-[10px] text-white/25 mt-1 flex items-center justify-center gap-1.5">
+                                            <span className="text-emerald-400/60">🔒</span> Your data is safe. We never share your information.
                                         </p>
                                     </form>
                                 )}
