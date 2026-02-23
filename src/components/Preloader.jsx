@@ -1,74 +1,14 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
 
-/* ─── Floating Glitch Line ─── */
-const GlitchLine = ({ delay, top }) => (
-    <motion.div
-        className="absolute left-0 w-full h-[1px] pointer-events-none z-[2]"
-        style={{ top: `${top}%`, background: 'linear-gradient(90deg, transparent 0%, rgba(6,182,212,0.3) 30%, rgba(168,85,247,0.15) 70%, transparent 100%)' }}
-        initial={{ opacity: 0, scaleX: 0 }}
-        animate={{ opacity: [0, 0.6, 0], scaleX: [0.3, 1.2, 0.3], x: ['-10%', '10%', '-10%'] }}
-        transition={{ duration: 4, delay, repeat: Infinity, ease: 'easeInOut' }}
-    />
-);
-
-/* ─── Data Stream Column ─── */
-const DataStream = ({ left, delay }) => {
-    const chars = useMemo(() => {
-        const c = 'ABCDEF0123456789ΣΠΩ∞◊⬡';
-        return Array.from({ length: 12 }, () => c[Math.floor(Math.random() * c.length)]);
-    }, []);
-    return (
-        <motion.div
-            className="absolute top-0 flex flex-col items-center gap-1 font-mono text-[9px] text-cyan-500/20 pointer-events-none z-[2]"
-            style={{ left: `${left}%` }}
-            initial={{ y: '-100%', opacity: 0 }}
-            animate={{ y: '120vh', opacity: [0, 0.5, 0.5, 0] }}
-            transition={{ duration: 6 + Math.random() * 4, delay, repeat: Infinity, ease: 'linear' }}
-        >
-            {chars.map((ch, i) => <span key={i}>{ch}</span>)}
-        </motion.div>
-    );
-};
-
-/* ─── Hexagonal Grid Node ─── */
-const HexNode = ({ x, y, delay, progress }) => (
-    <motion.div
-        className="absolute w-2 h-2 pointer-events-none z-[2]"
-        style={{ left: `${x}%`, top: `${y}%` }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{
-            opacity: progress > delay * 33 ? [0, 0.6, 0.3] : 0,
-            scale: progress > delay * 33 ? 1 : 0,
-        }}
-        transition={{ duration: 1.5, ease: 'easeOut' }}
-    >
-        <div className="w-full h-full bg-cyan-400/30 rotate-45" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }} />
-    </motion.div>
-);
-
-/* ─── Status Log Messages ─── */
-const statusMessages = [
-    'Loading assets...',
-    'Initializing shaders...',
-    'Compiling scene graph...',
-    'Rendering particles...',
-    'Calibrating interface...',
-    'Establishing connection...',
-    'Optimizing viewport...',
-    'Systems online',
-];
-
-/* ─── Main Preloader ─── */
-const Preloader = ({ onComplete }) => {
-    const [count, setCount] = useState(0);
-    const [phase, setPhase] = useState('loading');
-    const [statusIdx, setStatusIdx] = useState(0);
+/* ───────────────────────── WebGL Warp Tunnel Canvas ───────────────────────── */
+const WarpCanvas = ({ progress }) => {
     const canvasRef = useRef(null);
-    const animFrameRef = useRef(null);
+    const frameRef = useRef(null);
+    const progressRef = useRef(0);
+    progressRef.current = progress;
 
-    // Networked particle canvas with gravitational center pull
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -83,68 +23,181 @@ const Preloader = ({ onComplete }) => {
         canvas.style.height = h + 'px';
 
         const cx = w / 2, cy = h / 2;
-        const particles = Array.from({ length: 80 }, () => ({
-            x: Math.random() * w, y: Math.random() * h,
-            vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
-            size: Math.random() * 2 + 0.5,
-            hue: 180 + Math.random() * 120,
-            orbit: 80 + Math.random() * 200,
+
+        // Star field with depth
+        const stars = Array.from({ length: 250 }, () => ({
             angle: Math.random() * Math.PI * 2,
-            speed: 0.002 + Math.random() * 0.003,
+            radius: 5 + Math.random() * 5,
+            speed: 0.5 + Math.random() * 2.5,
+            size: 0.3 + Math.random() * 1.5,
+            hue: 180 + Math.random() * 130,
+            maxRadius: Math.max(w, h) * 0.8,
+        }));
+
+        // Nebula particles (slow, large, blurry blobs)
+        const nebulae = Array.from({ length: 12 }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            radius: 40 + Math.random() * 80,
+            hue: 180 + Math.random() * 140,
+            alpha: 0.01 + Math.random() * 0.02,
+            drift: (Math.random() - 0.5) * 0.15,
+            driftY: (Math.random() - 0.5) * 0.15,
         }));
 
         let t = 0;
         const render = () => {
-            ctx.clearRect(0, 0, w, h);
-            t += 0.01;
-            particles.forEach((p, i) => {
-                // Gentle orbital drift toward center
-                p.angle += p.speed;
-                const targetX = cx + Math.cos(p.angle) * p.orbit;
-                const targetY = cy + Math.sin(p.angle) * p.orbit;
-                p.x += (targetX - p.x) * 0.008 + p.vx;
-                p.y += (targetY - p.y) * 0.008 + p.vy;
+            t += 0.008;
+            const p = progressRef.current / 100;
+            const warpSpeed = 0.3 + p * 2.5;
 
-                const alpha = 0.15 + 0.1 * Math.sin(t + i);
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${p.hue}, 80%, 65%, ${alpha})`;
-                ctx.fill();
+            ctx.fillStyle = `rgba(3,0,20,${0.15 + p * 0.05})`;
+            ctx.fillRect(0, 0, w, h);
 
-                // Connection lines
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dx = p.x - p2.x, dy = p.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `hsla(${(p.hue + p2.hue) / 2}, 60%, 50%, ${0.06 * (1 - dist / 120)})`;
-                        ctx.lineWidth = 0.4;
-                        ctx.stroke();
-                    }
-                }
+            // Nebula blobs
+            nebulae.forEach(n => {
+                n.x += n.drift;
+                n.y += n.driftY;
+                if (n.x < -n.radius) n.x = w + n.radius;
+                if (n.x > w + n.radius) n.x = -n.radius;
+                if (n.y < -n.radius) n.y = h + n.radius;
+                if (n.y > h + n.radius) n.y = -n.radius;
+
+                const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius);
+                grad.addColorStop(0, `hsla(${n.hue + t * 10}, 70%, 50%, ${n.alpha * (1 + p)})`);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.fillRect(n.x - n.radius, n.y - n.radius, n.radius * 2, n.radius * 2);
             });
-            animFrameRef.current = requestAnimationFrame(render);
+
+            // Warp stars
+            stars.forEach(s => {
+                s.radius += s.speed * warpSpeed;
+                if (s.radius > s.maxRadius) {
+                    s.radius = 5 + Math.random() * 5;
+                    s.angle = Math.random() * Math.PI * 2;
+                }
+
+                const x = cx + Math.cos(s.angle) * s.radius;
+                const y = cy + Math.sin(s.angle) * s.radius;
+                const dist = s.radius / s.maxRadius;
+                const alpha = dist * (0.5 + p * 0.5);
+                const sz = s.size * (0.5 + dist * 2);
+
+                // Trail line
+                if (dist > 0.1) {
+                    const trailLen = Math.min(s.speed * warpSpeed * 4, s.radius * 0.3);
+                    const tx = cx + Math.cos(s.angle) * (s.radius - trailLen);
+                    const ty = cy + Math.sin(s.angle) * (s.radius - trailLen);
+                    ctx.beginPath();
+                    ctx.moveTo(tx, ty);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = `hsla(${s.hue}, 80%, 70%, ${alpha * 0.4})`;
+                    ctx.lineWidth = sz * 0.6;
+                    ctx.stroke();
+                }
+
+                // Star dot
+                ctx.beginPath();
+                ctx.arc(x, y, sz, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${s.hue}, 90%, 80%, ${alpha})`;
+                ctx.fill();
+            });
+
+            // Central vortex glow
+            const vGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120 + p * 80);
+            vGrad.addColorStop(0, `rgba(6,182,212,${0.04 + p * 0.03})`);
+            vGrad.addColorStop(0.4, `rgba(168,85,247,${0.02 + p * 0.02})`);
+            vGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = vGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 200 + p * 80, 0, Math.PI * 2);
+            ctx.fill();
+
+            frameRef.current = requestAnimationFrame(render);
         };
         render();
-        return () => { if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current); };
+        return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
     }, []);
 
-    // Counter with exponential ease
+    return <canvas ref={canvasRef} className="absolute inset-0 z-0" />;
+};
+
+/* ───────────────────────── Morphing Geometric Ring ───────────────────────── */
+const GeometricRing = ({ progress, size = 260 }) => {
+    const sides = Math.floor(3 + (progress / 100) * 9); // morphs 3 → 12 sides
+    const r = size / 2 - 10;
+    const points = useMemo(() => {
+        return Array.from({ length: Math.max(sides, 3) }, (_, i) => {
+            const angle = (i / Math.max(sides, 3)) * Math.PI * 2 - Math.PI / 2;
+            return `${size / 2 + Math.cos(angle) * r},${size / 2 + Math.sin(angle) * r}`;
+        }).join(' ');
+    }, [sides, r, size]);
+
+    return (
+        <motion.svg
+            width={size} height={size}
+            className="absolute z-[4]"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+        >
+            <defs>
+                <linearGradient id="geoRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.5" />
+                    <stop offset="50%" stopColor="#a855f7" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#ec4899" stopOpacity="0.5" />
+                </linearGradient>
+            </defs>
+            <polygon
+                points={points}
+                stroke="url(#geoRingGrad)"
+                strokeWidth="1"
+                fill="none"
+                style={{ transition: 'all 0.6s cubic-bezier(0.16,1,0.3,1)' }}
+            />
+        </motion.svg>
+    );
+};
+
+/* ───────────────────────── Floating Status Terminal ───────────────────────── */
+const statusLog = [
+    { at: 0, text: 'Booting system core...' },
+    { at: 8, text: 'Loading shader modules...' },
+    { at: 18, text: 'Compiling visual engine...' },
+    { at: 30, text: 'Initializing 3D renderer...' },
+    { at: 42, text: 'Mounting component tree...' },
+    { at: 55, text: 'Hydrating user interface...' },
+    { at: 68, text: 'Optimizing render pipeline...' },
+    { at: 80, text: 'Syncing animation frames...' },
+    { at: 92, text: 'Finalizing experience...' },
+    { at: 99, text: 'Ready.' },
+];
+
+/* ───────────────────────── Preloader ───────────────────────── */
+const Preloader = ({ onComplete }) => {
+    const [count, setCount] = useState(0);
+    const [phase, setPhase] = useState('loading');
+    const [visibleLogs, setVisibleLogs] = useState([]);
+
+    // Eased counter
     useEffect(() => {
         const start = Date.now();
-        const duration = 2800;
+        const duration = 3200;
         const tick = () => {
             const elapsed = Date.now() - start;
             const p = Math.min(elapsed / duration, 1);
-            const ease = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+            const ease = p === 1 ? 1 : 1 - Math.pow(2, -12 * p);
             const val = Math.floor(ease * 100);
             setCount(val);
-            setStatusIdx(Math.min(Math.floor(val / 13), statusMessages.length - 1));
+
+            // Add status messages as progress passes thresholds
+            setVisibleLogs(prev => {
+                const newLogs = statusLog.filter(s => val >= s.at && !prev.find(l => l.at === s.at));
+                return newLogs.length > 0 ? [...prev, ...newLogs].slice(-4) : prev;
+            });
+
             if (p < 1) requestAnimationFrame(tick);
-            else setTimeout(() => setPhase('reveal'), 300);
+            else setTimeout(() => setPhase('reveal'), 400);
         };
         requestAnimationFrame(tick);
     }, []);
@@ -154,196 +207,202 @@ const Preloader = ({ onComplete }) => {
         if (phase !== 'reveal') return;
         const t = setTimeout(() => {
             setPhase('exit');
-            setTimeout(onComplete, 800);
-        }, 2200);
+            setTimeout(onComplete, 900);
+        }, 2400);
         return () => clearTimeout(t);
     }, [phase, onComplete]);
 
-    const letterVariants = {
-        hidden: { y: 80, opacity: 0, rotateX: -90, scale: 0.6 },
-        visible: (i) => ({
-            y: 0, opacity: 1, rotateX: 0, scale: 1,
-            transition: { delay: i * 0.04, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-        }),
-    };
-
-    const brandText = 'CREATIVE WEBFLOW';
-    const ringR = 85;
+    // Ring metrics
+    const ringR = 90;
     const ringC = 2 * Math.PI * ringR;
     const ringOffset = ringC - (count / 100) * ringC;
 
-    // Hex grid positions
-    const hexNodes = useMemo(() => {
-        const nodes = [];
-        for (let i = 0; i < 18; i++) {
-            nodes.push({
-                x: 10 + Math.random() * 80,
-                y: 10 + Math.random() * 80,
-                delay: 0.5 + Math.random() * 2.5,
-            });
-        }
-        return nodes;
-    }, []);
-
-    // Data stream positions
-    const streams = useMemo(() =>
-        Array.from({ length: 8 }, (_, i) => ({ left: 5 + i * 12 + Math.random() * 5, delay: Math.random() * 4 })),
-        []);
+    const brandText = 'CREATIVE WEBFLOW';
 
     return (
         <motion.div
-            className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #030014 0%, #070b1e 40%, #0a0520 70%, #030014 100%)' }}
-            exit={{ clipPath: 'circle(0% at 50% 50%)', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
+            className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden select-none"
+            style={{ background: '#030014' }}
+            exit={{ clipPath: 'circle(0% at 50% 50%)', transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}
         >
-            {/* Particle canvas */}
-            <canvas ref={canvasRef} className="absolute inset-0 z-0" />
+            {/* Warp speed star field */}
+            <WarpCanvas progress={count} />
 
-            {/* Noise texture overlay */}
-            <div className="absolute inset-0 z-[1] opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '128px 128px' }} />
+            {/* Noise grain */}
+            <div className="absolute inset-0 z-[1] opacity-[0.025] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '128px 128px' }} />
 
-            {/* Pulsing multi-layered glow */}
-            <motion.div
-                className="absolute inset-0 z-[1]"
-                animate={{
-                    background: [
-                        'radial-gradient(600px circle at 50% 50%, rgba(6,182,212,0.1) 0%, transparent 60%), radial-gradient(400px circle at 30% 40%, rgba(168,85,247,0.06) 0%, transparent 50%)',
-                        'radial-gradient(600px circle at 50% 50%, rgba(168,85,247,0.1) 0%, transparent 60%), radial-gradient(400px circle at 70% 60%, rgba(236,72,153,0.06) 0%, transparent 50%)',
-                        'radial-gradient(600px circle at 50% 50%, rgba(6,182,212,0.1) 0%, transparent 60%), radial-gradient(400px circle at 30% 40%, rgba(168,85,247,0.06) 0%, transparent 50%)',
-                    ]
-                }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            />
-
-            {/* Glitch scan lines */}
-            <GlitchLine delay={0} top={20} />
-            <GlitchLine delay={1.5} top={45} />
-            <GlitchLine delay={3} top={75} />
-
-            {/* Data streams */}
-            {streams.map((s, i) => <DataStream key={i} left={s.left} delay={s.delay} />)}
-
-            {/* Hex grid nodes */}
-            {hexNodes.map((n, i) => <HexNode key={i} x={n.x} y={n.y} delay={n.delay} progress={count} />)}
-
-            {/* Triple orbit rings */}
-            <motion.div className="absolute w-[280px] h-[280px] md:w-[380px] md:h-[380px] rounded-full border border-white/[0.03] z-[3]" animate={{ rotate: 360 }} transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-cyan-400 rounded-full" style={{ boxShadow: '0 0 16px rgba(6,182,212,0.9), 0 0 40px rgba(6,182,212,0.3)' }} />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full" style={{ boxShadow: '0 0 12px rgba(168,85,247,0.8)' }} />
-            </motion.div>
-            <motion.div className="absolute w-[220px] h-[220px] md:w-[290px] md:h-[290px] rounded-full border border-white/[0.02] z-[3]" animate={{ rotate: -360 }} transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}>
-                <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-pink-400 rounded-full" style={{ boxShadow: '0 0 10px rgba(236,72,153,0.8)' }} />
-                <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-cyan-300 rounded-full" style={{ boxShadow: '0 0 8px rgba(6,182,212,0.6)' }} />
-            </motion.div>
-            <motion.div className="absolute w-[160px] h-[160px] md:w-[200px] md:h-[200px] rounded-full border border-white/[0.015] z-[3]" animate={{ rotate: 360 }} transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}>
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-1 bg-emerald-400 rounded-full" style={{ boxShadow: '0 0 8px rgba(52,211,153,0.7)' }} />
-            </motion.div>
+            {/* Vignette */}
+            <div className="absolute inset-0 z-[2] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(3,0,20,0.7) 100%)' }} />
 
             {/* Main content */}
-            <div className="relative z-20 text-center">
+            <div className="relative z-20 text-center flex flex-col items-center">
                 <AnimatePresence mode="wait">
                     {phase === 'loading' && (
                         <motion.div
                             key="loading"
-                            exit={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
-                            transition={{ duration: 0.5 }}
+                            exit={{ opacity: 0, scale: 0.7, filter: 'blur(30px)' }}
+                            transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
                             className="flex flex-col items-center"
                         >
-                            {/* Logo + Progress ring */}
-                            <div className="relative flex items-center justify-center mb-8">
-                                {/* Outer glow pulse */}
-                                <motion.div
-                                    className="absolute w-[200px] h-[200px] rounded-full"
-                                    animate={{ boxShadow: ['0 0 40px 10px rgba(6,182,212,0.05)', '0 0 60px 20px rgba(168,85,247,0.08)', '0 0 40px 10px rgba(6,182,212,0.05)'] }}
-                                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                                />
-                                <svg width="210" height="210" className="absolute -rotate-90">
-                                    {/* Track */}
-                                    <circle cx="105" cy="105" r={ringR} stroke="rgba(255,255,255,0.03)" strokeWidth="1" fill="none" />
-                                    {/* Tick marks */}
-                                    {Array.from({ length: 60 }, (_, i) => {
-                                        const angle = (i / 60) * Math.PI * 2 - Math.PI / 2;
-                                        const inner = ringR - 3;
-                                        const outer = ringR + 3;
-                                        const filled = i / 60 <= count / 100;
+                            {/* Logo hub with rings */}
+                            <div className="relative flex items-center justify-center mb-10" style={{ width: 260, height: 260 }}>
+                                {/* Morphing geometric ring */}
+                                <GeometricRing progress={count} size={260} />
+
+                                {/* Progress ring with glow */}
+                                <svg width="220" height="220" className="absolute -rotate-90 z-[5]">
+                                    <circle cx="110" cy="110" r={ringR} stroke="rgba(255,255,255,0.02)" strokeWidth="1" fill="none" />
+                                    {/* Graduated tick marks */}
+                                    {Array.from({ length: 72 }, (_, i) => {
+                                        const angle = (i / 72) * Math.PI * 2 - Math.PI / 2;
+                                        const inner = ringR - (i % 6 === 0 ? 5 : 2);
+                                        const outer = ringR + (i % 6 === 0 ? 5 : 2);
+                                        const filled = (i / 72) * 100 <= count;
                                         return (
                                             <line
                                                 key={i}
-                                                x1={105 + Math.cos(angle) * inner}
-                                                y1={105 + Math.sin(angle) * inner}
-                                                x2={105 + Math.cos(angle) * outer}
-                                                y2={105 + Math.sin(angle) * outer}
-                                                stroke={filled ? 'rgba(6,182,212,0.4)' : 'rgba(255,255,255,0.04)'}
-                                                strokeWidth="1"
+                                                x1={110 + Math.cos(angle) * inner}
+                                                y1={110 + Math.sin(angle) * inner}
+                                                x2={110 + Math.cos(angle) * outer}
+                                                y2={110 + Math.sin(angle) * outer}
+                                                stroke={filled ? `hsla(${180 + (i / 72) * 120}, 80%, 60%, 0.6)` : 'rgba(255,255,255,0.03)'}
+                                                strokeWidth={i % 6 === 0 ? '1.5' : '0.5'}
+                                                style={{ transition: 'stroke 0.3s ease' }}
                                             />
                                         );
                                     })}
-                                    {/* Progress arc */}
+                                    {/* Main arc */}
                                     <circle
-                                        cx="105" cy="105" r={ringR}
-                                        stroke="url(#preRingGrad)"
+                                        cx="110" cy="110" r={ringR}
+                                        stroke="url(#preloaderArcGrad)"
                                         strokeWidth="2.5"
                                         fill="none"
                                         strokeLinecap="round"
                                         strokeDasharray={ringC}
                                         strokeDashoffset={ringOffset}
-                                        style={{ transition: 'stroke-dashoffset 0.1s linear', filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.5))' }}
+                                        style={{ transition: 'stroke-dashoffset 0.1s linear', filter: 'drop-shadow(0 0 8px rgba(6,182,212,0.6))' }}
                                     />
                                     <defs>
-                                        <linearGradient id="preRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <linearGradient id="preloaderArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                                             <stop offset="0%" stopColor="#06b6d4" />
                                             <stop offset="50%" stopColor="#a855f7" />
                                             <stop offset="100%" stopColor="#ec4899" />
                                         </linearGradient>
                                     </defs>
                                 </svg>
-                                <AnimatedLogo size={80} />
+
+                                {/* Orbiting dots on progress ring */}
+                                <motion.div
+                                    className="absolute z-[6]"
+                                    style={{ width: 220, height: 220 }}
+                                    animate={{ rotate: -count * 3.6 }}
+                                    transition={{ duration: 0, ease: 'linear' }}
+                                >
+                                    <div
+                                        className="absolute w-3 h-3 rounded-full"
+                                        style={{
+                                            top: 0, left: '50%', transform: 'translate(-50%, -50%)',
+                                            background: 'radial-gradient(circle, #06b6d4, transparent)',
+                                            boxShadow: '0 0 12px 4px rgba(6,182,212,0.6)',
+                                        }}
+                                    />
+                                </motion.div>
+
+                                {/* Logo — contained with overflow hidden */}
+                                <div className="absolute z-10 flex items-center justify-center overflow-hidden rounded-full" style={{ width: 100, height: 100 }}>
+                                    <AnimatedLogo size={85} />
+                                </div>
+
+                                {/* Breathing glow behind logo */}
+                                <motion.div
+                                    className="absolute z-[3] rounded-full"
+                                    style={{ width: 130, height: 130 }}
+                                    animate={{
+                                        boxShadow: [
+                                            '0 0 30px 8px rgba(6,182,212,0.08), inset 0 0 20px rgba(6,182,212,0.03)',
+                                            '0 0 50px 15px rgba(168,85,247,0.1), inset 0 0 30px rgba(168,85,247,0.04)',
+                                            '0 0 30px 8px rgba(6,182,212,0.08), inset 0 0 20px rgba(6,182,212,0.03)',
+                                        ]
+                                    }}
+                                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                                />
                             </div>
 
-                            {/* Counter */}
-                            <motion.div
-                                className="relative text-7xl md:text-9xl font-extralight leading-none tracking-tighter tabular-nums mb-3"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                <span
-                                    style={{
-                                        background: 'linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.25) 100%)',
-                                        WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                                    }}
+                            {/* Counter display */}
+                            <div className="relative mb-6">
+                                <motion.div
+                                    className="text-8xl md:text-[120px] font-extralight leading-none tabular-nums"
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 >
-                                    {String(count).padStart(3, '0')}
-                                </span>
-                                <span className="text-lg md:text-2xl font-light text-white/15 ml-1">%</span>
-                            </motion.div>
+                                    <span style={{
+                                        background: `linear-gradient(180deg, #ffffff ${100 - count}%, rgba(6,182,212,0.4) 100%)`,
+                                        WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                                        filter: `drop-shadow(0 0 ${4 + count * 0.15}px rgba(6,182,212,${0.1 + count * 0.003}))`,
+                                    }}>
+                                        {String(count).padStart(3, '0')}
+                                    </span>
+                                </motion.div>
+                                {/* Thin accent line under counter */}
+                                <motion.div
+                                    className="mx-auto mt-2 h-[1px]"
+                                    style={{ background: 'linear-gradient(90deg, transparent, #06b6d4, #a855f7, #ec4899, transparent)' }}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${40 + count * 0.6}%` }}
+                                    transition={{ duration: 0.1 }}
+                                />
+                            </div>
 
-                            {/* Status message log */}
-                            <div className="h-5 overflow-hidden">
-                                <AnimatePresence mode="wait">
-                                    <motion.p
-                                        key={statusIdx}
-                                        initial={{ y: 12, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        exit={{ y: -12, opacity: 0 }}
-                                        transition={{ duration: 0.25 }}
-                                        className="text-[10px] font-mono text-cyan-400/40 uppercase tracking-[0.25em]"
-                                    >
-                                        <span className="text-cyan-400/70">{'>'}</span> {statusMessages[statusIdx]}
-                                    </motion.p>
+                            {/* Terminal-style log feed */}
+                            <div className="w-64 md:w-80 text-left font-mono mb-4 h-20 overflow-hidden">
+                                <AnimatePresence>
+                                    {visibleLogs.map((log, i) => (
+                                        <motion.div
+                                            key={log.at}
+                                            initial={{ opacity: 0, x: -10, height: 0 }}
+                                            animate={{ opacity: 1, x: 0, height: 20 }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.25 }}
+                                            className="text-[10px] tracking-wide flex items-center gap-1.5 overflow-hidden"
+                                        >
+                                            <span className="text-cyan-500/60">▸</span>
+                                            <span className="text-white/25">{log.text}</span>
+                                            {i === visibleLogs.length - 1 && (
+                                                <motion.span
+                                                    className="inline-block w-[5px] h-[10px] bg-cyan-400/50 ml-0.5"
+                                                    animate={{ opacity: [1, 0, 1] }}
+                                                    transition={{ duration: 0.8, repeat: Infinity }}
+                                                />
+                                            )}
+                                        </motion.div>
+                                    ))}
                                 </AnimatePresence>
                             </div>
 
-                            {/* Mini equalizer bars */}
-                            <div className="flex items-end gap-[2px] mt-4 h-4">
-                                {Array.from({ length: 12 }, (_, i) => (
-                                    <motion.div
-                                        key={i}
-                                        className="w-[2px] bg-gradient-to-t from-cyan-500/40 to-purple-500/40 rounded-full"
-                                        animate={{ height: ['3px', `${5 + Math.random() * 10}px`, '3px'] }}
-                                        transition={{ duration: 0.5 + Math.random() * 0.5, repeat: Infinity, delay: i * 0.06 }}
-                                    />
-                                ))}
+                            {/* Waveform visualizer */}
+                            <div className="flex items-center gap-[1.5px] h-6">
+                                {Array.from({ length: 30 }, (_, i) => {
+                                    const dist = Math.abs(i - 15) / 15;
+                                    return (
+                                        <motion.div
+                                            key={i}
+                                            className="w-[2px] rounded-full"
+                                            style={{
+                                                background: `linear-gradient(to top, rgba(6,182,212,${0.3 + count * 0.005}), rgba(168,85,247,${0.2 + count * 0.004}))`,
+                                            }}
+                                            animate={{
+                                                height: [`${2 + (1 - dist) * 4}px`, `${4 + (1 - dist) * (8 + count * 0.12)}px`, `${2 + (1 - dist) * 4}px`],
+                                            }}
+                                            transition={{
+                                                duration: 0.6 + Math.random() * 0.4,
+                                                repeat: Infinity,
+                                                delay: i * 0.03,
+                                                ease: 'easeInOut',
+                                            }}
+                                        />
+                                    );
+                                })}
                             </div>
                         </motion.div>
                     )}
@@ -351,49 +410,68 @@ const Preloader = ({ onComplete }) => {
                     {phase === 'reveal' && (
                         <motion.div
                             key="reveal"
-                            className="flex flex-col items-center gap-5"
-                            exit={{ opacity: 0, y: -40, scale: 0.9, filter: 'blur(12px)' }}
-                            transition={{ duration: 0.5 }}
+                            className="flex flex-col items-center"
+                            exit={{ opacity: 0, scale: 0.85, filter: 'blur(20px)' }}
+                            transition={{ duration: 0.6 }}
                         >
-                            {/* Logo with starburst */}
+                            {/* Logo entrance with expanding ring burst */}
                             <motion.div
-                                className="relative"
-                                initial={{ scale: 0, rotate: -180 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{ type: 'spring', stiffness: 180, damping: 18 }}
+                                className="relative mb-8"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 160, damping: 16 }}
                             >
-                                {/* Starburst rays */}
-                                {Array.from({ length: 8 }, (_, i) => (
+                                {/* Expanding ring pulse */}
+                                {[0, 0.3, 0.6].map((delay, i) => (
                                     <motion.div
                                         key={i}
-                                        className="absolute top-1/2 left-1/2 h-[1px] origin-left"
-                                        style={{
-                                            transform: `rotate(${i * 45}deg)`,
-                                            background: `linear-gradient(90deg, rgba(6,182,212,0.4), transparent)`,
-                                            width: '0px',
-                                        }}
-                                        animate={{ width: ['0px', '60px', '0px'] }}
-                                        transition={{ duration: 1.2, delay: 0.3 + i * 0.05, ease: 'easeOut' }}
+                                        className="absolute inset-0 rounded-full border pointer-events-none"
+                                        style={{ borderColor: `rgba(6,182,212,${0.3 - i * 0.1})` }}
+                                        initial={{ scale: 1, opacity: 0.5 }}
+                                        animate={{ scale: [1, 3], opacity: [0.4, 0] }}
+                                        transition={{ duration: 1.5, delay: 0.2 + delay, ease: 'easeOut' }}
                                     />
                                 ))}
-                                <AnimatedLogo size={110} />
+
+                                {/* Radial light rays */}
+                                <motion.div
+                                    className="absolute inset-0 z-0"
+                                    initial={{ opacity: 0, rotate: -30 }}
+                                    animate={{ opacity: [0, 0.8, 0], rotate: 30 }}
+                                    transition={{ duration: 2, ease: 'easeOut' }}
+                                >
+                                    {Array.from({ length: 12 }, (_, i) => (
+                                        <div
+                                            key={i}
+                                            className="absolute top-1/2 left-1/2 origin-left h-[0.5px]"
+                                            style={{
+                                                transform: `rotate(${i * 30}deg)`,
+                                                width: '80px',
+                                                background: `linear-gradient(90deg, rgba(${i % 3 === 0 ? '6,182,212' : i % 3 === 1 ? '168,85,247' : '236,72,153'},0.5), transparent)`,
+                                            }}
+                                        />
+                                    ))}
+                                </motion.div>
+
+                                <div className="overflow-hidden rounded-full" style={{ width: 120, height: 120 }}>
+                                    <AnimatedLogo size={110} />
+                                </div>
                             </motion.div>
 
-                            {/* Brand text with 3D flip */}
-                            <div className="flex flex-wrap justify-center px-4" style={{ perspective: '1200px' }}>
+                            {/* Brand text — staggered 3D entrance */}
+                            <div className="flex flex-wrap justify-center px-4 mb-4" style={{ perspective: '1500px' }}>
                                 {brandText.split('').map((char, i) => (
                                     <motion.span
                                         key={i}
-                                        custom={i}
-                                        variants={letterVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                        className={`text-3xl md:text-6xl lg:text-7xl font-black tracking-tight ${char === ' ' ? 'mx-2 md:mx-3' : ''}`}
+                                        initial={{ y: 100, opacity: 0, rotateX: -90, scale: 0.5, filter: 'blur(8px)' }}
+                                        animate={{ y: 0, opacity: 1, rotateX: 0, scale: 1, filter: 'blur(0px)' }}
+                                        transition={{ delay: 0.15 + i * 0.035, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                                        className={`text-3xl md:text-6xl lg:text-7xl font-black tracking-tight inline-block ${char === ' ' ? 'mx-2 md:mx-3' : ''}`}
                                         style={{
-                                            background: `linear-gradient(135deg, #06b6d4 ${i * 5}%, #a855f7 ${40 + i * 3}%, #ec4899 100%)`,
+                                            background: `linear-gradient(135deg, #06b6d4 ${i * 5}%, #a855f7 ${35 + i * 3}%, #ec4899 ${80 + i * 2}%)`,
                                             WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                                            display: 'inline-block',
-                                            filter: `drop-shadow(0 0 8px rgba(6,182,212,${0.1 + i * 0.02}))`,
+                                            textShadow: 'none',
+                                            filter: `drop-shadow(0 0 10px hsla(${180 + i * 8}, 80%, 60%, 0.2))`,
                                         }}
                                     >
                                         {char}
@@ -401,32 +479,39 @@ const Preloader = ({ onComplete }) => {
                                 ))}
                             </div>
 
-                            {/* Animated divider */}
+                            {/* Animated divider line */}
                             <motion.div
-                                className="h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"
-                                initial={{ width: 0 }}
-                                animate={{ width: '200px' }}
-                                transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                className="h-[1px] mb-4"
+                                style={{ background: 'linear-gradient(90deg, transparent, #06b6d4, #a855f7, #ec4899, transparent)' }}
+                                initial={{ width: 0, opacity: 0 }}
+                                animate={{ width: 220, opacity: 1 }}
+                                transition={{ delay: 0.8, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                             />
 
-                            {/* Tagline */}
+                            {/* Tagline with letter-spacing morph */}
                             <motion.p
-                                initial={{ opacity: 0, y: 20, letterSpacing: '0.5em' }}
-                                animate={{ opacity: 1, y: 0, letterSpacing: '0.2em' }}
-                                transition={{ delay: 0.8, duration: 0.7 }}
-                                className="text-sm md:text-base text-white/30 font-light uppercase"
+                                initial={{ opacity: 0, y: 20, letterSpacing: '0.6em' }}
+                                animate={{ opacity: 0.4, y: 0, letterSpacing: '0.18em' }}
+                                transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                className="text-xs md:text-sm text-white font-light uppercase mb-6"
                             >
                                 Crafting Digital Excellence
                             </motion.p>
 
-                            {/* Entry prompt */}
+                            {/* Entry pulse */}
                             <motion.div
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: [0, 0.5, 0] }}
-                                transition={{ delay: 1.2, duration: 1.5, repeat: Infinity }}
-                                className="text-[9px] font-mono text-white/20 uppercase tracking-[0.3em] mt-2"
+                                animate={{ opacity: [0, 0.4, 0] }}
+                                transition={{ delay: 1.4, duration: 1.5, repeat: Infinity }}
+                                className="flex items-center gap-2 text-[9px] font-mono text-white/20 uppercase tracking-[0.25em]"
                             >
-                                ▼ Entering Experience
+                                <motion.div
+                                    animate={{ y: [0, 3, 0] }}
+                                    transition={{ duration: 1, repeat: Infinity }}
+                                >
+                                    ▼
+                                </motion.div>
+                                Entering Experience
                             </motion.div>
                         </motion.div>
                     )}
@@ -434,28 +519,46 @@ const Preloader = ({ onComplete }) => {
             </div>
 
             {/* Bottom progress bar */}
-            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/[0.03] z-30">
+            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/[0.02] z-30">
                 <motion.div
                     className="h-full"
-                    style={{ background: 'linear-gradient(90deg, transparent, #06b6d4, #a855f7, #ec4899, transparent)' }}
+                    style={{ background: 'linear-gradient(90deg, transparent 0%, #06b6d4 20%, #a855f7 50%, #ec4899 80%, transparent 100%)' }}
                     initial={{ width: 0 }}
                     animate={{ width: phase === 'reveal' ? '100%' : `${count}%` }}
                     transition={{ ease: 'linear', duration: 0.1 }}
                 />
+                {/* Glowing head of progress bar */}
+                {phase === 'loading' && (
+                    <motion.div
+                        className="absolute top-[-3px] h-[8px] w-[30px] rounded-full"
+                        style={{
+                            background: 'radial-gradient(ellipse, rgba(6,182,212,0.8), transparent)',
+                            left: `${count}%`,
+                            transform: 'translateX(-50%)',
+                        }}
+                    />
+                )}
             </div>
 
-            {/* Top bar: brand stamp + version */}
+            {/* Top HUD */}
             <motion.div
-                className="absolute top-6 left-0 w-full flex justify-between items-center px-6 md:px-10 z-30"
+                className="absolute top-5 left-0 w-full flex justify-between items-center px-6 md:px-10 z-30"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
             >
-                <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.2em]">Creative Webflow</span>
-                <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.2em]">v2.0</span>
+                <div className="flex items-center gap-3">
+                    <div className="flex gap-1">
+                        <motion.div className="w-1.5 h-1.5 rounded-full bg-cyan-400/60" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-400/40" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-pink-400/30" />
+                    </div>
+                    <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.15em]">Creative Webflow</span>
+                </div>
+                <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.15em]">v2.0</span>
             </motion.div>
 
-            {/* Bottom bar info */}
+            {/* Bottom HUD */}
             <motion.div
                 className="absolute bottom-5 left-0 w-full flex justify-between items-center px-6 md:px-10 z-30"
                 initial={{ opacity: 0 }}
@@ -463,25 +566,19 @@ const Preloader = ({ onComplete }) => {
                 transition={{ delay: 0.5 }}
             >
                 <span className="text-[8px] font-mono text-white/10 uppercase tracking-wider">Premium Digital Agency</span>
-                <span className="text-[8px] font-mono text-white/10 uppercase tracking-wider">{new Date().getFullYear()}</span>
+                <span className="text-[8px] font-mono text-white/10 tabular-nums">{new Date().getFullYear()}</span>
             </motion.div>
 
-            {/* Corner accent brackets */}
+            {/* Corner HUD brackets */}
             {[
-                { pos: 'top-5 left-5', bH: 'from-cyan-400/40 to-transparent', bV: 'from-cyan-400/40 to-transparent', dirH: 'bg-gradient-to-r', dirV: 'bg-gradient-to-b' },
-                { pos: 'top-5 right-5', bH: 'from-purple-400/40 to-transparent', bV: 'from-purple-400/40 to-transparent', dirH: 'bg-gradient-to-l', dirV: 'bg-gradient-to-b' },
-                { pos: 'bottom-5 left-5', bH: 'from-cyan-400/25 to-transparent', bV: 'from-cyan-400/25 to-transparent', dirH: 'bg-gradient-to-r', dirV: 'bg-gradient-to-t' },
-                { pos: 'bottom-5 right-5', bH: 'from-pink-400/25 to-transparent', bV: 'from-pink-400/25 to-transparent', dirH: 'bg-gradient-to-l', dirV: 'bg-gradient-to-t' },
+                { cls: 'top-4 left-4', c1: 'from-cyan-400/50', c2: 'from-cyan-400/50', dH: 'to-r', dV: 'to-b' },
+                { cls: 'top-4 right-4', c1: 'from-purple-400/50', c2: 'from-purple-400/50', dH: 'to-l', dV: 'to-b' },
+                { cls: 'bottom-4 left-4', c1: 'from-cyan-400/30', c2: 'from-cyan-400/30', dH: 'to-r', dV: 'to-t' },
+                { cls: 'bottom-4 right-4', c1: 'from-pink-400/30', c2: 'from-pink-400/30', dH: 'to-l', dV: 'to-t' },
             ].map((c, i) => (
-                <motion.div
-                    key={i}
-                    className={`absolute ${c.pos} z-30`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
-                >
-                    <div className={`w-8 h-[1px] ${c.dirH} ${c.bH}`} />
-                    <div className={`h-8 w-[1px] ${c.dirV} ${c.bV}`} />
+                <motion.div key={i} className={`absolute ${c.cls} z-30`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 + i * 0.08 }}>
+                    <div className={`w-10 h-[1px] bg-gradient-${c.dH} ${c.c1} to-transparent`} />
+                    <div className={`h-10 w-[1px] bg-gradient-${c.dV} ${c.c2} to-transparent`} />
                 </motion.div>
             ))}
         </motion.div>
