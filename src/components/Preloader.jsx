@@ -104,15 +104,7 @@ const WarpCanvas = ({ progress }) => {
                 ctx.fill();
             });
 
-            // Central vortex glow
-            const vGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120 + p * 80);
-            vGrad.addColorStop(0, `rgba(6,182,212,${0.04 + p * 0.03})`);
-            vGrad.addColorStop(0.4, `rgba(168,85,247,${0.02 + p * 0.02})`);
-            vGrad.addColorStop(1, 'transparent');
-            ctx.fillStyle = vGrad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 200 + p * 80, 0, Math.PI * 2);
-            ctx.fill();
+
 
             frameRef.current = requestAnimationFrame(render);
         };
@@ -313,19 +305,7 @@ const Preloader = ({ onComplete }) => {
                                     <AnimatedLogo size={85} />
                                 </div>
 
-                                {/* Breathing glow behind logo */}
-                                <motion.div
-                                    className="absolute z-[3] rounded-full"
-                                    style={{ width: 130, height: 130 }}
-                                    animate={{
-                                        boxShadow: [
-                                            '0 0 30px 8px rgba(6,182,212,0.08), inset 0 0 20px rgba(6,182,212,0.03)',
-                                            '0 0 50px 15px rgba(168,85,247,0.1), inset 0 0 30px rgba(168,85,247,0.04)',
-                                            '0 0 30px 8px rgba(6,182,212,0.08), inset 0 0 20px rgba(6,182,212,0.03)',
-                                        ]
-                                    }}
-                                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                                />
+
                             </div>
 
                             {/* Counter display */}
