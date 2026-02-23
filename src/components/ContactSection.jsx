@@ -461,8 +461,8 @@ const ContactSection = () => {
                                                         whileHover={{ scale: 1.02 }}
                                                         whileTap={{ scale: 0.98 }}
                                                         className={`relative p-3 rounded-xl border text-left transition-all duration-300 overflow-hidden ${formData.budget === tier.value
-                                                                ? `bg-gradient-to-br ${tier.color} ${tier.border} shadow-lg`
-                                                                : 'bg-black/20 border-white/8 hover:border-white/15'
+                                                            ? `bg-gradient-to-br ${tier.color} ${tier.border} shadow-lg`
+                                                            : 'bg-black/20 border-white/8 hover:border-white/15'
                                                             }`}
                                                     >
                                                         {formData.budget === tier.value && (
@@ -515,62 +515,48 @@ const ContactSection = () => {
                                             </div>
                                         </div>
 
-                                        {/* Submit Button — Rotating Gradient Border */}
+                                        {/* Submit Button — Static Gradient Border + Shimmer */}
                                         <motion.div
-                                            className="relative group w-full mt-4"
+                                            className="relative group w-full mt-4 rounded-2xl overflow-hidden"
                                             whileHover={{ scale: 1.01 }}
                                             whileTap={{ scale: 0.99 }}
+                                            style={{
+                                                padding: '1px',
+                                                background: 'linear-gradient(135deg, #06b6d4, #a855f7, #ec4899)',
+                                            }}
                                         >
-                                            {/* Rotating border */}
-                                            <div
-                                                className="absolute -inset-[1px] rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"
-                                                style={{
-                                                    background: 'conic-gradient(from 0deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
-                                                    animation: 'contact-submit-rotate 3s linear infinite',
-                                                }}
-                                            />
-                                            {/* Inner bg */}
-                                            <div className="absolute inset-[1px] rounded-2xl bg-[#0a0f1c]/95" />
-
-                                            {/* Pulsing glow */}
-                                            <motion.div
-                                                className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 blur-xl pointer-events-none"
-                                                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                                                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                                            />
-
-                                            {/* Shimmer */}
-                                            <motion.div className="absolute inset-[1px] rounded-2xl overflow-hidden pointer-events-none">
+                                            <div className="rounded-2xl bg-[#0a0f1c]/95 relative overflow-hidden">
+                                                {/* Shimmer sweep */}
                                                 <motion.div
-                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -skew-x-12"
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12 pointer-events-none"
                                                     animate={{ x: ['-200%', '200%'] }}
-                                                    transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                                                    transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
                                                 />
-                                            </motion.div>
 
-                                            <button
-                                                type="submit"
-                                                disabled={isSubmitting}
-                                                className="relative z-10 w-full py-4 rounded-2xl text-white font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-3 cursor-pointer"
-                                            >
-                                                {isSubmitting ? (
-                                                    <motion.div
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                                        className="w-5 h-5 border-2 border-white/30 border-t-cyan-400 rounded-full"
-                                                    />
-                                                ) : (
-                                                    <>
-                                                        <span style={{ textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>Send Message</span>
+                                                <button
+                                                    type="submit"
+                                                    disabled={isSubmitting}
+                                                    className="relative z-10 w-full py-4 text-white font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-3 cursor-pointer"
+                                                >
+                                                    {isSubmitting ? (
                                                         <motion.div
-                                                            animate={{ x: [0, 4, 0] }}
-                                                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                                                        >
-                                                            <Send size={16} className="text-cyan-400" />
-                                                        </motion.div>
-                                                    </>
-                                                )}
-                                            </button>
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                                            className="w-5 h-5 border-2 border-white/30 border-t-cyan-400 rounded-full"
+                                                        />
+                                                    ) : (
+                                                        <>
+                                                            <span style={{ textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>Send Message</span>
+                                                            <motion.div
+                                                                animate={{ x: [0, 4, 0] }}
+                                                                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                                                            >
+                                                                <Send size={16} className="text-cyan-400" />
+                                                            </motion.div>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
                                         </motion.div>
 
                                         <p className="text-center text-[10px] text-white/25 mt-1 flex items-center justify-center gap-1.5">

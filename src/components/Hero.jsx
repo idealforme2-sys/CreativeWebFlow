@@ -84,43 +84,54 @@ const PrimaryCTA = ({ onClick }) => {
 
     return (
         <MagneticWrapper strength={0.2}>
-            <div
-                className="relative group w-full cursor-pointer"
+            <motion.button
+                className="relative group cursor-pointer overflow-hidden rounded-full px-8 py-3.5"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 onClick={onClick}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                    background: 'linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4, #ec4899)',
+                    backgroundSize: '300% 100%',
+                    animation: 'pulseBackground 4s linear infinite',
+                }}
             >
-                <PulsatingButton className="w-full sm:w-auto !px-6 !py-2.5">
-                    <span className="flex items-center justify-center gap-2 drop-shadow-md">
-                        <motion.span
-                            animate={{ rotate: isHovered ? 360 : 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="text-cyan-400"
-                        >
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M12 2L4 7l8 5 8-5-8-5z" />
-                                <path d="M4 12l8 5 8-5" />
-                                <path d="M4 17l8 5 8-5" />
-                            </svg>
-                        </motion.span>
-                        <span className="text-xs font-bold uppercase tracking-wider text-white">
-                            Get More Customers
-                        </span>
-                        <motion.span
-                            animate={{ x: isHovered ? [0, 5, 0] : 0 }}
-                            transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
-                            className="text-purple-400"
-                        >
-                            →
-                        </motion.span>
+                {/* Shimmer */}
+                <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.15] to-transparent -skew-x-12 pointer-events-none"
+                    animate={{ x: ['-200%', '200%'] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                />
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                    <motion.span
+                        animate={{ rotate: isHovered ? 360 : 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-cyan-200"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 2L4 7l8 5 8-5-8-5z" />
+                            <path d="M4 12l8 5 8-5" />
+                            <path d="M4 17l8 5 8-5" />
+                        </svg>
+                    </motion.span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-white">
+                        Get More Customers
                     </span>
-                </PulsatingButton>
-            </div>
+                    <motion.span
+                        animate={{ x: isHovered ? [0, 5, 0] : 0 }}
+                        transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
+                        className="text-purple-200"
+                    >
+                        →
+                    </motion.span>
+                </span>
+            </motion.button>
         </MagneticWrapper>
     );
 };
 
-// Secondary CTA Button with Eye Icon + Rotating Gradient Border
+// Secondary CTA — static gradient border + shimmer sweep
 const SecondaryCTA = ({ onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -129,64 +140,36 @@ const SecondaryCTA = ({ onClick }) => {
             <motion.a
                 href="#work"
                 onClick={onClick}
-                className="relative group block"
+                className="relative group block rounded-full"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                style={{
+                    padding: '1px',
+                    background: 'linear-gradient(135deg, rgba(6,182,212,0.4), rgba(168,85,247,0.4), rgba(236,72,153,0.4))',
+                }}
             >
-                <style>{`
-                    @keyframes hero-gradient-rotate {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}</style>
-                {/* Rotating gradient border */}
-                <div
-                    className="absolute -inset-[1px] rounded-full opacity-40 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                        background: 'conic-gradient(from 0deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
-                        animation: 'hero-gradient-rotate 3s linear infinite',
-                    }}
-                />
-                {/* Inner bg */}
-                <div className="absolute inset-[1px] rounded-full bg-black/80 backdrop-blur-md" />
-
-                {/* Pulsing glow */}
-                <motion.div
-                    className="absolute -inset-2 rounded-full bg-cyan-500/10 blur-xl pointer-events-none"
-                    animate={{ opacity: [0.1, 0.3, 0.1], scale: [0.95, 1.05, 0.95] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
-
-                {/* Shimmer */}
-                <motion.div
-                    className="absolute inset-0 rounded-full overflow-hidden pointer-events-none"
-                >
+                <div className="rounded-full bg-black/85 backdrop-blur-md px-6 py-3 relative overflow-hidden">
+                    {/* Shimmer sweep */}
                     <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.07] to-transparent -skew-x-12 pointer-events-none"
                         animate={{ x: ['-200%', '200%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
                     />
-                </motion.div>
-
-                <div className="relative z-10 px-6 py-3 flex items-center gap-2">
-                    <motion.svg
-                        className="w-4 h-4 text-white/60 group-hover:text-cyan-400 transition-colors"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        animate={{ scale: isHovered ? 1.1 : 1 }}
-                    >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </motion.svg>
-                    <span className="text-sm font-bold uppercase tracking-wider text-white/80 group-hover:text-white transition-colors">
-                        View Our Work
-                    </span>
+                    <div className="relative z-10 flex items-center gap-2">
+                        <motion.svg
+                            className="w-4 h-4 text-white/60 group-hover:text-cyan-400 transition-colors"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                            animate={{ scale: isHovered ? 1.1 : 1 }}
+                        >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </motion.svg>
+                        <span className="text-sm font-bold uppercase tracking-wider text-white/80 group-hover:text-white transition-colors">
+                            View Our Work
+                        </span>
+                    </div>
                 </div>
             </motion.a>
         </MagneticWrapper>
