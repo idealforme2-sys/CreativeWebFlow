@@ -15,10 +15,10 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import InfiniteMarquee from './components/InfiniteMarquee';
 import AboutSection from './components/AboutSection';
-import ProcessSection from './components/ProcessSection'; // Restored Missing Section
+import ProcessSection from './components/ProcessSection';
 import ServicesShowcase from './components/ServicesShowcase';
 import WorkSection from './components/WorkSection';
-import DetailedCaseStudies from './components/DetailedCaseStudies'; // New Component
+import DetailedCaseStudies from './components/DetailedCaseStudies';
 import WhyChooseUs from './components/WhyChooseUs';
 import ContactSection from './components/ContactSection';
 import SocialProofSection from './components/SocialProofSection';
@@ -31,7 +31,7 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [gameActive, setGameActive] = useState(false);
 
-    // Initialize Lenis smooth scrolling — cinematic feel
+    // Initialize Lenis smooth scrolling
     useEffect(() => {
         if (loading) return;
 
@@ -52,19 +52,22 @@ function App() {
 
         requestAnimationFrame(raf);
 
-        // Removed code that forces lenis.stop() on gameActive so user can play and scroll simultaneously
-
         return () => {
             lenis.destroy();
         };
-    }, [loading, gameActive]);
+    }, [loading]);
 
     return (
-        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative">
+        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative bg-[#030014]">
             {/* Dynamic Viewport Border */}
             <BorderFrame />
+
             {/* Custom Cursor */}
             <CustomCursor />
+
+            {/* Global Backgrounds */}
+            <WebGLBackground />
+            <DigitalRain />
 
             {/* Preloader */}
             <AnimatePresence mode="wait">
@@ -74,60 +77,31 @@ function App() {
             {/* Main Content */}
             {!loading && (
                 <>
-                    {/* Scroll Progress Bar */}
-                    <ScrollProgress />
-
-                    {/* WebGL Neon Background */}
-                    <WebGLBackground />
-
-                    {/* Matrix Digital Rain Effect */}
-                    <DigitalRain />
-
-                    {/* Navigation */}
+                    {/* Navigation Overlays */}
                     <Navbar />
+                    <ScrollProgress />
+                    <GameTriggerButton onClick={() => setGameActive(true)} />
 
-                    {/* Space Defender Game */}
                     <InSiteSpaceGame
                         isActive={gameActive}
                         onClose={() => setGameActive(false)}
                     />
-                    <GameTriggerButton onClick={() => setGameActive(true)} />
 
-                    {/* Main Content */}
                     <main className="relative z-10">
                         {/* Hero Section */}
                         <Hero />
 
-                        {/* Content sections: Removed backdrop-blur-sm and changed bg-black/50 to bg-black/20 so the Digital Rain cyberpunk background shines through globally */}
+                        {/* Content sections Container */}
                         <div className="relative z-20 bg-black/20 shadow-[0_-50px_100px_black]">
-                            {/* Marquee Transition */}
                             <InfiniteMarquee />
-
-                            {/* About Us (absorbs Mission content) */}
                             <AboutSection />
-
-                            {/* Restored: Process/Methodology (Horizontal Scroll) */}
                             <ProcessSection />
-
-                            {/* Services — single interactive showcase */}
                             <ServicesShowcase />
-
-                            {/* Portfolio */}
                             <WorkSection />
-
-                            {/* Detailed Case Studies (Original Section) */}
                             <DetailedCaseStudies />
-
-                            {/* Why Choose Us */}
                             <WhyChooseUs />
-
-                            {/* Social Proof & Guarantees */}
                             <SocialProofSection />
-
-                            {/* Contact */}
                             <ContactSection />
-
-                            {/* Footer */}
                             <Footer />
                         </div>
                     </main>

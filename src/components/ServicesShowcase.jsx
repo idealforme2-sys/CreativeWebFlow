@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { BlurFadeIn, MagneticButton, ParticlesBackground } from './UIComponents';
-import { ArrowRight, Check, CheckCircle2, Sparkles, TrendingUp, Search, Code2, Cpu, MapPin } from 'lucide-react';
+import { ArrowRight, Check, CheckCircle2, Sparkles, TrendingUp, Search, Code2, Cpu, MapPin, Star } from 'lucide-react';
 
 // Data Structure — icons added back, headings fixed (no more .split('to') truncation)
 const tabsData = [

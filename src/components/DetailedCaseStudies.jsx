@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award, ExternalLink } from 'lucide-react';
+import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award, ExternalLink, Star } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { RevealOnScroll, SectionParticles, TyphoonVortex } from './UIComponents';
 import { Highlighter } from './magicui/Highlighter';
