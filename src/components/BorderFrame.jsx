@@ -61,21 +61,6 @@ const BorderFrame = () => {
         window.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('mouseleave', handleMouseLeave);
 
-        const chasers = [
-            { idx: 0, speed: 60, color: '#06b6d4', size: 3.5 },
-            { idx: 0, speed: 85, color: '#a855f7', size: 4.5 },
-            { idx: 0, speed: 110, color: '#ec4899', size: 3 },
-        ];
-
-        // Stagger initial positions
-        setTimeout(() => {
-            if (vertices.length > 0) {
-                chasers[0].idx = 0;
-                chasers[1].idx = vertices.length * 0.33;
-                chasers[2].idx = vertices.length * 0.66;
-            }
-        }, 100);
-
         let frameId;
         let lastTime = performance.now();
         let globalTime = 0;
@@ -138,8 +123,8 @@ const BorderFrame = () => {
             }
             ctx.closePath();
 
-            // Rotating ambient gradient spanning the viewport
-            const gradRot = globalTime * 0.8;
+            // Flowing gradient spanning the viewport to simulate the animated CSS background
+            const gradRot = globalTime * 0.4;
             const cx = w / 2;
             const cy = h / 2;
             const radius = Math.max(w, h);
@@ -148,56 +133,27 @@ const BorderFrame = () => {
                 cx - Math.cos(gradRot) * radius, cy - Math.sin(gradRot) * radius
             );
             grad.addColorStop(0, '#06b6d4');
-            grad.addColorStop(0.5, '#a855f7');
-            grad.addColorStop(1, '#ec4899');
+            grad.addColorStop(0.33, '#a855f7');
+            grad.addColorStop(0.66, '#ec4899');
+            grad.addColorStop(1, '#06b6d4');
 
-            // Draw outer neon glow
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2;
             ctx.strokeStyle = grad;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = 'rgba(168,85,247,0.8)'; // Purple ambient glow
+            ctx.globalAlpha = 0.9; // Match CSS opacity-90
+
+            // Draw first glow layer (cyan tint, tighter)
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(6,182,212,0.6)';
             ctx.stroke();
 
-            // Draw pure white hot core
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#ffffff';
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = '#ffffff';
+            // Draw second glow layer (purple tint, wider)
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = 'rgba(168,85,247,0.4)';
             ctx.stroke();
 
+            // Draw crisp solid core line (matching the CSS border)
             ctx.shadowBlur = 0;
-
-            // ─── Draw Chasers ───
-            chasers.forEach(c => {
-                c.idx += c.speed * dt;
-                if (c.idx >= vertices.length) c.idx -= vertices.length;
-
-                let i1 = Math.floor(c.idx);
-                let i2 = (i1 + 1) % vertices.length;
-                let t = c.idx - i1;
-
-                // Interpolate exact position along the physics segments
-                let px = vertices[i1].x * (1 - t) + vertices[i2].x * t;
-                let py = vertices[i1].y * (1 - t) + vertices[i2].y * t;
-
-                // Chaser Aura
-                ctx.beginPath();
-                ctx.arc(px, py, c.size * 4, 0, Math.PI * 2);
-                ctx.fillStyle = c.color;
-                ctx.globalAlpha = 0.4;
-                ctx.fill();
-
-                // Chaser Hot Core
-                ctx.globalAlpha = 1;
-                ctx.beginPath();
-                ctx.arc(px, py, c.size, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.shadowColor = c.color;
-                ctx.shadowBlur = 12;
-                ctx.fill();
-
-                ctx.shadowBlur = 0;
-            });
+            ctx.stroke();
 
             frameId = requestAnimationFrame(render);
         };
@@ -212,7 +168,7 @@ const BorderFrame = () => {
         };
     }, []);
 
-    // Minimal corner accents (colored L-brackets without white lines)
+    // Premium Tech Corner Brackets
     const corners = [
         { top: 0, left: 0, rotate: 0, color: '#06b6d4' },
         { top: 0, right: 0, rotate: 90, color: '#a855f7' },
@@ -230,7 +186,7 @@ const BorderFrame = () => {
                 className="absolute inset-0 pointer-events-none"
             />
 
-            {/* Premium Tech Corner Brackets (Color Only) */}
+            {/* Premium Tech Corner Brackets */}
             {corners.map((c, i) => (
                 <div
                     key={i}
@@ -242,22 +198,23 @@ const BorderFrame = () => {
                         bottom: c.bottom !== undefined ? c.bottom : 'auto',
                         width: '40px',
                         height: '40px',
-                        filter: `drop-shadow(0 0 10px ${c.color})` // Glowing brackets
+                        filter: `drop-shadow(0 0 12px ${c.color})`
                     }}
                 >
-                    <motion.svg
+                    <svg
                         width="40" height="40"
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                         style={{ transform: `rotate(${c.rotate}deg)` }}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: i * 0.15 }}
                     >
-                        <path d="M10 4 L26 4" stroke={c.color} strokeWidth="3" strokeOpacity="1" strokeLinecap="round" />
-                        <path d="M4 10 L4 26" stroke={c.color} strokeWidth="3" strokeOpacity="1" strokeLinecap="round" />
-                    </motion.svg>
+                        {/* Outer bracket layer */}
+                        <path d="M0 2 L20 2" stroke="white" strokeWidth="2.5" strokeOpacity="0.9" />
+                        <path d="M2 0 L2 20" stroke="white" strokeWidth="2.5" strokeOpacity="0.9" />
+                        {/* Inner colored accent layer */}
+                        <path d="M12 6 L24 6" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" />
+                        <path d="M6 12 L6 24" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" />
+                    </svg>
                 </div>
             ))}
         </div>
