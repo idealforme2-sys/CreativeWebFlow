@@ -122,22 +122,22 @@ const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
                 </div>
 
                 {/* Goal */}
-                <div className="relative mb-8 pt-6 border-t border-white/5">
+                <div className="relative mb-8 pt-6 border-t border-white/10">
                     <div className="flex items-center gap-2 mb-3">
-                        <Target size={14} className="text-white/30" />
-                        <h4 className="text-[11px] font-bold tracking-[0.2em] text-white/40 uppercase">The Goal</h4>
+                        <Target size={16} className="text-pink-400" />
+                        <h4 className="text-xs font-black tracking-[0.25em] text-white uppercase drop-shadow-md">The Goal</h4>
                     </div>
-                    <p className="text-xl md:text-2xl font-medium text-white/90 leading-snug">{study.goal}</p>
+                    <p className="text-xl md:text-2xl font-semibold text-white/95 leading-snug drop-shadow-sm">{study.goal}</p>
                 </div>
 
                 {/* Solution */}
                 <div className="mb-10">
                     <div className="flex items-center gap-2 mb-3">
-                        <Lightbulb size={14} className="text-white/30" />
-                        <h4 className="text-[11px] font-bold tracking-[0.2em] text-white/40 uppercase">Our Solution</h4>
+                        <Lightbulb size={16} className="text-cyan-400" />
+                        <h4 className="text-xs font-black tracking-[0.25em] text-white uppercase drop-shadow-md">Our Solution</h4>
                     </div>
                     {/* Replaced standard <p> with the requested TypingAnimation */}
-                    <TypingAnimation className="text-white/50 leading-relaxed text-base md:text-lg block" duration={15}>
+                    <TypingAnimation className="text-white/80 font-medium leading-relaxed text-base md:text-lg block drop-shadow-sm" duration={15}>
                         {study.solution}
                     </TypingAnimation>
                 </div>

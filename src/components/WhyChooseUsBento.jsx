@@ -135,16 +135,16 @@ const WhyChooseUsBento = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-20 relative z-10"
                 >
-                    <div className="inline-flex items-center space-x-2 mb-4">
-                        <span className="h-px w-8 bg-cyan-400/50"></span>
-                        <span className="text-xs font-bold tracking-[0.2em] text-cyan-400 uppercase">Why Us</span>
-                        <span className="h-px w-8 bg-cyan-400/50"></span>
+                    <div className="inline-flex items-center justify-center gap-4 mb-6">
+                        <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-pink-500" />
+                        <span className="text-pink-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]">Why Us</span>
+                        <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-pink-500" />
                     </div>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-2">
+                    <h2 className="font-extrabold text-4xl md:text-5xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                         Why Local Businesses
                     </h2>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight pb-2">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
+                    <h2 className="font-extrabold text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-tight pb-2">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                             Choose Us
                         </span>
                     </h2>

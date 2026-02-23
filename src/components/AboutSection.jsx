@@ -155,6 +155,7 @@ const AboutSection = () => {
                         >
                             <div className="h-px w-12 bg-cyan-500" />
                             <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">About Us</span>
+                            <div className="h-px w-12 bg-cyan-500" />
                         </motion.div>
                         <AnimatedHeadline>
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">

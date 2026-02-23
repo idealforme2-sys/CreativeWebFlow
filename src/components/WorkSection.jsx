@@ -88,33 +88,50 @@ const WorkSection = () => {
     };
 
     const getCardStyle = (position) => {
-        // position 0: back (far), 1: middle, 2: front (active)
+        // We now have 4 positions in a 3D circle:
+        // 0: Front (Active)
+        // 1: Right Side
+        // 2: Back (Hidden/Far)
+        // 3: Left Side
         const styles = {
             0: {
-                x: isHovered ? -80 : -60,
-                z: -100,
-                rotateZ: isHovered ? -8 : -5,
-                opacity: 0.6,
-                filter: 'blur(2px)',
-                scale: 0.9,
-                zIndex: 10
-            },
-            1: {
-                x: isHovered ? -40 : -30,
-                z: -50,
-                rotateZ: isHovered ? -4 : -2.5,
-                opacity: 0.8,
-                filter: 'blur(1px)',
-                scale: 0.95,
-                zIndex: 20
-            },
-            2: {
                 x: 0,
+                y: 0,
                 z: 0,
-                rotateZ: 0,
+                rotateY: 0,
                 opacity: 1,
                 filter: 'blur(0px)',
                 scale: 1,
+                zIndex: 40
+            },
+            1: {
+                x: isHovered ? 140 : 120,
+                y: 0,
+                z: -100,
+                rotateY: -15, // turn inward to face user
+                opacity: 0.7,
+                filter: 'blur(2px)',
+                scale: 0.85,
+                zIndex: 30
+            },
+            2: {
+                x: 0,
+                y: -40,
+                z: -200,
+                rotateY: 0,
+                opacity: 0.3,
+                filter: 'blur(4px)',
+                scale: 0.7,
+                zIndex: 20
+            },
+            3: {
+                x: isHovered ? -140 : -120,
+                y: 0,
+                z: -100,
+                rotateY: 15, // turn inward to face user
+                opacity: 0.7,
+                filter: 'blur(2px)',
+                scale: 0.85,
                 zIndex: 30
             }
         };
@@ -122,12 +139,12 @@ const WorkSection = () => {
     };
 
     const getVisibleCards = () => {
-        const visible = [];
-        for (let i = 0; i < 3; i++) {
-            const index = (activeIndex + i) % projects.length;
-            visible.push({ ...projects[index], position: 2 - i });
-        }
-        return visible;
+        // Return all 4 cards mapped to their circular positions based on activeIndex
+        return projects.map((project, i) => {
+            // Distance from activeIndex (0 to 3)
+            let relativePosition = (i - activeIndex + projects.length) % projects.length;
+            return { ...project, position: relativePosition };
+        });
     };
 
     return (
@@ -142,18 +159,18 @@ const WorkSection = () => {
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 <div className="text-center mb-24">
                     <div className="flex items-center justify-center gap-4 mb-6">
-                        <div className="h-px w-12 bg-cyan-500" />
-                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Example Projects</span>
-                        <div className="h-px w-12 bg-cyan-500" />
+                        <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-pink-500" />
+                        <span className="text-pink-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]">Example Projects</span>
+                        <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-pink-500" />
                     </div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6"
+                        className="font-extrabold text-4xl md:text-5xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                     >
                         How We Help <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                             Local Businesses
                         </span>
                     </motion.h2>
@@ -184,29 +201,34 @@ const WorkSection = () => {
                         <AnimatePresence initial={false}>
                             {getVisibleCards().map((card) => {
                                 const style = getCardStyle(card.position);
-                                const isFront = card.position === 2;
+                                const isFront = card.position === 0;
                                 const Icon = card.icon;
 
                                 return (
                                     <motion.div
                                         key={card.id}
-                                        initial={{ opacity: 0, x: 50, z: -50 }}
+                                        initial={{ opacity: 0 }}
                                         animate={{
                                             ...style,
-                                            transition: { type: "spring", stiffness: 300, damping: 30 }
+                                            transition: { type: "spring", stiffness: 200, damping: 25 }
                                         }}
-                                        exit={{ opacity: 0, x: -100, z: -100, rotateZ: -10 }}
+                                        exit={{ opacity: 0 }}
                                         className="absolute inset-0 w-full h-full"
                                         style={{
                                             transformStyle: 'preserve-3d',
-                                            transformOrigin: 'center bottom',
+                                            transformOrigin: 'center center',
+                                        }}
+                                        onClick={() => {
+                                            // Optional: clicking a side card brings it to the front
+                                            if (card.position === 1) handleNext();
+                                            if (card.position === 3) handlePrev();
                                         }}
                                     >
                                         <div className={`
                                             relative w-full h-full rounded-[2rem] overflow-hidden border transition-all duration-500
                                             ${isFront ?
-                                                'bg-slate-900/80 backdrop-blur-xl border-white/10 ring-1 ring-white/20 shadow-[0_0_40px_-10px_rgba(112,0,255,0.5)]' :
-                                                'bg-slate-950 border-white/20 shadow-2xl'}
+                                                'bg-slate-900/80 backdrop-blur-xl border-white/10 ring-1 ring-white/20 shadow-[0_0_40px_-10px_rgba(112,0,255,0.5)] cursor-default' :
+                                                'bg-slate-950 border-white/20 shadow-2xl cursor-pointer hover:border-cyan-500/50'}
                                         `}>
                                             {/* Card Background Image */}
                                             <div className="absolute inset-0 z-0">

@@ -111,9 +111,9 @@ const SocialProofSection = () => {
                         <span className="text-xs tracking-[0.3em] font-bold text-slate-200 uppercase">Core Architecture</span>
                     </div>
                     <AnimatedHeadline>
-                        <h2 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight text-white">
+                        <h2 className="font-extrabold text-5xl md:text-7xl leading-[1.1] tracking-tight mb-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                             Built on Promises <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-[#bd00ff] to-[#00f0ff] bg-[length:200%_auto] animate-shimmer">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                                 We Actually Keep
                             </span>
                         </h2>

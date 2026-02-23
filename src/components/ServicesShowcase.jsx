@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { BlurFadeIn, MagneticButton, ParticlesBackground } from './UIComponents';
-import { ArrowRight, Check, CheckCircle2, Star, TrendingUp, Search, Code2, Cpu, MapPin } from 'lucide-react';
+import { ArrowRight, Check, CheckCircle2, Sparkles, TrendingUp, Search, Code2, Cpu, MapPin } from 'lucide-react';
 
 // Data Structure — icons added back, headings fixed (no more .split('to') truncation)
 const tabsData = [
@@ -146,9 +146,11 @@ const ServicesShowcase = () => {
                 {/* Section Header */}
                 <BlurFadeIn delay={0.1}>
                     <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-24">
-                        <div className="inline-flex items-center px-5 py-2 mb-6 rounded-full bg-white/10 border border-blue-400/30 backdrop-blur-md text-sm font-bold text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] drop-shadow-[0_0_10px_rgba(255,255,255,0.6)] tracking-wide">
-                            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 mr-2.5 animate-pulse shadow-[0_0_10px_rgba(59,130,246,1)]" />
-                            Innovation Engine
+                        <div className="inline-flex items-center px-6 py-2.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-shadow">
+                            <Sparkles className="w-5 h-5 text-cyan-400 mr-2.5" />
+                            <span className="text-sm font-bold text-white tracking-widest uppercase">
+                                Innovation Engine
+                            </span>
                         </div>
                         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
                             Everything your business <br className="hidden sm:block" />
@@ -170,7 +172,7 @@ const ServicesShowcase = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
-                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-slate-300 bg-white/[0.05] hover:text-white hover:bg-white/15 drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-white bg-white/[0.05] hover:bg-white/15 drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
                                             }`}
                                     >
                                         {isActive && (

@@ -30,9 +30,9 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
             }}
         >
             <div
-                className={`w-full h-full rounded-[2.5rem] overflow-hidden border transition-all duration-700 ease-out relative flex flex-col backdrop-blur-md ${isFocused
-                    ? `border-${step.color}-500/40 bg-slate-900/80 shadow-[0_0_50px_rgba(var(--${step.color}-rgb),0.15)]`
-                    : 'border-white/5 bg-slate-900/30 opacity-40 blur-[1px] grayscale'
+                className={`w-full h-full rounded-[2.5rem] overflow-hidden border transition-all duration-700 ease-out relative flex flex-col bg-[#050510] ${isFocused
+                    ? `border-${step.color}-500/40 shadow-[0_0_50px_rgba(var(--${step.color}-rgb),0.15)]`
+                    : 'border-white/10 opacity-70 blur-[1px] grayscale'
                     }`}
             >
                 <div className="flex flex-col md:flex-row h-full">
@@ -74,7 +74,6 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
                         </div>
 
                         <div className={`flex items-center gap-4 transition-all duration-500 delay-200 ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                            <div className={`w-8 h-[1px] bg-${step.color}-500/40`} />
                             <span className={`text-[10px] font-bold uppercase tracking-widest text-white/50`}>System Execution</span>
                         </div>
                     </div>
@@ -171,13 +170,17 @@ const ProcessSection = () => {
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-4xl mx-auto"
                     >
-                        <span className="inline-block text-cyan-400 text-xs font-bold tracking-[0.2em] uppercase mb-3 md:mb-4 cyan-glow-text">
-                            How It Works
+                        <span className="flex items-center justify-center gap-4 mb-3 md:mb-4">
+                            <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-pink-500" />
+                            <span className="text-pink-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]">
+                                How It Works
+                            </span>
+                            <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-pink-500" />
                         </span>
                         <AnimatedHeadline>
-                            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 md:mb-4 tracking-tight">
+                            <h2 className="font-extrabold text-4xl md:text-5xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-2 md:mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                                 From Idea to Launch in{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                                     4 Simple Steps
                                 </span>
                             </h2>
