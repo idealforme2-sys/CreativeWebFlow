@@ -208,21 +208,25 @@ const BorderFrame = () => {
         {
             position: { top: 0, left: 0 },
             color: '#06b6d4',
+            whitePaths: ["M0 2 L20 2", "M2 0 L2 20"],
             paths: ["M12 6 L24 6", "M6 12 L6 24"]
         },
         {
             position: { top: 0, right: 0 },
             color: '#a855f7',
+            whitePaths: ["M40 2 L20 2", "M38 0 L38 20"],
             paths: ["M16 6 L28 6", "M34 12 L34 24"]
         },
         {
             position: { bottom: 0, right: 0 },
             color: '#ec4899',
+            whitePaths: ["M40 38 L20 38", "M38 40 L38 20"],
             paths: ["M16 34 L28 34", "M34 16 L34 28"]
         },
         {
             position: { bottom: 0, left: 0 },
             color: '#06b6d4',
+            whitePaths: ["M0 38 L20 38", "M2 40 L2 20"],
             paths: ["M12 34 L24 34", "M6 16 L6 28"]
         },
     ];
@@ -259,9 +263,13 @@ const BorderFrame = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: i * 0.15 }}
                     >
-                        {/* Inner colored accent layer ONLY -- perfectly positioned to the true corner */}
+                        {/* Outer white bracket layer perfectly aligned */}
+                        {c.whitePaths.map((d, pathIdx) => (
+                            <path key={`w-${pathIdx}`} d={d} stroke="white" strokeWidth="2.5" strokeOpacity="0.9" />
+                        ))}
+                        {/* Inner colored accent layer perfectly positioned to the true corner */}
                         {c.paths.map((d, pathIdx) => (
-                            <path key={pathIdx} d={d} stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
+                            <path key={`c-${pathIdx}`} d={d} stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
                         ))}
                     </motion.svg>
                 </div>
