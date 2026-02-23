@@ -82,9 +82,6 @@ const BorderFrame = () => {
                         xmlns="http://www.w3.org/2000/svg"
                         style={{ transform: `rotate(${c.rotate}deg)` }}
                     >
-                        {/* Outer bracket layer */}
-                        <path d="M0 2 L20 2" stroke="white" strokeWidth="2.5" strokeOpacity="0.9" />
-                        <path d="M2 0 L2 20" stroke="white" strokeWidth="2.5" strokeOpacity="0.9" />
                         {/* Inner colored accent layer */}
                         <path d="M12 6 L24 6" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" />
                         <path d="M6 12 L6 24" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" />
