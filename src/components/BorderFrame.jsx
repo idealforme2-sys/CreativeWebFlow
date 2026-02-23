@@ -203,12 +203,29 @@ const BorderFrame = () => {
         };
     }, []);
 
-    // Minimal colored corner accents matching the current user-approved aesthetic
+    // Perfectly aligned explicit corner paths (no rotation transforms needed)
+    // Mirrors the basic 2-line structure: M12 6 L24 6, M6 12 L6 24 to all 4 corners
     const corners = [
-        { top: 0, left: 0, rotate: 0, color: '#06b6d4' },
-        { top: 0, right: 0, rotate: 90, color: '#a855f7' },
-        { bottom: 0, right: 0, rotate: 180, color: '#ec4899' },
-        { bottom: 0, left: 0, rotate: 270, color: '#06b6d4' },
+        {
+            position: { top: 0, left: 0 },
+            color: '#06b6d4',
+            paths: ["M12 6 L24 6", "M6 12 L6 24"]
+        },
+        {
+            position: { top: 0, right: 0 },
+            color: '#a855f7',
+            paths: ["M16 6 L28 6", "M34 12 L34 24"]
+        },
+        {
+            position: { bottom: 0, right: 0 },
+            color: '#ec4899',
+            paths: ["M16 34 L28 34", "M34 16 L34 28"]
+        },
+        {
+            position: { bottom: 0, left: 0 },
+            color: '#06b6d4',
+            paths: ["M12 34 L24 34", "M6 16 L6 28"]
+        },
     ];
 
     return (
@@ -228,10 +245,7 @@ const BorderFrame = () => {
                     key={i}
                     className="absolute"
                     style={{
-                        top: c.top !== undefined ? c.top : 'auto',
-                        left: c.left !== undefined ? c.left : 'auto',
-                        right: c.right !== undefined ? c.right : 'auto',
-                        bottom: c.bottom !== undefined ? c.bottom : 'auto',
+                        ...c.position,
                         width: '40px',
                         height: '40px',
                         filter: `drop-shadow(0 0 10px ${c.color})`
@@ -242,14 +256,14 @@ const BorderFrame = () => {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        style={{ transform: `rotate(${c.rotate}deg)` }}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: i * 0.15 }}
                     >
-                        {/* Only the internal accent ticks */}
-                        <path d="M12 6 L24 6" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
-                        <path d="M6 12 L6 24" stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
+                        {/* Only the internal accent ticks perfectly positioned to the true corner */}
+                        {c.paths.map((d, pathIdx) => (
+                            <path key={`c-${pathIdx}`} d={d} stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
+                        ))}
                     </motion.svg>
                 </div>
             ))}
