@@ -27,14 +27,26 @@ const BorderFrame = () => {
 
         const buildVertices = () => {
             vertices = [];
-            // Top: 0,0 -> w,0
-            for (let x = 0; x <= w; x += spacing) vertices.push({ base_x: x, base_y: 0, x, y: 0, vx: 0, vy: 0 });
-            // Right: w,0 -> w,h
-            for (let y = spacing; y <= h; y += spacing) vertices.push({ base_x: w, base_y: y, x: w, y, vx: 0, vy: 0 });
-            // Bottom: w,h -> 0,h
-            for (let x = w - spacing; x >= 0; x -= spacing) vertices.push({ base_x: x, base_y: h, x, y: h, vx: 0, vy: 0 });
-            // Left: 0,h -> 0,0
-            for (let y = h - spacing; y > 0; y -= spacing) vertices.push({ base_x: 0, base_y: y, x: 0, y, vx: 0, vy: 0 });
+            const perimeter = 2 * (w + h);
+            const numNodes = Math.floor(perimeter / spacing);
+
+            for (let i = 0; i < numNodes; i++) {
+                const frac = i / numNodes;
+                const pos = frac * perimeter;
+                let x, y;
+
+                if (pos < w) {
+                    x = pos; y = 0;
+                } else if (pos < w + h) {
+                    x = w; y = pos - w;
+                } else if (pos < 2 * w + h) {
+                    x = w - (pos - (w + h)); y = h;
+                } else {
+                    x = 0; y = h - (pos - (2 * w + h));
+                }
+
+                vertices.push({ base_x: x, base_y: y, x, y, vx: 0, vy: 0 });
+            }
         };
 
         const resize = () => {
