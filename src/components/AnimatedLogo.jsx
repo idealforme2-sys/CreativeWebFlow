@@ -10,10 +10,11 @@ const AnimatedLogo = ({ size = 40, className = '' }) => {
             transition={{ type: 'spring', stiffness: 300, damping: 18 }}
         >
             <svg
-                viewBox="-15 -15 150 150"
+                viewBox="0 0 120 120"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full overflow-visible"
+                className="w-full h-full"
+                style={{ overflow: 'visible' }}
             >
                 <defs>
                     <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">

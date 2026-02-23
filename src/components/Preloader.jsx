@@ -308,8 +308,8 @@ const Preloader = ({ onComplete }) => {
                                     />
                                 </motion.div>
 
-                                {/* Logo — unconstrained */}
-                                <div className="absolute z-10 flex items-center justify-center" style={{ width: 100, height: 100 }}>
+                                {/* Logo */}
+                                <div className="absolute z-10 flex items-center justify-center" style={{ width: 120, height: 120, overflow: 'visible' }}>
                                     <AnimatedLogo size={85} />
                                 </div>
 
@@ -331,17 +331,12 @@ const Preloader = ({ onComplete }) => {
                             {/* Counter display */}
                             <div className="relative mb-6">
                                 <motion.div
-                                    className="text-8xl md:text-[120px] font-extralight leading-none tabular-nums"
+                                    className="text-8xl md:text-[120px] font-extralight leading-none tabular-nums text-white/90"
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 >
-                                    <span style={{
-                                        background: `linear-gradient(180deg, #ffffff ${100 - count}%, rgba(6,182,212,0.4) 100%)`,
-                                        WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                                    }}>
-                                        {String(count).padStart(3, '0')}
-                                    </span>
+                                    {String(count).padStart(3, '0')}
                                 </motion.div>
                                 {/* Thin accent line under counter */}
                                 <motion.div
