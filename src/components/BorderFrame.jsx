@@ -27,22 +27,25 @@ const BorderFrame = () => {
 
         const buildVertices = () => {
             vertices = [];
-            const perimeter = 2 * (w + h);
-            const numNodes = Math.floor(perimeter / spacing);
+            const inset = 2; // Keep stroke thickness fully inside canvas
+            const boxW = w - inset * 2;
+            const boxH = h - inset * 2;
+            const perimeter = 2 * (boxW + boxH);
+            const numNodes = Math.max(10, Math.floor(perimeter / spacing));
 
             for (let i = 0; i < numNodes; i++) {
                 const frac = i / numNodes;
                 const pos = frac * perimeter;
                 let x, y;
 
-                if (pos < w) {
-                    x = pos; y = 0;
-                } else if (pos < w + h) {
-                    x = w; y = pos - w;
-                } else if (pos < 2 * w + h) {
-                    x = w - (pos - (w + h)); y = h;
+                if (pos < boxW) {
+                    x = inset + pos; y = inset;
+                } else if (pos < boxW + boxH) {
+                    x = w - inset; y = inset + (pos - boxW);
+                } else if (pos < 2 * boxW + boxH) {
+                    x = w - inset - (pos - (boxW + boxH)); y = h - inset;
                 } else {
-                    x = 0; y = h - (pos - (2 * w + h));
+                    x = inset; y = h - inset - (pos - (2 * boxW + boxH));
                 }
 
                 vertices.push({ base_x: x, base_y: y, x, y, vx: 0, vy: 0 });
@@ -50,8 +53,9 @@ const BorderFrame = () => {
         };
 
         const resize = () => {
-            w = window.innerWidth;
-            h = window.innerHeight;
+            // Use current viewport dimensions (excluding scrollbars), fixes right/bottom clipping
+            w = document.documentElement.clientWidth;
+            h = window.innerHeight; // Keep innerHeight for bottom, but clientWidth for horizontal scrollbars
             canvas.width = w * dpr;
             canvas.height = h * dpr;
             ctx.scale(dpr, dpr);
