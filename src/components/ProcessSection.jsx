@@ -23,7 +23,7 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
 
     return (
         <div
-            className="relative w-[85vw] md:w-[60vw] lg:w-[45vw] h-[45vh] md:h-[50vh] flex-shrink-0 group perspective-1000"
+            className="relative w-[85vw] md:w-[60vw] lg:w-[45vw] min-h-[50vh] md:min-h-[55vh] flex-shrink-0 group perspective-1000"
             style={{
                 transform: `rotateY(${tilt}deg) translateZ(${isFocused ? '30px' : '0px'})`,
                 transition: 'transform 0.1s ease-out'
@@ -61,11 +61,11 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
                             {step.title}
                         </h3>
 
-                        <p className="text-gray-400 text-base leading-relaxed mb-8 max-w-sm">
+                        <p className="text-gray-400 text-sm md:text-base leading-relaxed mb-6 max-w-sm">
                             {step.description}
                         </p>
 
-                        <div className={`flex flex-wrap gap-2 mb-8 transition-all duration-500 delay-100 ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        <div className={`flex flex-wrap gap-2 mb-6 transition-all duration-500 delay-100 ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                             {step.deliverables.map((item, i) => (
                                 <span key={i} className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wider border border-white/10 bg-white/5 text-gray-300 transition-colors cursor-default`}>
                                     {item}
@@ -73,7 +73,7 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
                             ))}
                         </div>
 
-                        <div className={`flex items-center gap-4 transition-all duration-500 delay-200 ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        <div className={`flex items-center gap-4 transition-all duration-500 delay-200 mt-auto ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                             <span className={`text-[10px] font-bold uppercase tracking-widest text-white/50`}>System Execution</span>
                         </div>
                     </div>

@@ -83,13 +83,14 @@ const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
         <div id={study.id} ref={ref} className="min-h-[90vh] flex flex-col justify-center py-20 pr-0 lg:pr-12">
 
             {/* Mobile View: Iframe Preview (Hidden on Desktop) */}
-            <div className="block lg:hidden w-full aspect-[4/3] rounded-3xl overflow-hidden mb-10 relative border border-white/10 shadow-2xl">
-                <div className="absolute inset-0 z-0 bg-slate-900 pointer-events-none">
+            <div className="block lg:hidden w-full aspect-[4/3] rounded-3xl overflow-hidden mb-10 relative border border-white/10 shadow-2xl bg-slate-950">
+                <div className="absolute inset-0 z-0 bg-slate-950 pointer-events-none">
                     <iframe
                         src={study.url}
-                        className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0"
+                        className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0 bg-transparent"
                         title={`${study.title} Preview`}
                         loading="lazy"
+                        style={{ colorScheme: 'dark' }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
                 </div>
@@ -243,12 +244,13 @@ const DetailedCaseStudies = () => {
                                     style={{ pointerEvents: isActive ? 'auto' : 'none' }}
                                 >
                                     {/* Live iframe container */}
-                                    <div className="absolute inset-4 rounded-[2rem] overflow-hidden bg-slate-900 shadow-inner">
+                                    <div className="absolute inset-4 rounded-[2rem] overflow-hidden bg-slate-950 shadow-inner">
                                         <iframe
                                             src={study.url}
-                                            className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0 pointer-events-none"
+                                            className="w-[200%] h-[200%] transform scale-50 origin-top-left border-0 pointer-events-none bg-transparent"
                                             title={`${study.title} Preview`}
                                             loading="lazy"
+                                            style={{ colorScheme: 'dark' }}
                                         />
 
                                         {/* Gradients to blend edges */}

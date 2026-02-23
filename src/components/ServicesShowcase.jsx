@@ -176,7 +176,7 @@ const ServicesShowcase = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
-                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-slate-400 bg-white/[0.05] hover:text-white hover:bg-white/15 drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-slate-400 bg-slate-900/80 hover:text-white hover:bg-slate-800 border border-transparent hover:border-white/10 shadow-inner'
                                             }`}
                                     >
                                         {isActive && (

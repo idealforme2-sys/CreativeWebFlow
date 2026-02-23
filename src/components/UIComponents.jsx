@@ -693,7 +693,9 @@ export const TyphoonVortex = ({ color = '#a855f7', speed = 20 }) => {
 };
 
 export const ElectricCurrent = ({ color = '#06b6d4', style, className }) => {
-    const d = `M 0,50 Q ${Math.random() * 50 + 25},${Math.random() * 100} 100,50 T 200,50 T 300,50 T 400,50`;
+    const d = React.useMemo(() => {
+        return `M 0,50 Q ${Math.random() * 50 + 25},${Math.random() * 100} 100,50 T 200,50 T 300,50 T 400,50`;
+    }, []);
 
     return (
         <div className={`absolute pointer-events-none z-0 ${className}`} style={style}>

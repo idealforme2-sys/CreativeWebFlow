@@ -24,8 +24,11 @@ export function TypingAnimation({
     }, [isInView, delay]);
 
     useEffect(() => {
-        // Reset the typing effect entirely if the incoming text changes
+        // Only reset displayed text when the actual source text changes, not on mount.
         setDisplayedText("");
+    }, [text]);
+
+    useEffect(() => {
 
         if (!hasStarted) return;
 
