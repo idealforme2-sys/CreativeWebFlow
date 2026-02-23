@@ -3,6 +3,7 @@ import { Users, ArrowRight, Phone, TrendingUp, Monitor, Target, Lightbulb, Award
 import { motion, useInView } from 'framer-motion';
 import { RevealOnScroll, SectionParticles, TyphoonVortex } from './UIComponents';
 import { Highlighter } from './magicui/Highlighter';
+import { TypingAnimation } from './magicui/typing-animation';
 
 const caseStudies = [
     {
@@ -135,7 +136,10 @@ const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
                         <Lightbulb size={14} className="text-white/30" />
                         <h4 className="text-[11px] font-bold tracking-[0.2em] text-white/40 uppercase">Our Solution</h4>
                     </div>
-                    <p className="text-white/50 leading-relaxed text-base md:text-lg">{study.solution}</p>
+                    {/* Replaced standard <p> with the requested TypingAnimation */}
+                    <TypingAnimation className="text-white/50 leading-relaxed text-base md:text-lg block" duration={15}>
+                        {study.solution}
+                    </TypingAnimation>
                 </div>
 
                 {/* Result — gradient card */}
@@ -178,13 +182,13 @@ const DetailedCaseStudies = () => {
                             className="flex items-center gap-4 mb-6"
                         >
                             <div className="h-px w-12 bg-gradient-to-r from-pink-500 to-transparent" />
-                            <span className="text-pink-400 text-[10px] font-bold tracking-[0.25em] uppercase">Proven Results</span>
+                            <span className="text-pink-400 text-xs font-black tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]">Proven Results</span>
                         </motion.div>
                         <div className="max-w-3xl">
                             {/* <AnimatedHeadline> */}
-                            <h2 className="font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-8">
+                            <h2 className="font-extrabold text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                                 Engineering Success<br className="hidden md:block" />{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                                     Stories
                                 </span>
                             </h2>

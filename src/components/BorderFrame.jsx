@@ -66,6 +66,10 @@ const BorderFrame = () => {
 
         let mouseX = -1000;
         let mouseY = -1000;
+        let lastMouseX = -1000;
+        let lastMouseY = -1000;
+        let mouseVelocity = 0;
+
         const handleMouseMove = (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
@@ -73,6 +77,7 @@ const BorderFrame = () => {
         const handleMouseLeave = () => {
             mouseX = -1000;
             mouseY = -1000;
+            mouseVelocity = 0;
         };
         window.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('mouseleave', handleMouseLeave);
@@ -85,6 +90,16 @@ const BorderFrame = () => {
             const dt = Math.min((now - lastTime) / 1000, 0.1); // Cap delta time to prevent physics explosions
             lastTime = now;
             globalTime += dt;
+
+            // Track kinetic velocity so the ripple requires mouse movement
+            const dVMX = mouseX - lastMouseX;
+            const dVMY = mouseY - lastMouseY;
+            const currentSpeed = Math.sqrt(dVMX * dVMX + dVMY * dVMY);
+            mouseVelocity = mouseVelocity * 0.9 + currentSpeed * 0.1; // Smooth decay
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+
+            const kineticFactor = Math.min(mouseVelocity * 0.15, 1); // Capped at 1
 
             ctx.clearRect(0, 0, w, h);
 
@@ -129,13 +144,13 @@ const BorderFrame = () => {
                         // Calculate a traveling sine wave based on distance and time
                         const waveSpeed = globalTime * 12; // Speed of the ripple
                         const ripplePhase = (dist * 0.04) - waveSpeed;
-                        const amplitude = 35; // How far the ripple bulges
+                        const amplitude = 4; // Drastically reduced from 35 to 4 for sublety
 
                         // Smooth falloff so the ripple gently dies out at the edges of the radius
                         const falloff = Math.pow((magneticRadius - dist) / magneticRadius, 2);
 
-                        // The actual displacement force of the wave at this node
-                        const rippleForce = Math.sin(ripplePhase) * amplitude * falloff * (1 - pinForce);
+                        // The actual displacement force of the wave at this node, modified by mouse movement speed
+                        const rippleForce = Math.sin(ripplePhase) * amplitude * falloff * (1 - pinForce) * kineticFactor;
 
                         // Apply the ripple force perpendicularly (inward/outward) depending on which edge the node belongs to
                         const isTopOrBottomEdge = v.base_y <= inset + 1 || v.base_y >= h - inset - 1;

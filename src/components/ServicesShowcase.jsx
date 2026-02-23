@@ -146,8 +146,8 @@ const ServicesShowcase = () => {
                 {/* Section Header */}
                 <BlurFadeIn delay={0.1}>
                     <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-24">
-                        <div className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-sm font-medium text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
-                            <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                        <div className="inline-flex items-center px-5 py-2 mb-6 rounded-full bg-white/10 border border-blue-400/30 backdrop-blur-md text-sm font-bold text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] drop-shadow-[0_0_10px_rgba(255,255,255,0.6)] tracking-wide">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 mr-2.5 animate-pulse shadow-[0_0_10px_rgba(59,130,246,1)]" />
                             Innovation Engine
                         </div>
                         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
@@ -170,7 +170,7 @@ const ServicesShowcase = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
-                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 ${isActive ? 'text-white shadow-lg' : 'text-slate-400 bg-white/[0.03] hover:text-white hover:bg-white/10'
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-slate-300 bg-white/[0.05] hover:text-white hover:bg-white/15 drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
                                             }`}
                                     >
                                         {isActive && (
