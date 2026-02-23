@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
 /*
-  Lava-lamp fluid gradient border.
-  A solid 2px border whose color flows and morphs continuously
-  like a lava lamp — using animated hue shifts along the perimeter.
+  Premium wave-glow border frame.
+  A visible solid border around the entire viewport with a flowing wave
+  of light that travels along the edges, emitting a soft outer glow.
+  Uses the site palette: cyan (#06b6d4), purple (#a855f7), pink (#ec4899).
 */
 
 const BorderFrame = () => {
@@ -29,78 +30,100 @@ const BorderFrame = () => {
         resize();
         window.addEventListener('resize', resize);
 
-        const borderW = 2;
-        let t = 0;
+        // Site palette
+        const palette = [
+            [6, 182, 212],    // cyan
+            [139, 92, 246],   // purple
+            [168, 85, 247],   // violet
+            [236, 72, 153],   // pink
+            [139, 92, 246],   // purple (loop back)
+            [6, 182, 212],    // cyan (loop back)
+        ];
+
+        // Lerp between palette colors based on position
+        const getColor = (frac) => {
+            const idx = frac * (palette.length - 1);
+            const i = Math.floor(idx);
+            const t = idx - i;
+            const a = palette[Math.min(i, palette.length - 1)];
+            const b = palette[Math.min(i + 1, palette.length - 1)];
+            return [
+                a[0] + (b[0] - a[0]) * t,
+                a[1] + (b[1] - a[1]) * t,
+                a[2] + (b[2] - a[2]) * t,
+            ];
+        };
+
+        // Get x,y on the perimeter (0→1 maps around the entire rectangle)
+        const posOnEdge = (frac, W, H) => {
+            const perim = 2 * (W + H);
+            let pos = frac * perim;
+            if (pos < W) return { x: pos, y: 0, edge: 'top' };
+            pos -= W;
+            if (pos < H) return { x: W, y: pos, edge: 'right' };
+            pos -= H;
+            if (pos < W) return { x: W - pos, y: H, edge: 'bottom' };
+            pos -= W;
+            return { x: 0, y: H - pos, edge: 'left' };
+        };
+
+        const BORDER = 2;
+        let time = 0;
 
         const render = () => {
-            t += 0.006;
+            time += 0.003;
             ctx.clearRect(0, 0, w, h);
 
-            const perimeter = 2 * (w + h);
-            // Number of segments to draw (more = smoother)
-            const segments = Math.ceil(perimeter / 3);
+            const steps = 600;
 
-            for (let i = 0; i < segments; i++) {
-                const frac = i / segments;
-                const pos = frac * perimeter;
+            for (let i = 0; i < steps; i++) {
+                const frac = i / steps;
 
-                // Position on the rectangle perimeter
-                let x, y, bw, bh;
-                if (pos < w) {
-                    x = pos; y = 0; bw = 4; bh = borderW; // top
-                } else if (pos < w + h) {
-                    x = w - borderW; y = pos - w; bw = borderW; bh = 4; // right
-                } else if (pos < 2 * w + h) {
-                    x = w - (pos - w - h); y = h - borderW; bw = 4; bh = borderW; // bottom
-                } else {
-                    x = 0; y = h - (pos - 2 * w - h); bw = borderW; bh = 4; // left
-                }
+                // This fraction determines the base color from the palette
+                // The wave: shift the palette position over time so colors flow
+                const colorFrac = (frac + time) % 1;
+                const [r, g, b] = getColor(colorFrac);
 
-                // Lava lamp hue: flowing sine waves with multiple frequencies
-                const hue = (
-                    186 +
-                    80 * Math.sin(frac * Math.PI * 4 + t * 2) +
-                    40 * Math.sin(frac * Math.PI * 6 - t * 3.1) +
-                    30 * Math.cos(frac * Math.PI * 2 + t * 1.5)
-                ) % 360;
+                // Wave intensity: a bright "hot spot" that travels around
+                const wave1 = Math.pow(Math.max(0, Math.cos((frac - time * 1.2) * Math.PI * 2)), 4);
+                const wave2 = Math.pow(Math.max(0, Math.cos((frac - time * 0.8 + 0.5) * Math.PI * 2)), 4);
+                const wave = Math.max(wave1, wave2);
 
-                // Pulsing brightness
-                const light = 55 + 10 * Math.sin(frac * Math.PI * 8 + t * 4);
-                // Alpha wave for organic feel
-                const alpha = 0.5 + 0.3 * Math.sin(frac * Math.PI * 6 + t * 2.5);
+                // Base alpha for the border + wave boost
+                const baseAlpha = 0.35 + wave * 0.65;
 
-                ctx.fillStyle = `hsla(${hue}, 85%, ${light}%, ${alpha})`;
-                ctx.fillRect(x, y, bw, bh);
+                const { x, y, edge } = posOnEdge(frac, w, h);
 
-                // Glow layer (wider, lower alpha)
-                const glowAlpha = alpha * 0.15;
-                ctx.fillStyle = `hsla(${hue}, 90%, ${light + 10}%, ${glowAlpha})`;
-                if (pos < w) {
-                    ctx.fillRect(x - 1, 0, 6, 6);
-                } else if (pos < w + h) {
-                    ctx.fillRect(w - 6, y - 1, 6, 6);
-                } else if (pos < 2 * w + h) {
-                    ctx.fillRect(x - 1, h - 6, 6, 6);
-                } else {
-                    ctx.fillRect(0, y - 1, 6, 6);
+                // Draw the border segment
+                ctx.fillStyle = `rgba(${r | 0},${g | 0},${b | 0},${baseAlpha})`;
+                if (edge === 'top') ctx.fillRect(x - 1, 0, 3, BORDER);
+                else if (edge === 'right') ctx.fillRect(w - BORDER, y - 1, BORDER, 3);
+                else if (edge === 'bottom') ctx.fillRect(x - 1, h - BORDER, 3, BORDER);
+                else ctx.fillRect(0, y - 1, BORDER, 3);
+
+                // Glow — only where the wave is bright
+                if (wave > 0.1) {
+                    const glowSize = 8 + wave * 18;
+                    const glowAlpha = wave * 0.25;
+                    const grad = ctx.createRadialGradient(
+                        edge === 'right' ? w : edge === 'left' ? 0 : x,
+                        edge === 'bottom' ? h : edge === 'top' ? 0 : y,
+                        0,
+                        edge === 'right' ? w : edge === 'left' ? 0 : x,
+                        edge === 'bottom' ? h : edge === 'top' ? 0 : y,
+                        glowSize
+                    );
+                    grad.addColorStop(0, `rgba(${r | 0},${g | 0},${b | 0},${glowAlpha})`);
+                    grad.addColorStop(1, 'transparent');
+                    ctx.fillStyle = grad;
+                    const gs = glowSize * 2;
+                    ctx.fillRect(
+                        (edge === 'right' ? w - gs : edge === 'left' ? 0 : x - glowSize),
+                        (edge === 'bottom' ? h - gs : edge === 'top' ? 0 : y - glowSize),
+                        gs, gs
+                    );
                 }
             }
-
-            // Corner glow accents
-            const corners = [
-                { x: 0, y: 0, hue: 186 },
-                { x: w, y: 0, hue: 270 },
-                { x: w, y: h, hue: 330 },
-                { x: 0, y: h, hue: 270 },
-            ];
-            corners.forEach(c => {
-                const a = 0.15 + 0.1 * Math.sin(t * 2 + c.hue);
-                const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, 25);
-                grad.addColorStop(0, `hsla(${c.hue + t * 30}, 80%, 60%, ${a})`);
-                grad.addColorStop(1, 'transparent');
-                ctx.fillStyle = grad;
-                ctx.fillRect(c.x - 25, c.y - 25, 50, 50);
-            });
 
             frameRef.current = requestAnimationFrame(render);
         };
