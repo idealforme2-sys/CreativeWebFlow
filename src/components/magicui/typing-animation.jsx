@@ -24,19 +24,25 @@ export function TypingAnimation({
     }, [isInView, delay]);
 
     useEffect(() => {
+        // Reset the typing effect entirely if the incoming text changes
+        setDisplayedText("");
+
         if (!hasStarted) return;
 
         let i = 0;
         const typingEffect = setInterval(() => {
             if (i < text.length) {
-                setDisplayedText(text.substring(0, i + 1));
+                // Ensure we use functional state updates to avoid stale closures
+                setDisplayedText(() => text.substring(0, i + 1));
                 i++;
             } else {
                 clearInterval(typingEffect);
             }
         }, duration);
 
-        return () => clearInterval(typingEffect);
+        return () => {
+            clearInterval(typingEffect);
+        };
     }, [text, duration, hasStarted]);
 
     return (

@@ -88,12 +88,13 @@ const WorkSection = () => {
     };
 
     const getCardStyle = (position) => {
-        // We now have 4 positions in a 3D circle:
-        // 0: Front (Active)
-        // 1: Right Side
-        // 2: Back (Hidden/Far)
-        // 3: Left Side
-        const styles = {
+        // True 3D Carousel approach:
+        // Position 0 = Front/Center
+        // Position 1 = Right Side
+        // Position 2 = Back (Hidden behind 0)
+        // Position 3 = Left Side
+
+        const baseStyles = {
             0: {
                 x: 0,
                 y: 0,
@@ -105,45 +106,51 @@ const WorkSection = () => {
                 zIndex: 40
             },
             1: {
-                x: isHovered ? 140 : 120,
+                x: 160,
                 y: 0,
-                z: -100,
-                rotateY: -15, // turn inward to face user
-                opacity: 0.7,
-                filter: 'blur(2px)',
+                z: -120,
+                rotateY: -25, // Angled inwards to face user slightly
+                opacity: 0.8,
+                filter: 'blur(1px)',
                 scale: 0.85,
                 zIndex: 30
             },
             2: {
                 x: 0,
-                y: -40,
-                z: -200,
-                rotateY: 0,
-                opacity: 0.3,
-                filter: 'blur(4px)',
-                scale: 0.7,
-                zIndex: 20
+                y: 0,
+                z: -300,
+                rotateY: 0, // Flat behind the active card
+                opacity: 0, // Hidden completely since it's exactly behind the active
+                filter: 'blur(10px)',
+                scale: 0.6,
+                zIndex: 10
             },
             3: {
-                x: isHovered ? -140 : -120,
+                x: -160,
                 y: 0,
-                z: -100,
-                rotateY: 15, // turn inward to face user
-                opacity: 0.7,
-                filter: 'blur(2px)',
+                z: -120,
+                rotateY: 25, // Angled inwards to face user slightly
+                opacity: 0.8,
+                filter: 'blur(1px)',
                 scale: 0.85,
                 zIndex: 30
             }
         };
-        return styles[position];
+
+        return baseStyles[position];
     };
 
     const getVisibleCards = () => {
-        // Return all 4 cards mapped to their circular positions based on activeIndex
-        return projects.map((project, i) => {
-            // Distance from activeIndex (0 to 3)
-            let relativePosition = (i - activeIndex + projects.length) % projects.length;
-            return { ...project, position: relativePosition };
+        // Map elements directly to circle positions relative to activeIndex.
+        // Array order doesn't change, we just assign them a "slot" (0, 1, 2, 3) 
+        // representing their spatial coordinates at the current rotation frame.
+        return projects.map((project, idx) => {
+            // How far is this index from the activeIndex? (Wrapping logic)
+            const relativePosition = (idx - activeIndex + projects.length) % projects.length;
+            return {
+                ...project,
+                position: relativePosition
+            };
         });
     };
 
@@ -159,9 +166,9 @@ const WorkSection = () => {
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 <div className="text-center mb-24">
                     <div className="flex items-center justify-center gap-4 mb-6">
-                        <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-pink-500" />
-                        <span className="text-pink-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]">Example Projects</span>
-                        <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-pink-500" />
+                        <div className="h-px w-12 bg-cyan-500" />
+                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Example Projects</span>
+                        <div className="h-px w-12 bg-cyan-500" />
                     </div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}

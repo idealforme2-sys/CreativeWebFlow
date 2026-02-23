@@ -146,9 +146,13 @@ const ServicesShowcase = () => {
                 {/* Section Header */}
                 <BlurFadeIn delay={0.1}>
                     <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-24">
-                        <div className="inline-flex items-center px-6 py-2.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-shadow">
-                            <Sparkles className="w-5 h-5 text-cyan-400 mr-2.5" />
-                            <span className="text-sm font-bold text-white tracking-widest uppercase">
+                        <div className="inline-flex items-center px-4 py-2 mb-6 rounded-full bg-slate-900 border border-slate-700 shadow-lg relative group">
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <span className="relative flex h-2 w-2 mr-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            <span className="text-sm font-medium text-slate-300">
                                 Innovation Engine
                             </span>
                         </div>
@@ -172,7 +176,7 @@ const ServicesShowcase = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
-                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-white bg-white/[0.05] hover:bg-white/15 drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
+                                        className={`relative z-10 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 w-52 text-center flex items-center justify-center gap-2 tracking-wide ${isActive ? 'text-white shadow-[0_0_20px_rgba(255,255,255,0.2)] drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] border border-white/20' : 'text-slate-400 bg-white/[0.05] hover:text-white hover:bg-white/15 drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
                                             }`}
                                     >
                                         {isActive && (
