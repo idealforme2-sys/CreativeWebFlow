@@ -28,28 +28,21 @@ const BorderFrame = () => {
         const buildVertices = () => {
             vertices = [];
             const inset = 2; // Restore bounding box to absolute 2px outward edge
-            const boxW = w - inset * 2;
-            const boxH = h - inset * 2;
-            const perimeter = 2 * (boxW + boxH);
-            const numNodes = Math.max(10, Math.floor(perimeter / spacing));
 
-            for (let i = 0; i < numNodes; i++) {
-                const frac = i / numNodes;
-                const pos = frac * perimeter;
-                let x, y;
+            // Top edge
+            for (let x = inset; x < w - inset; x += spacing) vertices.push({ base_x: x, base_y: inset, x, y: inset, vx: 0, vy: 0 });
+            vertices.push({ base_x: w - inset, base_y: inset, x: w - inset, y: inset, vx: 0, vy: 0 });
 
-                if (pos < boxW) {
-                    x = inset + pos; y = inset;
-                } else if (pos < boxW + boxH) {
-                    x = w - inset; y = inset + (pos - boxW);
-                } else if (pos < 2 * boxW + boxH) {
-                    x = w - inset - (pos - (boxW + boxH)); y = h - inset;
-                } else {
-                    x = inset; y = h - inset - (pos - (2 * boxW + boxH));
-                }
+            // Right edge
+            for (let y = inset; y < h - inset; y += spacing) vertices.push({ base_x: w - inset, base_y: y, x: w - inset, y, vx: 0, vy: 0 });
+            vertices.push({ base_x: w - inset, base_y: h - inset, x: w - inset, y: h - inset, vx: 0, vy: 0 });
 
-                vertices.push({ base_x: x, base_y: y, x, y, vx: 0, vy: 0 });
-            }
+            // Bottom edge
+            for (let x = w - inset; x > inset; x -= spacing) vertices.push({ base_x: x, base_y: h - inset, x, y: h - inset, vx: 0, vy: 0 });
+            vertices.push({ base_x: inset, base_y: h - inset, x: inset, y: h - inset, vx: 0, vy: 0 });
+
+            // Left edge
+            for (let y = h - inset; y > inset; y -= spacing) vertices.push({ base_x: inset, base_y: y, x: inset, y, vx: 0, vy: 0 });
         };
 
         const resize = () => {
@@ -65,6 +58,10 @@ const BorderFrame = () => {
             buildVertices();
         };
         resize();
+
+        // ResizeObserver is required to catch when the layout shifts due to the scrollbar appearing
+        const resizeObserver = new ResizeObserver(() => resize());
+        resizeObserver.observe(document.documentElement);
         window.addEventListener('resize', resize);
 
         let mouseX = -1000;
@@ -193,6 +190,7 @@ const BorderFrame = () => {
         frameId = requestAnimationFrame(render);
 
         return () => {
+            resizeObserver.disconnect();
             window.removeEventListener('resize', resize);
             window.removeEventListener('mousemove', handleMouseMove);
             document.body.removeEventListener('mouseleave', handleMouseLeave);

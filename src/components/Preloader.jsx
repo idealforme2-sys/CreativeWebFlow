@@ -329,16 +329,16 @@ const Preloader = ({ onComplete }) => {
                             </div>
 
                             {/* Terminal-style log feed */}
-                            <div className="w-64 md:w-80 text-left font-mono mb-4 h-20 overflow-hidden">
+                            <div className="w-64 md:w-80 text-center font-mono mb-4 h-20 overflow-hidden mx-auto flex flex-col items-center">
                                 <AnimatePresence>
                                     {visibleLogs.map((log, i) => (
                                         <motion.div
                                             key={log.at}
-                                            initial={{ opacity: 0, x: -10, height: 0 }}
-                                            animate={{ opacity: 1, x: 0, height: 20 }}
+                                            initial={{ opacity: 0, y: -10, height: 0 }}
+                                            animate={{ opacity: 1, y: 0, height: 20 }}
                                             exit={{ opacity: 0, height: 0 }}
                                             transition={{ duration: 0.25 }}
-                                            className="text-[10px] tracking-wide flex items-center gap-1.5 overflow-hidden"
+                                            className="text-[10px] tracking-wide flex items-center justify-center gap-1.5 overflow-hidden w-full"
                                         >
                                             <span className="text-cyan-500/60">▸</span>
                                             <span className="text-white/25">{log.text}</span>
@@ -433,7 +433,7 @@ const Preloader = ({ onComplete }) => {
                             </motion.div>
 
                             {/* Brand text — staggered 3D entrance */}
-                            <div className="flex flex-wrap justify-center px-4 mb-4" style={{ perspective: '1500px' }}>
+                            <div className="flex flex-wrap justify-center items-center px-4 mb-4 text-center w-full max-w-4xl" style={{ perspective: '1500px' }}>
                                 {brandText.split('').map((char, i) => (
                                     <motion.span
                                         key={i}
