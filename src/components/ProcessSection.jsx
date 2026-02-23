@@ -52,8 +52,8 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
                     </div>
 
                     {/* Intel Section */}
-                    <div className="w-full md:w-[55%] p-8 md:p-12 flex flex-col justify-center relative">
-                        <div className={`mb-auto sm:mb-6 mt-4 sm:mt-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 ${isFocused ? `bg-${step.color}-500/20 text-${step.color}-400` : 'bg-white/5 text-white/20'}`}>
+                    <div className="w-full md:w-[55%] p-6 md:p-8 flex flex-col justify-center relative">
+                        <div className={`mb-4 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 flex-shrink-0 ${isFocused ? `bg-${step.color}-500/20 text-${step.color}-400` : 'bg-white/5 text-white/20'}`}>
                             <Icon size={24} />
                         </div>
 
@@ -154,7 +154,6 @@ const ProcessSection = () => {
             {/* The sticky inner container stays in view while we scroll down */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between py-[4vh] md:py-[6vh] overflow-hidden">
                 <ParticlesBackground />
-                <FloatingOrbs count={6} color1="#06b6d4" color2="#a855f7" />
                 <ElectricCurrent color="#06b6d4" className="top-20 left-[10%]" />
                 <ElectricCurrent color="#a855f7" className="bottom-40 right-[10%] rotate-180" />
 
