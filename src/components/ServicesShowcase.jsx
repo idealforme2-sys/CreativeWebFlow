@@ -102,7 +102,7 @@ const StatPill = ({ stat, index, accentRgb }) => (
     <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200 }}
+        transition={{ delay: index * 0.05 + 0.05, type: 'spring', stiffness: 400, damping: 25 }}
         className="relative flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm group hover:bg-white/[0.08] transition-all duration-300"
     >
         <div
@@ -123,7 +123,7 @@ const FeatureCard = ({ card, index, gradient, neonColor, accentRgb }) => (
     <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: index * 0.08 + 0.15, type: 'spring', stiffness: 180, damping: 20 }}
+        transition={{ delay: index * 0.05 + 0.05, type: 'spring', stiffness: 350, damping: 25 }}
         whileHover={{ y: -6, scale: 1.02 }}
         className="relative group cursor-default"
     >
@@ -289,10 +289,10 @@ const ServicesShowcase = () => {
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeData.id}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.15, ease: 'easeOut' }}
                             className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
                         >
                             {/* ─── Left: Text + Stats ─── */}
