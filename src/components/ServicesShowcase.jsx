@@ -175,7 +175,7 @@ const ServicesShowcase = () => {
     const activeData = tabsData.find(t => t.id === activeTabId);
 
     return (
-        <section id="what-we-do" className="relative py-24 lg:py-32 overflow-hidden min-h-screen flex items-center">
+        <section id="what-we-do" className="relative pt-24 lg:pt-32 pb-12 lg:pb-16 overflow-hidden flex items-center">
 
             {/* Interactive Particle Background */}
             <ParticlesBackground />
@@ -238,8 +238,8 @@ const ServicesShowcase = () => {
                                         key={tab.id}
                                         onClick={() => setActiveTabId(tab.id)}
                                         className={`relative z-10 px-7 py-4 rounded-2xl text-left transition-all duration-400 w-56 group ${isActive
-                                                ? 'text-white'
-                                                : 'text-slate-400 bg-white/[0.03] border border-white/[0.06] hover:text-white hover:bg-white/[0.06] hover:border-white/[0.1]'
+                                            ? 'text-white'
+                                            : 'text-slate-400 bg-white/[0.03] border border-white/[0.06] hover:text-white hover:bg-white/[0.06] hover:border-white/[0.1]'
                                             }`}
                                     >
                                         {isActive && (
@@ -266,8 +266,8 @@ const ServicesShowcase = () => {
                                         )}
                                         <div className="flex items-center gap-3">
                                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive
-                                                    ? 'bg-white/20 border border-white/20'
-                                                    : 'bg-white/[0.05] border border-white/[0.08] group-hover:bg-white/[0.1]'
+                                                ? 'bg-white/20 border border-white/20'
+                                                : 'bg-white/[0.05] border border-white/[0.08] group-hover:bg-white/[0.1]'
                                                 }`}>
                                                 <TabIcon size={18} className="flex-shrink-0" />
                                             </div>
