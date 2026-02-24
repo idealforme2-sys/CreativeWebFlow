@@ -157,7 +157,7 @@ const WhyChooseUs = () => {
     const row2 = [...r2Base, ...r2Base, ...r2Base];
 
     return (
-        <section className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-black/30 to-black/50 pb-40">
+        <section className="relative py-24 lg:py-32 overflow-hidden pb-40">
             {/* Ambient Particles */}
             <SectionParticles color="rgba(6,182,212,0.3)" count={25} />
 
