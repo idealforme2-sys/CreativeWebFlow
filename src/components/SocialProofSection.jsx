@@ -93,7 +93,7 @@ const SocialProofSection = () => {
                 }
             `}</style>
             {/* Background - adjusted for transparency */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-purple-950/20 to-black/80 z-0" />
+            {/* Removed dark gradient to reveal global animated background */}
             <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
 
