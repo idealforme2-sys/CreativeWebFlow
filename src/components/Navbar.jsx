@@ -58,7 +58,7 @@ const Navbar = () => {
             ]
         },
         { label: 'Work', href: '#work', id: 'work' },
-        { label: 'Mission', href: '#mission', id: 'mission' },
+        { label: 'Mission', href: '#about', id: 'about' },
         { label: 'Contact', href: '#contact', id: 'contact' },
     ];
 
@@ -232,28 +232,30 @@ const Navbar = () => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                                                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                                                    className="absolute top-full left-0 mt-2 w-56 py-2 bg-[#0a0f1c]/95 backdrop-blur-3xl border border-white/[0.08] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden nav-noise"
+                                                    className="absolute top-full left-0 pt-2 w-56 pointer-events-none"
                                                 >
-                                                    {/* Top accent line */}
-                                                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
-                                                    {/* Grid pattern overlay */}
-                                                    <div
-                                                        className="absolute inset-0 opacity-[0.02] pointer-events-none"
-                                                        style={{
-                                                            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                                                            backgroundSize: '20px 20px',
-                                                        }}
-                                                    />
-                                                    {link.dropdown.map((item) => (
-                                                        <button
-                                                            key={item.label}
-                                                            onClick={() => scrollToSection(item.href)}
-                                                            className="relative w-full px-5 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 hover:text-cyan-400 hover:bg-cyan-400/[0.06] transition-all duration-200 flex items-center gap-2.5 group/item overflow-hidden"
-                                                        >
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 group-hover/item:opacity-100 group-hover/item:shadow-[0_0_6px_currentColor] transition-all duration-300 flex-shrink-0" />
-                                                            <span className="relative z-10">{item.label}</span>
-                                                        </button>
-                                                    ))}
+                                                    <div className="relative w-full py-2 bg-[#0a0f1c]/95 backdrop-blur-3xl border border-white/[0.08] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden nav-noise pointer-events-auto">
+                                                        {/* Top accent line */}
+                                                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+                                                        {/* Grid pattern overlay */}
+                                                        <div
+                                                            className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                                                            style={{
+                                                                backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                                                                backgroundSize: '20px 20px',
+                                                            }}
+                                                        />
+                                                        {link.dropdown.map((item) => (
+                                                            <button
+                                                                key={item.label}
+                                                                onClick={() => scrollToSection(item.href)}
+                                                                className="relative w-full px-5 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 hover:text-cyan-400 hover:bg-cyan-400/[0.06] transition-all duration-200 flex items-center gap-2.5 group/item overflow-hidden"
+                                                            >
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 group-hover/item:opacity-100 group-hover/item:shadow-[0_0_6px_currentColor] transition-all duration-300 flex-shrink-0" />
+                                                                <span className="relative z-10">{item.label}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>

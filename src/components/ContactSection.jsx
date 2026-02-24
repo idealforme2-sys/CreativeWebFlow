@@ -592,8 +592,8 @@ const ContactSection = () => {
                                     <Mail size={18} />
                                 </div>
                                 <div className="flex-1">
-                                    <address className="not-italic text-white/60 text-sm md:text-base space-y-4">
-                                        <p className="mb-4">Or email us directly at:</p>
+                                    <address className="not-italic text-white/60 text-sm md:text-base space-y-1">
+                                        <p className="mb-2">Or email us directly at:</p>
                                         <span
                                             className="group/link inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
                                         >

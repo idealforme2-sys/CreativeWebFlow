@@ -74,7 +74,7 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
                         </div>
 
                         <div className={`flex items-center gap-4 transition-all duration-500 delay-200 mt-auto ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                            <span className={`text-[10px] font-bold uppercase tracking-widest text-white/50`}>System Execution</span>
+                            <span className={`text-[10px] font-bold uppercase tracking-widest text-white/50`}>{step.tag}</span>
                         </div>
                     </div>
                 </div>
@@ -116,7 +116,8 @@ const ProcessSection = () => {
             icon: Fingerprint,
             deliverables: ["Market Audit", "User Personas", "Product DNA"],
             description: "We surgically extract your brand DNA and market positioning to map a data-driven path to dominance.",
-            image: discoveryImg
+            image: discoveryImg,
+            tag: "Strategy Alignment"
         },
         {
             number: "02",
@@ -125,7 +126,8 @@ const ProcessSection = () => {
             icon: Layout,
             deliverables: ["UI Strategy", "Prototypes", "Design System"],
             description: "Crafting sensory interfaces that blend intuitive utility with breathtaking visual storytelling.",
-            image: designImg
+            image: designImg,
+            tag: "Creative Architecture"
         },
         {
             number: "03",
@@ -134,7 +136,8 @@ const ProcessSection = () => {
             icon: Terminal,
             deliverables: ["Clean Architecture", "API Core", "Security"],
             description: "Engineering high-performance, ultra-fast digital engines that scale effortlessly with your vision.",
-            image: buildImg
+            image: buildImg,
+            tag: "Core Engineering"
         },
         {
             number: "04",
@@ -143,7 +146,8 @@ const ProcessSection = () => {
             icon: Zap,
             deliverables: ["SEO Mastery", "Cloud Deploy", "Scaling"],
             description: "Total deployment and ongoing performance optimization to ensure your product leads its industry.",
-            image: launchImg
+            image: launchImg,
+            tag: "Global Deployment"
         }
     ], []);
 
@@ -191,7 +195,7 @@ const ProcessSection = () => {
                     {/* The Track Container that Framer Motion animates */}
                     <motion.div
                         style={{ x }}
-                        className="flex items-center gap-8 md:gap-12 px-[10vw] flex-nowrap w-max"
+                        className="flex items-center gap-8 md:gap-12 px-[10vw] py-8 md:py-12 flex-nowrap w-max"
                     >
                         {steps.map((step, index) => (
                             <HorizontalStep
