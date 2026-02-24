@@ -44,11 +44,11 @@ export function TypingAnimation({
     const isComplete = displayedText.length === text.length;
 
     return (
-        <span ref={ref} className={`${className} relative inline`}>
-            {/* Invisible full text to reserve exact height — prevents layout shifts */}
-            <span className="invisible" aria-hidden="true">{text}</span>
-            {/* Visible typed text overlaid on top */}
-            <span className="absolute inset-0">
+        <span ref={ref} className={`${className} relative block mb-6`}>
+            {/* Invisible full text reserves height to prevent layout shifts */}
+            <span className="invisible block" aria-hidden="true">{text}</span>
+            {/* Visible typed text overlaid */}
+            <span className="absolute top-0 left-0 right-0">
                 {displayedText || "\u00A0"}
                 <span
                     className="inline-block w-[3px] h-[1em] bg-cyan-400 ml-1 translate-y-[0.15em] animate-pulse"

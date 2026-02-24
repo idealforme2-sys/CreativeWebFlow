@@ -23,7 +23,7 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
 
     return (
         <div
-            className="relative w-[85vw] md:w-[60vw] lg:w-[45vw] min-h-[50vh] md:min-h-[55vh] flex-shrink-0 group perspective-1000"
+            className="relative w-[85vw] md:w-[60vw] lg:w-[45vw] h-[50vh] md:h-[55vh] flex-shrink-0 group perspective-1000"
             style={{
                 transform: `rotateY(${tilt}deg) translateZ(${isFocused ? '30px' : '0px'})`,
                 transition: 'transform 0.1s ease-out'
@@ -191,11 +191,11 @@ const ProcessSection = () => {
                 </div>
 
                 {/* 2. Scrolling Viewport - Flex 1 takes remaining space, centers cards */}
-                <div className="flex-1 w-full flex items-center overflow-x-clip overflow-y-visible">
+                <div className="flex-1 w-full flex items-center overflow-hidden">
                     {/* The Track Container that Framer Motion animates */}
                     <motion.div
                         style={{ x }}
-                        className="flex items-center gap-8 md:gap-12 px-[10vw] py-8 md:py-12 flex-nowrap w-max"
+                        className="flex items-center gap-8 md:gap-12 px-[10vw] flex-nowrap w-max"
                     >
                         {steps.map((step, index) => (
                             <HorizontalStep
