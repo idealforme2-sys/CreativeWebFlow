@@ -163,7 +163,7 @@ const DetailedCaseStudies = () => {
     const [activeIndex, setActiveIndex] = useState(0);
 
     return (
-        <div className="relative z-10 font-sans antialiased bg-black/20">
+        <div className="relative z-10 font-sans antialiased">
             {/* Background atmospherics */}
             <SectionParticles color="rgba(168,85,247,0.3)" count={30} />
             <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-60">
