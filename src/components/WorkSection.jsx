@@ -106,7 +106,7 @@ const WorkSection = () => {
                 zIndex: 40
             },
             1: {
-                x: 160,
+                x: '30%', // Changed to percentage for responsiveness
                 y: 0,
                 z: -120,
                 rotateY: -25, // Angled inwards to face user slightly
@@ -126,7 +126,7 @@ const WorkSection = () => {
                 zIndex: 10
             },
             3: {
-                x: -160,
+                x: '-30%', // Changed to percentage for responsiveness
                 y: 0,
                 z: -120,
                 rotateY: 25, // Angled inwards to face user slightly

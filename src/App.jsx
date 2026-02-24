@@ -58,7 +58,7 @@ function App() {
     }, [loading]);
 
     return (
-        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative bg-[#030014]">
+        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip overflow-x-hidden relative bg-[#030014]">
             {/* Dynamic Viewport Border */}
             <BorderFrame />
 
