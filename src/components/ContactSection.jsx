@@ -190,6 +190,7 @@ const ContactSection = () => {
     return (
         <section id="contact" ref={sectionRef} className="relative py-32 lg:py-40 overflow-hidden">
             {/* Background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-cyan-950/5 to-black" />
             <SectionParticles color="rgba(236,72,153,0.3)" count={30} />
 
             {/* Animated gradient orbs */}

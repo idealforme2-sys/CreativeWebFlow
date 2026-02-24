@@ -161,8 +161,7 @@ const ProcessSection = () => {
                 <ElectricCurrent color="#06b6d4" className="top-20 left-[10%]" />
                 <ElectricCurrent color="#a855f7" className="bottom-40 right-[10%] rotate-180" />
 
-                {/* Background Gradients */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
+                {/* Background Gradients removed to showcase global animated background */}
 
                 {/* 1. Header Area - Flows naturally at the top */}
                 <div className="w-full px-6 flex-shrink-0 z-20">
