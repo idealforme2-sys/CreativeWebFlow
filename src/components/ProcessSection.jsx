@@ -191,7 +191,7 @@ const ProcessSection = () => {
                 </div>
 
                 {/* 2. Scrolling Viewport - Flex 1 takes remaining space, centers cards */}
-                <div className="flex-1 w-full flex items-center overflow-hidden">
+                <div className="flex-1 w-full flex items-center overflow-x-clip overflow-y-visible">
                     {/* The Track Container that Framer Motion animates */}
                     <motion.div
                         style={{ x }}

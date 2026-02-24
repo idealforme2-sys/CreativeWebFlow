@@ -14,7 +14,6 @@ export function TypingAnimation({
     const prevText = useRef(text);
     const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
 
-    // If text prop changes (switching cards), reset for new animation
     if (prevText.current !== text) {
         prevText.current = text;
         hasAnimated.current = false;
@@ -36,20 +35,26 @@ export function TypingAnimation({
                 }
             }, duration);
 
-            // Cleanup interval on unmount
             return () => clearInterval(typingEffect);
         }, delay);
 
         return () => clearTimeout(startTimeout);
     }, [isInView, text, duration, delay]);
 
+    const isComplete = displayedText.length === text.length;
+
     return (
-        <span ref={ref} className={className}>
-            {displayedText || "\u00A0"}
-            <span
-                className="inline-block w-[3px] h-[1em] bg-cyan-400 ml-1 translate-y-[0.15em] animate-pulse"
-                style={{ opacity: displayedText.length === text.length ? 0 : 1 }}
-            />
+        <span ref={ref} className={`${className} relative inline`}>
+            {/* Invisible full text to reserve exact height — prevents layout shifts */}
+            <span className="invisible" aria-hidden="true">{text}</span>
+            {/* Visible typed text overlaid on top */}
+            <span className="absolute inset-0">
+                {displayedText || "\u00A0"}
+                <span
+                    className="inline-block w-[3px] h-[1em] bg-cyan-400 ml-1 translate-y-[0.15em] animate-pulse"
+                    style={{ opacity: isComplete ? 0 : 1 }}
+                />
+            </span>
         </span>
     );
 }
