@@ -94,8 +94,8 @@ const SocialProofSection = () => {
             `}</style>
             {/* Background - adjusted for transparency */}
             {/* Removed dark gradient to reveal global animated background */}
-            <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
+            <div className="absolute top-[0%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
+            <div className="absolute bottom-[0%] left-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
 
             {/* Noise Overlay */}
             <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"
