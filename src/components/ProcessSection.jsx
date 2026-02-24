@@ -23,7 +23,7 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
 
     return (
         <div
-            className="relative w-[85vw] md:w-[60vw] lg:w-[45vw] h-[50vh] md:h-[55vh] flex-shrink-0 group perspective-1000"
+            className="relative w-[85vw] md:w-[60vw] lg:w-[45vw] h-[42vh] md:h-[48vh] flex-shrink-0 group perspective-1000"
             style={{
                 transform: `rotateY(${tilt}deg) translateZ(${isFocused ? '30px' : '0px'})`,
                 transition: 'transform 0.1s ease-out'
