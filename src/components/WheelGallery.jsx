@@ -91,7 +91,7 @@ const WheelGallery = () => {
                     {/* Scroll container */}
                     <div
                         ref={scrollRef}
-                        className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide"
+                        className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide"
                         style={{
                             scrollbarWidth: 'none',
                             msOverflowStyle: 'none',
@@ -103,7 +103,7 @@ const WheelGallery = () => {
                             return (
                                 <motion.div
                                     key={i}
-                                    className="flex-shrink-0 w-[350px] md:w-[400px] snap-center"
+                                    className="flex-shrink-0 w-[350px] md:w-[400px]"
                                     initial={{ opacity: 0, y: 40 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}

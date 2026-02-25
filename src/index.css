@@ -94,6 +94,11 @@ body.game-active * {
   border-radius: 3px;
 }
 
+/* Prevent hover issues on the scrollbar */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--color-cyan), var(--color-purple));
+}
+
 /* ===== TYPOGRAPHY ===== */
 
 .font-display {

@@ -157,9 +157,8 @@ const WhyChooseUsBento = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 auto-rows-[180px] md:auto-rows-[200px]">
                     {/* Large Card 1 - Spans 2 cols and 2 rows */}
                     <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0 * 0.1 }}
+                        initial={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
                         className="relative group col-span-1 md:col-span-2 row-span-2 rounded-[1.5rem] overflow-hidden"
                     >
                         {/* Animated border */}
@@ -191,9 +190,8 @@ const WhyChooseUsBento = () => {
                     {stats.map((stat, index) => (
                         <motion.div
                             key={stat.label}
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 0.6, delay: (index + 1) * 0.1 }}
+                            initial={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
                             className="relative group rounded-xl overflow-hidden"
                         >
                             <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -213,9 +211,8 @@ const WhyChooseUsBento = () => {
                         return (
                             <motion.div
                                 key={reason.title}
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.6, delay: (idx + 4) * 0.1 }}
+                                initial={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
                                 className="relative group col-span-1 row-span-2 rounded-xl overflow-hidden"
                             >
                                 <div className="absolute -inset-[2px] rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
@@ -242,9 +239,8 @@ const WhyChooseUsBento = () => {
 
                     {/* Large Card 2 - Spans 2 cols and 2 rows */}
                     <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 6 * 0.1 }}
+                        initial={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
                         className="relative group col-span-1 md:col-span-2 row-span-2 rounded-[1.5rem] overflow-hidden"
                     >
                         <div className="absolute -inset-[2px] rounded-[1.5rem] bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
@@ -273,9 +269,8 @@ const WhyChooseUsBento = () => {
                         return (
                             <motion.div
                                 key={reason.title}
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.6, delay: (idx + 3) * 0.1 }}
+                                initial={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
                                 className="relative group col-span-1 row-span-1 rounded-xl overflow-hidden"
                             >
                                 <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -293,9 +288,8 @@ const WhyChooseUsBento = () => {
 
                     {/* CTA Card - Spans 2 cols */}
                     <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 8 * 0.1 }}
+                        initial={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
                         className="relative group col-span-1 md:col-span-2 row-span-1 rounded-xl overflow-hidden"
                     >
                         <div className="relative h-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-sm rounded-xl p-6 flex items-center justify-between border border-white/10">
