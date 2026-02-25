@@ -113,6 +113,7 @@ const StackedCarousel = () => {
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
                         className="text-xs font-mono text-cyan-400 uppercase tracking-[0.3em] mb-4"
                     >
                         Our Services
@@ -120,6 +121,7 @@ const StackedCarousel = () => {
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
                         className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6"
                     >
@@ -250,8 +252,8 @@ const StackedCarousel = () => {
                             key={index}
                             onClick={() => setActiveIndex(index)}
                             className={`h-3 rounded-full transition-all duration-500 ${index === activeIndex
-                                    ? 'w-10 bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)]'
-                                    : 'w-3 bg-white/10 hover:bg-white/30'
+                                ? 'w-10 bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)]'
+                                : 'w-3 bg-white/10 hover:bg-white/30'
                                 }`}
                         />
                     ))}

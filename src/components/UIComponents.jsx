@@ -446,7 +446,7 @@ export const AnimatedHeadline = ({ children, className = "", delay = 0 }) => {
 
 
 // Custom HTML5 Canvas Particles for Constellation Effect
-export const ParticlesBackground = () => {
+export const ParticlesBackground = React.memo(() => {
     const canvasRef = useRef(null);
 
     React.useEffect(() => {
@@ -567,17 +567,17 @@ export const ParticlesBackground = () => {
     }, []);
 
     return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-auto" />;
-};
+});
 
 // Ambient particles that fade in per-section based on scroll
-export const SectionParticles = ({ type = 'dust', color = 'rgba(6,182,212,0.3)', count = 20 }) => {
+export const SectionParticles = React.memo(({ type = 'dust', color = 'rgba(6,182,212,0.3)', count = 20 }) => {
     const isEmber = type === 'ember';
 
     return (
         <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ margin: "-100px", amount: 0.1 }}
+            viewport={{ once: true, margin: "-100px", amount: 0.1 }}
             transition={{ duration: 1.5 }}
             className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
         >
@@ -610,7 +610,7 @@ export const SectionParticles = ({ type = 'dust', color = 'rgba(6,182,212,0.3)',
             ))}
         </motion.div>
     );
-};
+});
 
 // ==========================================
 // ADVANCED SECTION EFFECTS (Phase 30)

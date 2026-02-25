@@ -236,4 +236,4 @@ const ProcessSection = () => {
     );
 };
 
-export default ProcessSection;
+export default React.memo(ProcessSection);

@@ -4,9 +4,10 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 const ScrollProgress = () => {
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 30,
-        restDelta: 0.001
+        stiffness: 50,
+        damping: 40,
+        mass: 0.5,
+        restDelta: 0.01 // Looser rest delta stops micro-re-renders
     });
 
     return (
