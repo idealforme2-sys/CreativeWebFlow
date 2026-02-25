@@ -109,6 +109,7 @@ const ContactSection = () => {
         name: '',
         email: '',
         company: '',
+        budget: '',
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,6 +123,13 @@ const ContactSection = () => {
         { icon: CheckCircle, label: 'Secure & Private', desc: 'Your data is encrypted' },
         { icon: Clock, label: '24hr Response', desc: 'We reply within a day' },
         { icon: Zap, label: 'Fast Turnaround', desc: 'Projects ship quickly' },
+    ];
+
+    const budgetTiers = [
+        { id: '200-500', label: '$200 – $500', sub: 'Starter' },
+        { id: '500-1000', label: '$500 – $1,000', sub: 'Growth' },
+        { id: '1000-3000', label: '$1,000 – $3,000', sub: 'Premium' },
+        { id: '3000+', label: '$3,000+', sub: 'Enterprise' }
     ];
 
     const headerTexts = [
@@ -375,32 +383,50 @@ const ContactSection = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="relative group/input">
-                                                <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+                                            <div className="relative group/input col-span-1 md:col-span-2 mt-2">
+                                                <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-3">
                                                     Budget Range
                                                 </label>
-                                                <div className="relative">
-                                                    <select
-                                                        name="budget"
-                                                        value={formData.budget}
-                                                        onChange={handleChange}
-                                                        onFocus={() => setFocusedField('budget')}
-                                                        onBlur={() => setFocusedField(null)}
-                                                        className="contact-input appearance-none cursor-pointer text-gray-400"
-                                                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-                                                    >
-                                                        <option value="" className="bg-[#0a0a1a]">Select budget...</option>
-                                                        <option value="200-500" className="bg-[#0a0a1a]">$200 – $500 (Starter)</option>
-                                                        <option value="500-1000" className="bg-[#0a0a1a]">$500 – $1,000 (Growth)</option>
-                                                        <option value="1000-3000" className="bg-[#0a0a1a]">$1,000 – $3,000 (Premium)</option>
-                                                        <option value="3000+" className="bg-[#0a0a1a]">$3,000+ (Enterprise)</option>
-                                                    </select>
-                                                    <motion.div
-                                                        className="absolute bottom-0 left-1/2 h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
-                                                        animate={{ width: focusedField === 'budget' ? '90%' : '0%', x: '-50%' }}
-                                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                                                    />
+                                                <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar relative no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                                    {budgetTiers.map((tier) => (
+                                                        <motion.button
+                                                            key={tier.id}
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, budget: tier.id })}
+                                                            onFocus={() => setFocusedField('budget')}
+                                                            onBlur={() => setFocusedField(null)}
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                            className={`relative min-w-[150px] flex-shrink-0 snap-center p-4 rounded-xl border text-left transition-all duration-300 overflow-hidden group/btn ${formData.budget === tier.id
+                                                                ? 'bg-cyan-500/10 border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.2)] ring-1 ring-cyan-400/30 glow-effect'
+                                                                : 'bg-black/30 border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
+                                                                }`}
+                                                        >
+                                                            {/* Selection indicator */}
+                                                            {formData.budget === tier.id && (
+                                                                <motion.div
+                                                                    layoutId="budget-active"
+                                                                    className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 backdrop-blur-[2px]"
+                                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                                />
+                                                            )}
+
+                                                            <div className="relative z-10">
+                                                                <span className={`block text-[14px] font-bold tracking-tight mb-1 transition-colors ${formData.budget === tier.id ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'text-white'}`}>
+                                                                    {tier.label}
+                                                                </span>
+                                                                <span className={`block text-[10px] uppercase tracking-widest font-mono ${formData.budget === tier.id ? 'text-cyan-300/80' : 'text-gray-500'}`}>
+                                                                    {tier.sub}
+                                                                </span>
+                                                            </div>
+                                                        </motion.button>
+                                                    ))}
                                                 </div>
+                                                <motion.div
+                                                    className="absolute -bottom-2 left-1/2 h-[1px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full opacity-50"
+                                                    animate={{ width: formData.budget ? '100%' : '0%', x: '-50%' }}
+                                                    transition={{ duration: 0.5 }}
+                                                />
                                             </div>
                                         </div>
 
@@ -429,7 +455,7 @@ const ContactSection = () => {
                                         </div>
 
                                         <motion.button
-                                            className="relative w-full py-5 rounded-xl font-bold uppercase tracking-wider text-white overflow-hidden group mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="relative w-full py-5 rounded-xl font-bold uppercase tracking-wider text-white overflow-hidden group mt-4 disabled:opacity-50 disabled:cursor-not-allowed border border-white/5"
                                             onClick={handleSubmit}
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
@@ -437,30 +463,29 @@ const ContactSection = () => {
                                         >
                                             {/* Rotating gradient border */}
                                             <div
-                                                className="absolute -inset-[3px] rounded-xl opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                                                className="absolute -inset-[1px] rounded-xl opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                                                 style={{
                                                     background: 'conic-gradient(from 0deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
                                                     animation: 'nav-gradient-rotate 3s linear infinite',
                                                 }}
                                             />
+                                            {/* Inner background to preserve the gradient border */}
+                                            <div className="absolute inset-[1px] rounded-xl" style={{ background: 'linear-gradient(90deg, #0f172a, #1e1b4b)' }} />
 
-                                            {/* Inner background - Using the current gradient color */}
-                                            <div className="absolute inset-[2px] rounded-xl bg-gradient-to-r from-cyan-600/90 to-purple-600/90 backdrop-blur-md" />
+                                            {/* Hover glow fill */}
+                                            <div className="absolute inset-[1px] rounded-xl bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                                            {/* Hover glow fill for extra intensity */}
-                                            <div className="absolute inset-[2px] rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                                            {/* Shimmer */}
+                                            {/* Shimmer sweep */}
                                             <motion.div
-                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.2] to-transparent -skew-x-12 pointer-events-none"
+                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent -skew-x-12 pointer-events-none"
                                                 animate={{ x: ['-200%', '200%'] }}
-                                                transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                                                transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
                                             />
 
                                             {/* Pulsing glow behind */}
                                             <motion.div
-                                                className="absolute -inset-2 rounded-xl bg-cyan-500/30 blur-xl pointer-events-none"
-                                                animate={{ opacity: [0.2, 0.6, 0.2], scale: [0.98, 1.02, 0.98] }}
+                                                className="absolute -inset-2 rounded-xl bg-cyan-500/20 blur-xl pointer-events-none"
+                                                animate={{ opacity: [0.1, 0.4, 0.1], scale: [0.95, 1.05, 0.95] }}
                                                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                                             />
 
@@ -470,19 +495,15 @@ const ContactSection = () => {
                                                     <motion.div
                                                         animate={{ rotate: 360 }}
                                                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                                                        className="w-5 h-5 border-2 border-white/30 border-t-cyan-400 rounded-full"
                                                     />
                                                 ) : (
-                                                    <>
-                                                        <span>Send Message</span>
-                                                        <motion.div
-                                                            animate={{ rotate: 360 }}
-                                                            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                                                            className="flex items-center justify-center origin-center"
-                                                        >
-                                                            <Send size={18} />
+                                                    <div className="flex items-center gap-3 group-hover:pl-2 transition-all duration-300">
+                                                        <span className="text-sm tracking-[0.2em]" style={{ textShadow: '0 0 10px rgba(6,182,212,0.5)' }}>Send Message</span>
+                                                        <motion.div className="flex items-center justify-center -translate-x-2 opacity-80 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                                            <Send size={18} className="text-cyan-400" />
                                                         </motion.div>
-                                                    </>
+                                                    </div>
                                                 )}
                                             </div>
                                         </motion.button>

@@ -198,7 +198,7 @@ const ServicesShowcase = () => {
     React.useEffect(() => {
         const handleHashChange = () => {
             const hash = window.location.hash;
-            if (hash.includes('what-we-do?tab=')) {
+            if (hash.includes('?tab=')) {
                 const tabId = hash.split('?tab=')[1];
                 if (tabsData.find(t => t.id === tabId)) {
                     setActiveTabId(tabId);
@@ -267,7 +267,7 @@ const ServicesShowcase = () => {
 
                 {/* ─── Tab Buttons — Upgraded ─── */}
                 <BlurFadeIn delay={0.2}>
-                    <div className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar mb-16 pb-4 sm:pb-0">
+                    <div id="services-tabs" className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar mb-16 pb-4 sm:pb-0 scroll-mt-32">
                         <div className="relative flex space-x-2 min-w-max">
                             {tabsData.map((tab) => {
                                 const isActive = activeTabId === tab.id;

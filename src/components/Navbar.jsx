@@ -26,7 +26,7 @@ const Navbar = () => {
 
     // Active section tracking via IntersectionObserver
     useEffect(() => {
-        const sectionIds = ['about', 'services', 'work', 'mission', 'contact'];
+        const sectionIds = ['about', 'what-we-do', 'work', 'mission', 'contact'];
         const observers = [];
 
         sectionIds.forEach((id) => {
@@ -49,12 +49,12 @@ const Navbar = () => {
         { label: 'About', href: '#about', id: 'about' },
         {
             label: 'Services',
-            href: '#services',
-            id: 'services',
+            href: '#what-we-do',
+            id: 'what-we-do',
             dropdown: [
-                { label: 'Web Development', subText: 'Design & Build', href: '#what-we-do?tab=web' },
-                { label: 'Smart Features', subText: 'Automate & Scale', href: '#what-we-do?tab=smart' },
-                { label: 'Local Marketing', subText: 'Reach & Grow', href: '#what-we-do?tab=local' },
+                { label: 'Web Development', subText: 'Design & Build', href: '#services-tabs?tab=web' },
+                { label: 'Smart Features', subText: 'Automate & Scale', href: '#services-tabs?tab=smart' },
+                { label: 'Local Marketing', subText: 'Reach & Grow', href: '#services-tabs?tab=local' },
             ]
         },
         { label: 'Procedure', href: '#how-it-works', id: 'how-it-works' },
@@ -63,8 +63,16 @@ const Navbar = () => {
     ];
 
     const scrollToSection = (href) => {
-        const element = document.querySelector(href);
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
+        const [baseHref, query] = href.split('?');
+        const element = document.querySelector(baseHref);
+
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+            // Update URL without jump to trigger hash changes
+            window.history.pushState(null, '', href);
+            window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+
         setIsMobileMenuOpen(false);
         setActiveDropdown(null);
     };
