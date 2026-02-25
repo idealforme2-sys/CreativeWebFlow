@@ -105,27 +105,27 @@ const StatPill = ({ stat, index, accentRgb }) => (
         transition={{ delay: index * 0.05 + 0.05, type: 'spring', stiffness: 400, damping: 25 }}
         className="relative flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-lg group transition-all duration-300"
         style={{
-            background: `rgba(${accentRgb}, 0.15)`,
-            borderColor: `rgba(${accentRgb}, 0.2)`
+            background: `rgba(${accentRgb}, 0.25)`,
+            borderColor: `rgba(${accentRgb}, 0.4)`
         }}
     >
         <div
             className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
             style={{
-                background: `rgba(${accentRgb}, 0.25)`,
-                borderColor: `rgba(${accentRgb}, 0.3)`
+                background: `rgba(${accentRgb}, 0.35)`,
+                borderColor: `rgba(${accentRgb}, 0.5)`
             }}
         />
         <div className="relative z-10 flex items-center gap-3">
             <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/10"
-                style={{ background: `rgba(${accentRgb}, 0.2)` }}
+                className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20"
+                style={{ background: `rgba(${accentRgb}, 0.3)` }}
             >
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                <stat.icon className={`w-5 h-5 ${stat.color} drop-shadow-[0_0_8px_currentColor]`} />
             </div>
             <div>
-                <p className="text-xl font-black text-white tracking-tight leading-none">{stat.value}</p>
-                <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                <p className="text-xl font-black text-white tracking-tight leading-none drop-shadow-md">{stat.value}</p>
+                <p className="text-[11px] font-medium text-white/60 uppercase tracking-wider mt-0.5">{stat.label}</p>
             </div>
         </div>
     </motion.div>
@@ -141,24 +141,24 @@ const FeatureCard = ({ card, index, gradient, neonColor, accentRgb }) => (
         className="relative group cursor-default"
         style={{ willChange: "transform" }}
     >
-        {/* Glow on hover */}
+        {/* Glow on hover - removed blur-sm which causes flickering on some browsers during transitions */}
         <div
-            className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"
-            style={{ background: `linear-gradient(135deg, rgba(${accentRgb}, 0.6), transparent 60%)` }}
+            className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{ background: `linear-gradient(135deg, rgba(${accentRgb}, 0.8), transparent 60%)` }}
         />
 
         <div
             className="relative h-full p-5 rounded-2xl border shadow-lg backdrop-blur-md overflow-hidden"
             style={{
-                background: `rgba(${accentRgb}, 0.15)`,
-                borderColor: `rgba(${accentRgb}, 0.2)`
+                background: `rgba(${accentRgb}, 0.25)`,
+                borderColor: `rgba(${accentRgb}, 0.4)`
             }}
         >
             {/* Shimmer sweep */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                 <div
                     className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
-                    style={{ background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.15), transparent)` }}
+                    style={{ background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.25), transparent)` }}
                 />
             </div>
 
@@ -166,17 +166,18 @@ const FeatureCard = ({ card, index, gradient, neonColor, accentRgb }) => (
                 {/* Icon + Metric row */}
                 <div className="flex items-center justify-between mb-4">
                     <div
-                        className="w-11 h-11 rounded-xl flex items-center justify-center border border-white/10"
-                        style={{ background: `rgba(${accentRgb}, 0.12)` }}
+                        className="w-11 h-11 rounded-xl flex items-center justify-center border border-white/20"
+                        style={{ background: `rgba(${accentRgb}, 0.3)` }}
                     >
-                        <card.icon className="w-5 h-5" style={{ color: neonColor }} />
+                        <card.icon className="w-5 h-5 drop-shadow-[0_0_8px_currentColor]" style={{ color: neonColor }} />
                     </div>
                     <span
-                        className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+                        className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border shadow-sm"
                         style={{
-                            color: neonColor,
-                            borderColor: `rgba(${accentRgb}, 0.25)`,
-                            background: `rgba(${accentRgb}, 0.08)`
+                            color: '#fff',
+                            textShadow: `0 0 10px ${neonColor}`,
+                            borderColor: `rgba(${accentRgb}, 0.5)`,
+                            background: `rgba(${accentRgb}, 0.25)`
                         }}
                     >
                         {card.metric}

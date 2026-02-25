@@ -577,7 +577,7 @@ const ResponseTimeline = () => {
             color: 'from-cyan-500 to-blue-500',
         },
         {
-            emoji: '✅',
+            emoji: '✍️',
             title: 'Custom proposal sent',
             desc: 'We craft a tailored plan and send it to your email.',
             color: 'from-purple-500 to-violet-500',
