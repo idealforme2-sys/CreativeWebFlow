@@ -20,15 +20,16 @@ const MorphGrid = () => {
                         linear-gradient(90deg, rgba(0,240,255,0.3) 1px, transparent 1px)
                     `,
                     backgroundSize: '60px 60px',
-                    animation: 'gridPulse 8s ease-in-out infinite',
-                    maskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
-                    WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
+                    willChange: 'transform',
+                    animation: 'gridPulse 12s ease-in-out infinite',
+                    maskImage: 'radial-gradient(ellipse 70% 50% at 50% 50%, black, transparent)',
+                    WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 50% 50%, black, transparent)',
                 }}
             />
             <style>{`
                 @keyframes gridPulse {
-                    0%, 100% { transform: perspective(500px) rotateX(35deg) scale(2.5) translateY(-10%); }
-                    50% { transform: perspective(500px) rotateX(40deg) scale(2.6) translateY(-12%); }
+                    0%, 100% { transform: perspective(500px) rotateX(35deg) scale(2.0) translateY(-5%); }
+                    50% { transform: perspective(500px) rotateX(40deg) scale(2.1) translateY(-8%); }
                 }
             `}</style>
         </div>
@@ -36,33 +37,24 @@ const MorphGrid = () => {
 };
 
 // Floating orbs component for ambient atmosphere
+// Reduced radius and blur to heavily save on CSS rasterization overhead
 const FloatingOrbs = () => (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
             animate={{
-                x: [0, 100, -50, 0],
-                y: [0, -80, 40, 0],
-                scale: [1, 1.3, 0.9, 1],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/4 left-[15%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-cyan-500/15 to-blue-600/10 blur-[100px]"
-        />
-        <motion.div
-            animate={{
-                x: [0, -120, 60, 0],
-                y: [0, 60, -100, 0],
-                scale: [1, 0.8, 1.2, 1],
+                x: [0, 50, -25, 0],
+                y: [0, -40, 20, 0],
             }}
             transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/3 right-[10%] w-[400px] h-[400px] rounded-full bg-gradient-to-br from-purple-500/15 to-pink-600/10 blur-[100px]"
+            className="absolute top-1/4 left-[15%] w-[400px] h-[400px] rounded-full bg-cyan-500/10 blur-[60px] will-change-transform"
         />
         <motion.div
             animate={{
-                x: [0, 80, -80, 0],
-                y: [0, -40, 80, 0],
+                x: [0, -60, 30, 0],
+                y: [0, 30, -50, 0],
             }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-1/4 left-[40%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-emerald-500/10 to-cyan-500/8 blur-[80px]"
+            transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/3 right-[10%] w-[350px] h-[350px] rounded-full bg-purple-500/10 blur-[60px] will-change-transform"
         />
     </div>
 );

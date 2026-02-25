@@ -35,7 +35,8 @@ const fragmentShader = `
     float value = 0.0;
     float amplitude = 1.0;
     float frequency = 0.25;
-    for(int i = 0; i < 10; i++) {
+    // Hard cap the loop to 5 max octaves to save GPU (was 10)
+    for(int i = 0; i < 5; i++) {
       if(i >= octaves) break;
       value += amplitude * noise(p * frequency);
       amplitude *= 0.52;
@@ -93,10 +94,10 @@ const fragmentShader = `
     vec2 curlForce = curl(st * 2.0, time) * 0.6;
     vec2 flowField = st + curlForce;
 
-    float dist1 = fbm(flowField * 1.5 + time * 1.2, 8) * 0.4;
-    float dist2 = fbm(flowField * 2.3 - time * 0.8, 6) * 0.3;
-    float dist3 = fbm(flowField * 3.1 + time * 1.8, 4) * 0.2;
-    float dist4 = fbm(flowField * 4.7 - time * 1.1, 3) * 0.15;
+    float dist1 = fbm(flowField * 1.5 + time * 1.2, 5) * 0.4;
+    float dist2 = fbm(flowField * 2.3 - time * 0.8, 4) * 0.3;
+    float dist3 = fbm(flowField * 3.1 + time * 1.8, 3) * 0.2;
+    float dist4 = fbm(flowField * 4.7 - time * 1.1, 2) * 0.15;
 
     float cells = voronoi(flowField * 2.5 + time * 0.5);
     cells = smoothstep(0.1, 0.7, cells);
@@ -206,104 +207,118 @@ const fragmentShader = `
 `;
 
 const WebGLBackground = () => {
-    const canvasRef = useRef(null);
-    const mouseRef = useRef({ x: 0, y: 0 });
-    const intensityRef = useRef(1.0);
-    const targetIntensityRef = useRef(1.0);
-    const startTimeRef = useRef(Date.now());
+  const canvasRef = useRef(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const intensityRef = useRef(1.0);
+  const targetIntensityRef = useRef(1.0);
+  const startTimeRef = useRef(Date.now());
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-        const gl = canvas.getContext("webgl");
-        if (!gl) return;
+    const gl = canvas.getContext("webgl");
+    if (!gl) return;
 
-        const createShader = (type, source) => {
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                gl.deleteShader(shader);
-                return null;
-            }
-            return shader;
-        };
+    const createShader = (type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
 
-        const vertShader = createShader(gl.VERTEX_SHADER, vertexShader);
-        const fragShader = createShader(gl.FRAGMENT_SHADER, fragmentShader);
-        if (!vertShader || !fragShader) return;
+    const vertShader = createShader(gl.VERTEX_SHADER, vertexShader);
+    const fragShader = createShader(gl.FRAGMENT_SHADER, fragmentShader);
+    if (!vertShader || !fragShader) return;
 
-        const program = gl.createProgram();
-        gl.attachShader(program, vertShader);
-        gl.attachShader(program, fragShader);
-        gl.linkProgram(program);
-        gl.useProgram(program);
+    const program = gl.createProgram();
+    gl.attachShader(program, vertShader);
+    gl.attachShader(program, fragShader);
+    gl.linkProgram(program);
+    gl.useProgram(program);
 
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
 
-        const positionLoc = gl.getAttribLocation(program, "position");
-        gl.enableVertexAttribArray(positionLoc);
-        gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+    const positionLoc = gl.getAttribLocation(program, "position");
+    gl.enableVertexAttribArray(positionLoc);
+    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
 
-        const uTime = gl.getUniformLocation(program, "u_time");
-        const uResolution = gl.getUniformLocation(program, "u_resolution");
-        const uMouse = gl.getUniformLocation(program, "u_mouse");
-        const uIntensity = gl.getUniformLocation(program, "u_intensity");
+    const uTime = gl.getUniformLocation(program, "u_time");
+    const uResolution = gl.getUniformLocation(program, "u_resolution");
+    const uMouse = gl.getUniformLocation(program, "u_mouse");
+    const uIntensity = gl.getUniformLocation(program, "u_intensity");
 
-        const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            gl.viewport(0, 0, canvas.width, canvas.height);
-        };
+    const resize = () => {
+      // Render at 50% scale internally, then CSS scales it up to full window
+      // This cuts processed pixels by 75%, vastly improving GPU performance
+      const scale = 0.5;
+      canvas.width = window.innerWidth * scale;
+      canvas.height = window.innerHeight * scale;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    };
 
-        resize();
-        window.addEventListener("resize", resize);
+    resize();
+    window.addEventListener("resize", resize);
 
-        const onMouseMove = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouseRef.current.x = e.clientX - rect.left;
-            mouseRef.current.y = rect.height - (e.clientY - rect.top);
-            targetIntensityRef.current = 1.05;
-            setTimeout(() => {
-                targetIntensityRef.current = 1.0;
-            }, 200);
-        };
+    const onMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseRef.current.x = e.clientX - rect.left;
+      mouseRef.current.y = rect.height - (e.clientY - rect.top);
+      targetIntensityRef.current = 1.05;
+      setTimeout(() => {
+        targetIntensityRef.current = 1.0;
+      }, 200);
+    };
 
-        window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
 
-        let animationId;
-        const animate = () => {
-            const time = (Date.now() - startTimeRef.current) * 0.001;
-            intensityRef.current += (targetIntensityRef.current - intensityRef.current) * 0.05;
+    let animationId;
+    let lastTime = 0;
+    const fpsInterval = 1000 / 30; // Hard cap at 30 FPS for background
 
-            gl.uniform1f(uTime, time);
-            gl.uniform2f(uResolution, canvas.width, canvas.height);
-            gl.uniform2f(uMouse, mouseRef.current.x, mouseRef.current.y);
-            gl.uniform1f(uIntensity, intensityRef.current);
+    const animate = (timestamp) => {
+      animationId = requestAnimationFrame(animate);
 
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-            animationId = requestAnimationFrame(animate);
-        };
+      if (!lastTime) lastTime = timestamp;
+      const elapsed = timestamp - lastTime;
 
-        animate();
+      if (elapsed > fpsInterval) {
+        lastTime = timestamp - (elapsed % fpsInterval);
 
-        return () => {
-            window.removeEventListener("resize", resize);
-            window.removeEventListener("mousemove", onMouseMove);
-            cancelAnimationFrame(animationId);
-        };
-    }, []);
+        const time = (Date.now() - startTimeRef.current) * 0.001;
+        intensityRef.current += (targetIntensityRef.current - intensityRef.current) * 0.05;
 
-    return (
-        <canvas
-            ref={canvasRef}
-            className="fixed inset-0 w-full h-full pointer-events-none"
-            style={{ zIndex: 0 }}
-        />
-    );
+        gl.uniform1f(uTime, time);
+        gl.uniform2f(uResolution, canvas.width, canvas.height);
+        gl.uniform2f(uMouse, mouseRef.current.x, mouseRef.current.y);
+        gl.uniform1f(uIntensity, intensityRef.current);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+    };
+
+    requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMouseMove);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 0 }}
+    />
+  );
 };
 
 export default WebGLBackground;

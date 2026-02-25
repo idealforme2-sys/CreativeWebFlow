@@ -6,7 +6,7 @@ const CustomCursor = () => {
     const mouseY = useMotionValue(-100);
     const [isHovering, setIsHovering] = useState(false);
     const [isClicking, setIsClicking] = useState(false);
-    const [trail, setTrail] = useState([]);
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
     const trailRef = useRef([]);
     const rafRef = useRef(null);
 
@@ -20,6 +20,17 @@ const CustomCursor = () => {
     const trailY = useSpring(mouseY, trailSpringConfig);
 
     useEffect(() => {
+        const checkTouch = () => {
+            setIsTouchDevice(window.matchMedia("(hover: none)").matches || window.innerWidth < 1024);
+        };
+        checkTouch();
+        window.addEventListener('resize', checkTouch);
+        return () => window.removeEventListener('resize', checkTouch);
+    }, []);
+
+    useEffect(() => {
+        if (isTouchDevice) return; // Completely bypass heavy logic on mobile/touch devices
+
         const move = (e) => {
             mouseX.set(e.clientX);
             mouseY.set(e.clientY);
@@ -67,7 +78,9 @@ const CustomCursor = () => {
                 el.removeEventListener('mouseleave', handleHoverEnd);
             });
         };
-    }, [mouseX, mouseY]);
+    }, [mouseX, mouseY, isTouchDevice]);
+
+    if (isTouchDevice) return null;
 
     return (
         <>

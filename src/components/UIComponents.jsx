@@ -456,8 +456,8 @@ export const ParticlesBackground = () => {
 
         let animationFrameId;
         let particles = [];
-        const numParticles = 60;
-        const connectionDistance = 150;
+        const numParticles = 30; // Further reduced from 60 to drastically cut O(N^2) math loop
+        const connectionDistance = 100; // Shorter distance means fewer active lines
 
         const resize = () => {
             const parent = canvas.parentElement;

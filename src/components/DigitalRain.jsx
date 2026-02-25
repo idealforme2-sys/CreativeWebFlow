@@ -17,28 +17,37 @@ const DigitalRain = () => {
         const drops = new Array(Math.floor(columns)).fill(1);
 
         let animationId;
+        let lastTime = 0;
+        const fpsInterval = 1000 / 30; // 30 FPS cap
 
-        const draw = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, width, height);
-            ctx.font = `${fontSize}px monospace`;
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = charArray[Math.floor(Math.random() * charArray.length)];
-                ctx.fillStyle = Math.random() > 0.98 ? '#fff' :
-                    Math.random() > 0.9 ? '#06b6d4' : '#d946ef';
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-
+        const draw = (timestamp) => {
             animationId = requestAnimationFrame(draw);
+
+            if (!lastTime) lastTime = timestamp;
+            const elapsed = timestamp - lastTime;
+
+            if (elapsed > fpsInterval) {
+                lastTime = timestamp - (elapsed % fpsInterval);
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, width, height);
+                ctx.font = `${fontSize}px monospace`;
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = charArray[Math.floor(Math.random() * charArray.length)];
+                    ctx.fillStyle = Math.random() > 0.98 ? '#fff' :
+                        Math.random() > 0.9 ? '#06b6d4' : '#d946ef';
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
         };
 
-        animationId = requestAnimationFrame(draw);
+        requestAnimationFrame(draw);
 
         const handleResize = () => {
             width = canvas.width = window.innerWidth;
