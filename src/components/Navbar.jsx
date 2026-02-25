@@ -52,13 +52,12 @@ const Navbar = () => {
             href: '#services',
             id: 'services',
             dropdown: [
-                { label: 'Web Development', href: '#web-development' },
-                { label: 'App Development', href: '#app-development' },
-                { label: 'Digital Marketing', href: '#digital-marketing' },
+                { label: 'Web Development', subText: 'Design & Build', href: '#services' },
+                { label: 'Smart Features', subText: 'Automate & Scale', href: '#services' },
             ]
         },
+        { label: 'Procedure', href: '#how-it-works', id: 'how-it-works' },
         { label: 'Work', href: '#work', id: 'work' },
-        { label: 'Mission', href: '#about', id: 'about' },
         { label: 'Contact', href: '#contact', id: 'contact' },
     ];
 
@@ -232,8 +231,11 @@ const Navbar = () => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                                                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                                                    className="absolute top-full left-0 pt-2 w-56 pointer-events-none"
+                                                    className="absolute top-[100%] left-0 pt-4 w-64 pointer-events-none z-50"
                                                 >
+                                                    {/* Invisible block to bridge hover gap */}
+                                                    <div className="absolute top-0 left-0 w-full h-4 pointer-events-auto" />
+
                                                     <div className="relative w-full py-2 bg-[#0a0f1c]/95 backdrop-blur-3xl border border-white/[0.08] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden nav-noise pointer-events-auto">
                                                         {/* Top accent line */}
                                                         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
@@ -248,11 +250,17 @@ const Navbar = () => {
                                                         {link.dropdown.map((item) => (
                                                             <button
                                                                 key={item.label}
-                                                                onClick={() => scrollToSection(item.href)}
-                                                                className="relative w-full px-5 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 hover:text-cyan-400 hover:bg-cyan-400/[0.06] transition-all duration-200 flex items-center gap-2.5 group/item overflow-hidden"
+                                                                onClick={() => {
+                                                                    scrollToSection(item.href);
+                                                                    setActiveDropdown(null);
+                                                                }}
+                                                                className="relative w-full px-5 py-3 text-left hover:bg-cyan-400/[0.06] transition-all duration-200 flex items-start gap-3 group/item overflow-hidden"
                                                             >
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 group-hover/item:opacity-100 group-hover/item:shadow-[0_0_6px_currentColor] transition-all duration-300 flex-shrink-0" />
-                                                                <span className="relative z-10">{item.label}</span>
+                                                                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-cyan-500/40 group-hover/item:bg-cyan-400 group-hover/item:shadow-[0_0_8px_currentColor] transition-all duration-300 flex-shrink-0" />
+                                                                <div className="relative z-10 flex flex-col">
+                                                                    <span className="text-[12px] font-bold uppercase tracking-wider text-white/90 group-hover/item:text-cyan-400 transition-colors">{item.label}</span>
+                                                                    {item.subText && <span className="text-[10px] text-white/40 uppercase tracking-widest mt-0.5">{item.subText}</span>}
+                                                                </div>
                                                             </button>
                                                         ))}
                                                     </div>
@@ -328,7 +336,7 @@ const Navbar = () => {
             </motion.nav>
 
             {/* Mobile Menu */}
-            <AnimatePresence>
+            < AnimatePresence >
                 {isMobileMenuOpen && (
                     <motion.div
                         initial={{ opacity: 0, clipPath: 'circle(0% at 95% 5%)' }}
@@ -357,22 +365,30 @@ const Navbar = () => {
                                     transition={{ delay: 0.1 + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                                 >
                                     {link.dropdown ? (
-                                        <div className="flex flex-col items-center gap-3">
-                                            <span className="text-xl font-bold text-white/40 uppercase tracking-widest">{link.label}</span>
-                                            {link.dropdown.map((item) => (
-                                                <button
-                                                    key={item.label}
-                                                    onClick={() => scrollToSection(item.href)}
-                                                    className="text-base text-white/60 hover:text-cyan-400 transition-colors"
-                                                >
-                                                    {item.label}
-                                                </button>
-                                            ))}
+                                        <div className="flex flex-col items-center gap-1.5">
+                                            <span className="text-base font-bold text-white/40 uppercase tracking-widest">{link.label}</span>
+                                            <div className="flex flex-col items-center gap-1">
+                                                {link.dropdown.map((item) => (
+                                                    <button
+                                                        key={item.label}
+                                                        onClick={() => {
+                                                            scrollToSection(item.href);
+                                                            setIsMobileMenuOpen(false);
+                                                        }}
+                                                        className="text-sm text-white/60 hover:text-cyan-400 transition-colors py-1"
+                                                    >
+                                                        {item.label}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     ) : (
                                         <button
-                                            onClick={() => scrollToSection(link.href)}
-                                            className={`text-2xl font-bold uppercase tracking-widest transition-colors ${activeSection === link.id ? 'text-cyan-400' : 'text-white hover:text-cyan-400'}`}
+                                            onClick={() => {
+                                                scrollToSection(link.href);
+                                                setIsMobileMenuOpen(false);
+                                            }}
+                                            className={`text-lg font-bold uppercase tracking-widest transition-colors ${activeSection === link.id ? 'text-cyan-400' : 'text-white hover:text-cyan-400'}`}
                                         >
                                             {link.label}
                                         </button>

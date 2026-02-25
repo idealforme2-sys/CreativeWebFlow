@@ -42,10 +42,10 @@ const tabsData = [
         icon: Cpu,
         title: 'Smart Features',
         subtitle: 'Automate & Scale',
-        gradient: 'from-purple-600 to-pink-500',
-        textGradient: 'from-purple-400 to-pink-400',
-        neonColor: '#a855f7',
-        accentRgb: '168,85,247',
+        gradient: 'from-emerald-500 to-green-500',
+        textGradient: 'from-emerald-400 to-green-400',
+        neonColor: '#10b981',
+        accentRgb: '16,185,129',
         headingLine1: 'Smart tools for',
         headingLine2: 'modern businesses',
         description: 'Automate tasks, improve customer experience, and save time with custom features built for your specific needs.',
@@ -71,10 +71,10 @@ const tabsData = [
         icon: MapPin,
         title: 'Local Marketing',
         subtitle: 'Reach & Grow',
-        gradient: 'from-teal-500 to-emerald-500',
-        textGradient: 'from-teal-400 to-emerald-400',
-        neonColor: '#14b8a6',
-        accentRgb: '20,184,166',
+        gradient: 'from-purple-600 to-pink-500',
+        textGradient: 'from-purple-400 to-pink-400',
+        neonColor: '#a855f7',
+        accentRgb: '168,85,247',
         headingLine1: 'Help customers',
         headingLine2: 'find you online',
         description: 'Get found when customers search for businesses like yours. We optimize your presence for local searches and build your reputation.',
@@ -103,17 +103,30 @@ const StatPill = ({ stat, index, accentRgb }) => (
         initial={{ opacity: 0, y: 20, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ delay: index * 0.05 + 0.05, type: 'spring', stiffness: 400, damping: 25 }}
-        className="relative flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm group hover:bg-white/[0.08] transition-all duration-300"
+        className="relative flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-lg group transition-all duration-300"
+        style={{
+            background: `rgba(${accentRgb}, 0.15)`,
+            borderColor: `rgba(${accentRgb}, 0.2)`
+        }}
     >
         <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/10"
-            style={{ background: `rgba(${accentRgb}, 0.15)` }}
-        >
-            <stat.icon className={`w-5 h-5 ${stat.color}`} />
-        </div>
-        <div>
-            <p className="text-xl font-black text-white tracking-tight leading-none">{stat.value}</p>
-            <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider mt-0.5">{stat.label}</p>
+            className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+            style={{
+                background: `rgba(${accentRgb}, 0.25)`,
+                borderColor: `rgba(${accentRgb}, 0.3)`
+            }}
+        />
+        <div className="relative z-10 flex items-center gap-3">
+            <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/10"
+                style={{ background: `rgba(${accentRgb}, 0.2)` }}
+            >
+                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+            </div>
+            <div>
+                <p className="text-xl font-black text-white tracking-tight leading-none">{stat.value}</p>
+                <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider mt-0.5">{stat.label}</p>
+            </div>
         </div>
     </motion.div>
 );
@@ -124,21 +137,28 @@ const FeatureCard = ({ card, index, gradient, neonColor, accentRgb }) => (
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ delay: index * 0.05 + 0.05, type: 'spring', stiffness: 350, damping: 25 }}
-        whileHover={{ y: -6, scale: 1.02 }}
+        whileHover={{ y: -6 }}
         className="relative group cursor-default"
+        style={{ willChange: "transform" }}
     >
         {/* Glow on hover */}
         <div
             className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"
-            style={{ background: `linear-gradient(135deg, rgba(${accentRgb}, 0.4), transparent 60%)` }}
+            style={{ background: `linear-gradient(135deg, rgba(${accentRgb}, 0.6), transparent 60%)` }}
         />
 
-        <div className="relative h-full p-5 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md overflow-hidden">
+        <div
+            className="relative h-full p-5 rounded-2xl border shadow-lg backdrop-blur-md overflow-hidden"
+            style={{
+                background: `rgba(${accentRgb}, 0.15)`,
+                borderColor: `rgba(${accentRgb}, 0.2)`
+            }}
+        >
             {/* Shimmer sweep */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                 <div
                     className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
-                    style={{ background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.08), transparent)` }}
+                    style={{ background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.15), transparent)` }}
                 />
             </div>
 
