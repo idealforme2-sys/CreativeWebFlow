@@ -52,8 +52,9 @@ const Navbar = () => {
             href: '#services',
             id: 'services',
             dropdown: [
-                { label: 'Web Development', subText: 'Design & Build', href: '#services' },
-                { label: 'Smart Features', subText: 'Automate & Scale', href: '#services' },
+                { label: 'Web Development', subText: 'Design & Build', href: '#what-we-do?tab=web' },
+                { label: 'Smart Features', subText: 'Automate & Scale', href: '#what-we-do?tab=smart' },
+                { label: 'Local Marketing', subText: 'Reach & Grow', href: '#what-we-do?tab=local' },
             ]
         },
         { label: 'Procedure', href: '#how-it-works', id: 'how-it-works' },

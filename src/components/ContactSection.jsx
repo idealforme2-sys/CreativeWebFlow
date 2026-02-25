@@ -297,6 +297,10 @@ const ContactSection = () => {
                                             box-shadow: 0 0 20px rgba(6,182,212,0.1), inset 0 1px 2px rgba(6,182,212,0.05);
                                             background: rgba(6,182,212,0.02);
                                         }
+                                        @keyframes nav-gradient-rotate {
+                                            0% { transform: rotate(0deg); }
+                                            100% { transform: rotate(360deg); }
+                                        }
                                     `}</style>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="relative group/input">
@@ -424,11 +428,44 @@ const ContactSection = () => {
                                             </div>
                                         </div>
 
-                                        <MagneticButton
-                                            className="w-full py-5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white font-bold uppercase tracking-wider flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-cyan-500/25 transition-shadow disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                                        <motion.button
+                                            className="relative w-full py-5 rounded-xl font-bold uppercase tracking-wider text-white overflow-hidden group mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                                             onClick={handleSubmit}
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            disabled={isSubmitting}
                                         >
-                                            <div className="w-full h-full flex items-center justify-center gap-3">
+                                            {/* Rotating gradient border */}
+                                            <div
+                                                className="absolute -inset-[3px] rounded-xl opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                                                style={{
+                                                    background: 'conic-gradient(from 0deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
+                                                    animation: 'nav-gradient-rotate 3s linear infinite',
+                                                }}
+                                            />
+
+                                            {/* Inner background - Using the current gradient color */}
+                                            <div className="absolute inset-[2px] rounded-xl bg-gradient-to-r from-cyan-600/90 to-purple-600/90 backdrop-blur-md" />
+
+                                            {/* Hover glow fill for extra intensity */}
+                                            <div className="absolute inset-[2px] rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                                            {/* Shimmer */}
+                                            <motion.div
+                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.2] to-transparent -skew-x-12 pointer-events-none"
+                                                animate={{ x: ['-200%', '200%'] }}
+                                                transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                                            />
+
+                                            {/* Pulsing glow behind */}
+                                            <motion.div
+                                                className="absolute -inset-2 rounded-xl bg-cyan-500/30 blur-xl pointer-events-none"
+                                                animate={{ opacity: [0.2, 0.6, 0.2], scale: [0.98, 1.02, 0.98] }}
+                                                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                                            />
+
+                                            {/* Content */}
+                                            <div className="relative z-10 w-full h-full flex items-center justify-center gap-3">
                                                 {isSubmitting ? (
                                                     <motion.div
                                                         animate={{ rotate: 360 }}
@@ -437,12 +474,18 @@ const ContactSection = () => {
                                                     />
                                                 ) : (
                                                     <>
-                                                        Send Message
-                                                        <Send size={18} />
+                                                        <span>Send Message</span>
+                                                        <motion.div
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                                                            className="flex items-center justify-center origin-center"
+                                                        >
+                                                            <Send size={18} />
+                                                        </motion.div>
                                                     </>
                                                 )}
                                             </div>
-                                        </MagneticButton>
+                                        </motion.button>
                                     </form>
                                 )}
                             </div>

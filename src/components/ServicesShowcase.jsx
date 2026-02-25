@@ -194,6 +194,25 @@ const ServicesShowcase = () => {
     const [activeTabId, setActiveTabId] = useState(tabsData[0].id);
     const activeData = tabsData.find(t => t.id === activeTabId);
 
+    // Listen for hash changes to switch tabs directly from navigation
+    React.useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash;
+            if (hash.includes('what-we-do?tab=')) {
+                const tabId = hash.split('?tab=')[1];
+                if (tabsData.find(t => t.id === tabId)) {
+                    setActiveTabId(tabId);
+                }
+            }
+        };
+
+        // Check on initial load
+        handleHashChange();
+
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
     return (
         <section id="what-we-do" className="relative pt-24 lg:pt-32 pb-12 lg:pb-16 overflow-hidden flex items-center">
 
@@ -305,7 +324,7 @@ const ServicesShowcase = () => {
                 </BlurFadeIn>
 
                 {/* ─── Tab Content ─── */}
-                <div className="relative">
+                <div className="relative min-h-[700px] lg:min-h-[550px]">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeData.id}

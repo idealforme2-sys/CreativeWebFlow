@@ -153,7 +153,7 @@ const ProcessSection = () => {
 
     return (
         // The outer container establishes the total scrolling height (e.g., 400vh for 4 cards)
-        <section ref={targetRef} className="relative bg-transparent h-[400vh]">
+        <section id="how-it-works" ref={targetRef} className="relative bg-transparent h-[400vh]">
 
             {/* The sticky inner container stays in view while we scroll down */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between py-[4vh] md:py-[6vh] overflow-hidden">
