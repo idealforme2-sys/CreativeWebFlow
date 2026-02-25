@@ -255,11 +255,8 @@ const WebGLBackground = () => {
     const uIntensity = gl.getUniformLocation(program, "u_intensity");
 
     const resize = () => {
-      // Render at 50% scale internally, then CSS scales it up to full window
-      // This cuts processed pixels by 75%, vastly improving GPU performance
-      const scale = 0.5;
-      canvas.width = window.innerWidth * scale;
-      canvas.height = window.innerHeight * scale;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
