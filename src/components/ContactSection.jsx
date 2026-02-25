@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { Send, Mail, ArrowUpRight, CheckCircle2, Sparkles, Rocket, Calendar, CheckCircle, Clock, Zap } from 'lucide-react';
+import { Send, Mail, ArrowUpRight, CheckCircle2, Sparkles, Rocket, Calendar, CheckCircle, Clock, Zap, ChevronDown } from 'lucide-react';
 import { SectionHeader, RevealOnScroll, MagneticButton, HolographicCard, SectionParticles } from './UIComponents';
 import { Highlighter } from './magicui/Highlighter';
 
@@ -115,8 +115,20 @@ const ContactSection = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
-
+    const [isBudgetOpen, setIsBudgetOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const sectionRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsBudgetOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
     const trustBadges = [
@@ -174,7 +186,7 @@ const ContactSection = () => {
                     scale: [1, 1.1, 1],
                 }}
                 transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none"
+                className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.15)_0,transparent_60%)] pointer-events-none will-change-transform"
             />
             <motion.div
                 animate={{
@@ -183,7 +195,7 @@ const ContactSection = () => {
                     scale: [1, 0.9, 1],
                 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"
+                className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15)_0,transparent_60%)] pointer-events-none will-change-transform"
             />
 
             {/* Subtle grid */}
@@ -383,50 +395,77 @@ const ContactSection = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="relative group/input col-span-1 md:col-span-2 mt-2">
+                                            <div className="relative group/input col-span-1 md:col-span-2 mt-2" ref={dropdownRef}>
                                                 <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-3">
                                                     Budget Range
                                                 </label>
-                                                <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar relative no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                                                    {budgetTiers.map((tier) => (
-                                                        <motion.button
-                                                            key={tier.id}
-                                                            type="button"
-                                                            onClick={() => setFormData({ ...formData, budget: tier.id })}
-                                                            onFocus={() => setFocusedField('budget')}
-                                                            onBlur={() => setFocusedField(null)}
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            className={`relative min-w-[150px] flex-shrink-0 snap-center p-4 rounded-xl border text-left transition-all duration-300 overflow-hidden group/btn ${formData.budget === tier.id
-                                                                ? 'bg-cyan-500/10 border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.2)] ring-1 ring-cyan-400/30 glow-effect'
-                                                                : 'bg-black/30 border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
-                                                                }`}
+                                                <div className="relative">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsBudgetOpen(!isBudgetOpen)}
+                                                        className="contact-input flex items-center justify-between"
+                                                    >
+                                                        <span className={formData.budget ? 'text-white font-medium' : 'text-white/30'}>
+                                                            {formData.budget ? budgetTiers.find(t => t.id === formData.budget)?.label : 'Select your budget...'}
+                                                        </span>
+                                                        <motion.div
+                                                            animate={{ rotate: isBudgetOpen ? 180 : 0 }}
+                                                            transition={{ duration: 0.3 }}
                                                         >
-                                                            {/* Selection indicator */}
-                                                            {formData.budget === tier.id && (
-                                                                <motion.div
-                                                                    layoutId="budget-active"
-                                                                    className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 backdrop-blur-[2px]"
-                                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                                />
-                                                            )}
+                                                            <ChevronDown size={18} className="text-white/50" />
+                                                        </motion.div>
+                                                    </button>
 
-                                                            <div className="relative z-10">
-                                                                <span className={`block text-[14px] font-bold tracking-tight mb-1 transition-colors ${formData.budget === tier.id ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'text-white'}`}>
-                                                                    {tier.label}
-                                                                </span>
-                                                                <span className={`block text-[10px] uppercase tracking-widest font-mono ${formData.budget === tier.id ? 'text-cyan-300/80' : 'text-gray-500'}`}>
-                                                                    {tier.sub}
-                                                                </span>
-                                                            </div>
-                                                        </motion.button>
-                                                    ))}
+                                                    <AnimatePresence>
+                                                        {isBudgetOpen && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                                                                transition={{ duration: 0.2 }}
+                                                                className="absolute top-full left-0 right-0 mt-2 p-2 rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden flex flex-col gap-1"
+                                                            >
+                                                                {budgetTiers.map((tier, i) => (
+                                                                    <motion.button
+                                                                        initial={{ opacity: 0, x: -10 }}
+                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                        transition={{ delay: i * 0.05 }}
+                                                                        key={tier.id}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setFormData({ ...formData, budget: tier.id });
+                                                                            setIsBudgetOpen(false);
+                                                                        }}
+                                                                        className={`w-full text-left p-3 rounded-lg flex items-center justify-between transition-all duration-300 group ${formData.budget === tier.id
+                                                                            ? 'bg-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.15)] ring-1 ring-cyan-400/50'
+                                                                            : 'hover:bg-white/5'
+                                                                            }`}
+                                                                    >
+                                                                        <div className="flex flex-col">
+                                                                            <span className={`text-[14px] font-bold tracking-tight mb-0.5 transition-colors ${formData.budget === tier.id ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'text-white'}`}>
+                                                                                {tier.label}
+                                                                            </span>
+                                                                            <span className={`text-[10px] uppercase tracking-widest font-mono ${formData.budget === tier.id ? 'text-cyan-300/80' : 'text-gray-500'}`}>
+                                                                                {tier.sub}
+                                                                            </span>
+                                                                        </div>
+
+                                                                        {formData.budget === tier.id && (
+                                                                            <motion.div
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1 }}
+                                                                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                                                                className="w-6 h-6 rounded-full bg-cyan-400/20 flex items-center justify-center mr-1"
+                                                                            >
+                                                                                <CheckCircle size={14} className="text-cyan-400 drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]" />
+                                                                            </motion.div>
+                                                                        )}
+                                                                    </motion.button>
+                                                                ))}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
                                                 </div>
-                                                <motion.div
-                                                    className="absolute -bottom-2 left-1/2 h-[1px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full opacity-50"
-                                                    animate={{ width: formData.budget ? '100%' : '0%', x: '-50%' }}
-                                                    transition={{ duration: 0.5 }}
-                                                />
                                             </div>
                                         </div>
 

@@ -228,8 +228,8 @@ const ServicesShowcase = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 1 }}
-                    className="absolute top-1/4 left-[10%] w-[500px] h-[500px] rounded-full blur-[150px] mix-blend-screen pointer-events-none"
-                    style={{ background: `rgba(${activeData.accentRgb}, 0.15)` }}
+                    className="absolute top-1/4 left-[10%] w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none will-change-transform"
+                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.15) 0%, transparent 65%)` }}
                 />
                 <motion.div
                     key={activeData.id + '-orb2'}
@@ -237,8 +237,8 @@ const ServicesShowcase = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 1 }}
-                    className="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full blur-[120px] mix-blend-screen pointer-events-none"
-                    style={{ background: `rgba(${activeData.accentRgb}, 0.1)` }}
+                    className="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none will-change-transform"
+                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.1) 0%, transparent 65%)` }}
                 />
             </AnimatePresence>
 

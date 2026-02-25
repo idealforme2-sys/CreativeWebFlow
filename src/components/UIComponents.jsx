@@ -516,6 +516,7 @@ export const ParticlesBackground = React.memo(() => {
         canvas.addEventListener('mouseleave', handleMouseLeave);
 
         const render = () => {
+            if (!isInViewRef.current) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < particles.length; i++) {
@@ -556,13 +557,27 @@ export const ParticlesBackground = React.memo(() => {
             animationFrameId = requestAnimationFrame(render);
         };
 
-        render();
+        let isInViewRef = { current: false };
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                isInViewRef.current = entry.isIntersecting;
+                if (entry.isIntersecting && !animationFrameId) {
+                    render();
+                } else if (!entry.isIntersecting && animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            },
+            { threshold: 0 }
+        );
+        if (canvas) observer.observe(canvas);
 
         return () => {
             window.removeEventListener('resize', resize);
             canvas.removeEventListener('mousemove', handleMouseMove);
             canvas.removeEventListener('mouseleave', handleMouseLeave);
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (canvas) observer.unobserve(canvas);
         };
     }, []);
 

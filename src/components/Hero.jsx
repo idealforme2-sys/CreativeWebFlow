@@ -46,7 +46,7 @@ const FloatingOrbs = () => (
                 y: [0, -40, 20, 0],
             }}
             transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/4 left-[15%] w-[400px] h-[400px] rounded-full bg-cyan-500/10 blur-[60px] will-change-transform"
+            className="absolute top-1/4 left-[15%] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.15)_0,transparent_60%)] will-change-transform"
         />
         <motion.div
             animate={{
@@ -54,7 +54,7 @@ const FloatingOrbs = () => (
                 y: [0, 30, -50, 0],
             }}
             transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/3 right-[10%] w-[350px] h-[350px] rounded-full bg-purple-500/10 blur-[60px] will-change-transform"
+            className="absolute top-1/3 right-[10%] w-[350px] h-[350px] rounded-full bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15)_0,transparent_60%)] will-change-transform"
         />
     </div>
 );
