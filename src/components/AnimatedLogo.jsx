@@ -92,15 +92,15 @@ const AnimatedLogo = ({ size = 40, className = '', interactive = true }) => {
 
                 <g clipPath={`url(#${clipId})`} filter={`url(#${glowId})`}>
                     <text
-                        x="60"
-                        y="60"
+                        x="61"
+                        y="61"
                         textAnchor="middle"
-                        dominantBaseline="middle"
+                        dominantBaseline="central"
                         fill={`url(#${textGradId})`}
                         fontFamily="Inter, system-ui, sans-serif"
                         fontWeight="700"
                         fontSize="26"
-                        letterSpacing="1"
+                        letterSpacing="0.5"
                     >
                         CW
                     </text>
