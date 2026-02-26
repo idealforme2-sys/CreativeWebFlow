@@ -124,22 +124,21 @@ const MobileStep = ({ step, index }) => {
     const Icon = step.icon;
     return (
         <motion.article
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.45, delay: index * 0.06 }}
-            className="rounded-3xl border border-white/10 bg-black/45 backdrop-blur-md overflow-hidden"
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+            className="rounded-3xl border border-white/10 bg-[#0f172a]/80 overflow-hidden"
         >
             <div className="relative h-44 bg-black">
                 <img
                     src={step.image}
                     alt={step.title}
                     loading={index === 0 ? 'eager' : 'lazy'}
-                    fetchPriority={index === 0 ? 'high' : 'low'}
                     decoding="async"
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent" />
                 <div className="absolute top-4 left-4 px-2.5 py-1 rounded-full bg-black/45 border border-white/20 text-[10px] tracking-[0.18em] font-bold text-white/80">
                     PHASE {step.number}
                 </div>
@@ -267,27 +266,40 @@ const MobileProcess = () => {
     const trackRef = useRef(null);
     const [activeIndex, setActiveIndex] = useState(0);
 
+    const scrollRaf = useRef(null);
+
     const updateActiveFromScroll = React.useCallback(() => {
-        const track = trackRef.current;
-        if (!track) return;
+        if (scrollRaf.current) return;
 
-        const cards = track.querySelectorAll('[data-step-card="true"]');
-        if (!cards.length) return;
-
-        const viewportCenter = track.scrollLeft + track.clientWidth / 2;
-        let nearestIndex = 0;
-        let nearestDistance = Number.POSITIVE_INFINITY;
-
-        cards.forEach((card, idx) => {
-            const cardCenter = card.offsetLeft + card.clientWidth / 2;
-            const distance = Math.abs(viewportCenter - cardCenter);
-            if (distance < nearestDistance) {
-                nearestDistance = distance;
-                nearestIndex = idx;
+        scrollRaf.current = requestAnimationFrame(() => {
+            const track = trackRef.current;
+            if (!track) {
+                scrollRaf.current = null;
+                return;
             }
-        });
 
-        setActiveIndex((prev) => (prev === nearestIndex ? prev : nearestIndex));
+            const cards = track.querySelectorAll('[data-step-card="true"]');
+            if (!cards.length) {
+                scrollRaf.current = null;
+                return;
+            }
+
+            const scrollCenter = track.scrollLeft + track.clientWidth / 2;
+            let nearestIndex = 0;
+            let nearestDistance = Number.POSITIVE_INFINITY;
+
+            cards.forEach((card, idx) => {
+                const cardCenter = card.offsetLeft + card.clientWidth / 2;
+                const distance = Math.abs(scrollCenter - cardCenter);
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestIndex = idx;
+                }
+            });
+
+            setActiveIndex(nearestIndex);
+            scrollRaf.current = null;
+        });
     }, []);
 
     const scrollToStep = (index) => {
@@ -386,6 +398,7 @@ const MobileProcess = () => {
 };
 
 const ProcessSection = ({ isMobile = false }) => {
+    if (isMobile) return <MobileProcess />;
     return <DesktopProcess />;
 };
 
