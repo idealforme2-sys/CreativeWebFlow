@@ -145,7 +145,7 @@ function App() {
     return (
         <div className={`min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans overflow-clip relative bg-[#030014] ${isMobileDevice ? 'cursor-auto' : 'cursor-none'}`}>
             {/* Dynamic Viewport Border */}
-            <BorderFrame mobileOptimized={isMobileDevice} paused={gameActive} />
+            {!isMobileDevice && <BorderFrame paused={gameActive} />}
 
             {/* Custom Cursor */}
             {!isMobileDevice && <CustomCursor />}

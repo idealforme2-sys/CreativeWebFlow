@@ -386,7 +386,6 @@ const MobileProcess = () => {
 };
 
 const ProcessSection = ({ isMobile = false }) => {
-    if (isMobile) return <MobileProcess />;
     return <DesktopProcess />;
 };
 
