@@ -164,7 +164,7 @@ const ContactSection = () => {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    access_key: 'YOUR_ACCESS_KEY_HERE',
+                    access_key: '38797143-5d0f-4eb5-8081-38da718cf5e2',
                     subject: `New Inquiry from ${formData.name}`,
                     from_name: formData.name,
                     email: formData.email,
