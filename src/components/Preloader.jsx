@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
 
 /* ───────────────────────── WebGL Warp Tunnel Canvas ───────────────────────── */
@@ -301,8 +301,8 @@ const Preloader = ({ onComplete }) => {
                                 </motion.div>
 
                                 {/* Logo */}
-                                <div className="absolute z-10 flex items-center justify-center" style={{ width: 120, height: 120, overflow: 'visible' }}>
-                                    <AnimatedLogo size={85} />
+                                <div className="absolute z-10 flex items-center justify-center overflow-hidden rounded-full" style={{ width: 118, height: 118 }}>
+                                    <AnimatedLogo size={82} interactive={false} />
                                 </div>
 
 
@@ -391,9 +391,9 @@ const Preloader = ({ onComplete }) => {
                             {/* Logo entrance with expanding ring burst */}
                             <motion.div
                                 className="relative mb-8"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 160, damping: 16 }}
+                                initial={{ scale: 0.92, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                             >
                                 {/* Expanding ring pulse */}
                                 {[0, 0.3, 0.6].map((delay, i) => (
@@ -427,8 +427,8 @@ const Preloader = ({ onComplete }) => {
                                     ))}
                                 </motion.div>
 
-                                <div style={{ width: 120, height: 120 }}>
-                                    <AnimatedLogo size={110} />
+                                <div className="overflow-hidden rounded-full flex items-center justify-center" style={{ width: 118, height: 118 }}>
+                                    <AnimatedLogo size={92} interactive={false} />
                                 </div>
                             </motion.div>
 

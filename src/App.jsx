@@ -9,10 +9,10 @@ import CustomCursor from './components/CustomCursor';
 import Preloader from './components/Preloader';
 import BorderFrame from './components/BorderFrame';
 import ScrollProgress from './components/ScrollProgress';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
 
 // Section Components - Lazy loaded for performance (below fold)
-const Navbar = lazy(() => import('./components/Navbar'));
-const Hero = lazy(() => import('./components/Hero'));
 const InfiniteMarquee = lazy(() => import('./components/InfiniteMarquee'));
 const AboutSection = lazy(() => import('./components/AboutSection'));
 const ProcessSection = lazy(() => import('./components/ProcessSection'));
@@ -34,6 +34,17 @@ const SectionFallback = () => (
     </div>
 );
 
+const SectionShell = ({ children, isMobile = false }) => (
+    <div
+        style={isMobile ? {
+            contentVisibility: 'auto',
+            containIntrinsicSize: '900px',
+        } : undefined}
+    >
+        {children}
+    </div>
+);
+
 function App() {
     const detectMobile = () => {
         if (typeof window === 'undefined') return false;
@@ -46,7 +57,9 @@ function App() {
         if (typeof navigator === 'undefined') return mobile;
         const cores = navigator.hardwareConcurrency || 4;
         const memory = navigator.deviceMemory || 4;
-        return mobile || cores <= 4 || memory <= 4;
+        if (cores <= 4 || memory <= 4) return true;
+        if (mobile && (cores <= 6 || memory <= 6)) return true;
+        return false;
     };
 
     const initialMobile = detectMobile();
@@ -137,7 +150,7 @@ function App() {
     }, [gameActive]);
 
     return (
-        <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative bg-[#030014]">
+        <div className={`min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans overflow-clip relative bg-[#030014] ${isMobileDevice ? 'cursor-auto' : 'cursor-none'}`}>
             {/* Dynamic Viewport Border */}
             <BorderFrame mobileOptimized={isMobileDevice} paused={gameActive} />
 
@@ -145,7 +158,7 @@ function App() {
             {!isMobileDevice && <CustomCursor />}
 
             {/* Global Backgrounds */}
-            <WebGLBackground lowPower={isLowPowerDevice} paused={gameActive} />
+            {!isMobileDevice && <WebGLBackground lowPower={isLowPowerDevice} paused={gameActive} />}
             <DigitalRain lowPower={isLowPowerDevice} paused={gameActive} />
 
             {/* Preloader */}
@@ -158,10 +171,7 @@ function App() {
             {/* Main Content */}
             {!loading && (
                 <>
-                    {/* Navigation - Suspense wrapped with minimal fallback */}
-                    <Suspense fallback={<div className="fixed top-0 left-0 right-0 z-50 h-16 bg-black/80 backdrop-blur-md border-b border-white/10"></div>}>
-                        <Navbar isMobile={isMobileDevice} />
-                    </Suspense>
+                    <Navbar isMobile={isMobileDevice} />
                     {!isMobileDevice && <ScrollProgress />}
                     <GameTriggerButton onClick={() => setGameActive(true)} isMobile={isMobileDevice} />
 
@@ -172,43 +182,60 @@ function App() {
                     />
 
                     <main className="relative z-10">
-                        {/* Hero Section */}
-                        <Suspense fallback={<SectionFallback />}>
-                            <Hero />
-                        </Suspense>
+                        <Hero isMobile={isMobileDevice} />
 
                         {/* Content sections - below fold, lazy loaded */}
                         <div className="relative z-20 bg-black/30 md:bg-black/20 shadow-[0_-20px_40px_black] md:shadow-[0_-50px_100px_black]">
-                            <Suspense fallback={<SectionFallback />}>
-                                <InfiniteMarquee />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <AboutSection />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <ProcessSection />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <ServicesShowcase />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <WorkSection />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <DetailedCaseStudies />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <WhyChooseUs />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <SocialProofSection />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <ContactSection />
-                            </Suspense>
-                            <Suspense fallback={<SectionFallback />}>
-                                <Footer />
-                            </Suspense>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <InfiniteMarquee />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <AboutSection isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <ProcessSection isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <ServicesShowcase isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <WorkSection isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <DetailedCaseStudies isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <WhyChooseUs isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <SocialProofSection isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <ContactSection isMobile={isMobileDevice} />
+                                </Suspense>
+                            </SectionShell>
+                            <SectionShell isMobile={isMobileDevice}>
+                                <Suspense fallback={<SectionFallback />}>
+                                    <Footer />
+                                </Suspense>
+                            </SectionShell>
                         </div>
                     </main>
                 </>

@@ -1,14 +1,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, MessageCircle, TrendingUp, CheckCircle } from 'lucide-react';
-import { SectionHeader, RevealOnScroll, ParallaxContainer, AnimatedHeadline, TyphoonVortex } from './UIComponents';
-import { TextReveal } from './magicui/TextReveal';
+import { RevealOnScroll, ParallaxContainer, AnimatedHeadline, TyphoonVortex } from './UIComponents';
 import { Highlighter } from './magicui/Highlighter';
 
 // Local macro images
 import professionalImg from '../assets/aboutus/trusty.png';
 import messagingImg from '../assets/aboutus/clearmessaging_v2.png';
 import resultsImg from '../assets/aboutus/realresults_new.png';
+import professional640Avif from '../assets/aboutus/trusty-640.avif';
+import professional960Avif from '../assets/aboutus/trusty-960.avif';
+import professional640Webp from '../assets/aboutus/trusty-640.webp';
+import professional960Webp from '../assets/aboutus/trusty-960.webp';
+import messaging640Avif from '../assets/aboutus/clearmessaging_v2-640.avif';
+import messaging960Avif from '../assets/aboutus/clearmessaging_v2-960.avif';
+import messaging640Webp from '../assets/aboutus/clearmessaging_v2-640.webp';
+import messaging960Webp from '../assets/aboutus/clearmessaging_v2-960.webp';
+import results640Avif from '../assets/aboutus/realresults_new-640.avif';
+import results960Avif from '../assets/aboutus/realresults_new-960.avif';
+import results640Webp from '../assets/aboutus/realresults_new-640.webp';
+import results960Webp from '../assets/aboutus/realresults_new-960.webp';
 
 const focusPoints = [
     {
@@ -21,7 +32,9 @@ const focusPoints = [
         borderGradient: 'from-cyan-500 to-cyan-400',
         iconStroke: '#06b6d4',
         // Perfectly cropped to show the core graphic/icon
-        imageStyle: { objectPosition: 'center 40%' }
+        imageStyle: { objectPosition: 'center 40%' },
+        avifSrcSet: `${professional640Avif} 640w, ${professional960Avif} 960w`,
+        webpSrcSet: `${professional640Webp} 640w, ${professional960Webp} 960w`,
     },
     {
         icon: MessageCircle,
@@ -33,7 +46,9 @@ const focusPoints = [
         borderGradient: 'from-purple-500 to-purple-400',
         iconStroke: '#a855f7',
         // Focusing on the center
-        imageStyle: { objectPosition: 'center' }
+        imageStyle: { objectPosition: 'center' },
+        avifSrcSet: `${messaging640Avif} 640w, ${messaging960Avif} 960w`,
+        webpSrcSet: `${messaging640Webp} 640w, ${messaging960Webp} 960w`,
     },
     {
         icon: TrendingUp,
@@ -45,12 +60,14 @@ const focusPoints = [
         borderGradient: 'from-pink-500 to-pink-400',
         iconStroke: '#ec4899',
         // Focusing on center/top
-        imageStyle: { objectPosition: '50% 30%' }
+        imageStyle: { objectPosition: '50% 30%' },
+        avifSrcSet: `${results640Avif} 640w, ${results960Avif} 960w`,
+        webpSrcSet: `${results640Webp} 640w, ${results960Webp} 960w`,
     },
 ];
 
 /* ── Glass Card (Stitch design) ─────────────────────────────── */
-const GlassCard = ({ point, index }) => {
+const GlassCard = ({ point, index, isMobile = false }) => {
     const Icon = point.icon;
 
     return (
@@ -59,7 +76,7 @@ const GlassCard = ({ point, index }) => {
             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
-            whileHover={{ y: -8, transition: { duration: 0.3 } }}
+            whileHover={isMobile ? undefined : { y: -8, transition: { duration: 0.3 } }}
             className="relative group max-w-[22rem] mx-auto"
         >
             {/* Card container */}
@@ -78,12 +95,19 @@ const GlassCard = ({ point, index }) => {
 
                 {/* Background image */}
                 <div className="absolute inset-0 -z-10 opacity-70 transition-transform duration-500 group-hover:scale-105">
-                    <img
-                        src={point.image}
-                        alt={point.title}
-                        className="w-full h-full object-cover"
-                        style={point.imageStyle || { objectPosition: 'center' }}
-                    />
+                    <picture>
+                        <source type="image/avif" srcSet={point.avifSrcSet} sizes="(max-width: 768px) 92vw, (max-width: 1280px) 33vw, 360px" />
+                        <source type="image/webp" srcSet={point.webpSrcSet} sizes="(max-width: 768px) 92vw, (max-width: 1280px) 33vw, 360px" />
+                        <img
+                            src={point.image}
+                            alt={point.title}
+                            loading={index === 0 ? 'eager' : 'lazy'}
+                            fetchPriority={index === 0 ? 'high' : 'low'}
+                            decoding="async"
+                            className="w-full h-full object-cover"
+                            style={point.imageStyle || { objectPosition: 'center' }}
+                        />
+                    </picture>
                 </div>
 
                 {/* Gradient overlay — bottom fade to dark */}
@@ -120,9 +144,9 @@ const GlassCard = ({ point, index }) => {
 };
 
 /* ── About Section ──────────────────────────────────────────── */
-const AboutSection = () => {
+const AboutSection = ({ isMobile = false }) => {
     return (
-        <section id="about" className="relative py-24 lg:py-32 bg-[#020205] overflow-hidden">
+        <section id="about" className={`relative ${isMobile ? 'py-14' : 'py-24 lg:py-32'} bg-[#020205] overflow-hidden`}>
             {/* Custom Keyframes for Crystal Mirror Shine effect */}
             <style>{`
                 @keyframes mirror-shine {
@@ -136,11 +160,13 @@ const AboutSection = () => {
 
             {/* Enhanced Background Effects */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/10 to-black z-0" />
-            <TyphoonVortex color="#06b6d4" speed={40} />
-            <ParallaxContainer speed={0.2} className="absolute inset-0 z-0">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-            </ParallaxContainer>
+            {!isMobile && <TyphoonVortex color="#06b6d4" speed={40} />}
+            {!isMobile && (
+                <ParallaxContainer speed={0.2} className="absolute inset-0 z-0">
+                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+                </ParallaxContainer>
+            )}
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 {/* Header */}
@@ -191,9 +217,9 @@ const AboutSection = () => {
                 </div>
 
                 {/* Glass Cards Grid — Stitch Design */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div className={`grid grid-cols-1 md:grid-cols-3 ${isMobile ? 'gap-4 mb-10' : 'gap-8 mb-16'}`}>
                     {focusPoints.map((point, i) => (
-                        <GlassCard key={point.title} point={point} index={i} />
+                        <GlassCard key={point.title} point={point} index={i} isMobile={isMobile} />
                     ))}
                 </div>
 

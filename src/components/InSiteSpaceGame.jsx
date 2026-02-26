@@ -89,6 +89,7 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
         const ctx = canvas.getContext('2d');
         const game = gameStateRef.current;
         const isRunning = { current: true };
+        const mobileQualityFactor = isMobile ? 0.65 : 1;
 
         canvas.style.touchAction = 'none';
 
@@ -176,6 +177,7 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
 
         // Spawn shooting star (ambient effect)
         const spawnShootingStar = () => {
+            if (isMobile) return;
             if (Math.random() > 0.3) return;
             game.shootingStars.push({
                 x: Math.random() * canvas.width,
@@ -200,10 +202,10 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
         };
 
         // Set intervals
-        const asteroidInt = setInterval(spawnAsteroid, Math.max(500, 1200 - game.level * 80));
+        const asteroidInt = setInterval(spawnAsteroid, isMobile ? Math.max(680, 1350 - game.level * 70) : Math.max(500, 1200 - game.level * 80));
         const starInt = setInterval(spawnShootingStar, 2000);
-        const powerInt = setInterval(spawnPowerUp, 10000);
-        intervalsRef.current = [asteroidInt, starInt, powerInt];
+        const powerInt = setInterval(spawnPowerUp, isMobile ? 12000 : 10000);
+        intervalsRef.current = isMobile ? [asteroidInt, powerInt] : [asteroidInt, starInt, powerInt];
 
         // Keyboard handlers
         const handleKeyDown = (e) => {
@@ -255,7 +257,7 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
             shoot();
             autoFireInterval = setInterval(() => {
                 if (!game.gameOver) shoot();
-            }, 140);
+            }, isMobile ? 170 : 140);
         };
         const stopAutoFire = () => {
             if (!autoFireInterval) return;
@@ -311,8 +313,9 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
 
         // Explosion effect
         const createExplosion = (x, y, color = '#06b6d4', count = 15) => {
-            for (let i = 0; i < count; i++) {
-                const angle = (Math.PI * 2 / count) * i;
+            const effectiveCount = Math.max(8, Math.floor(count * mobileQualityFactor));
+            for (let i = 0; i < effectiveCount; i++) {
+                const angle = (Math.PI * 2 / effectiveCount) * i;
                 const speed = 4 + Math.random() * 5;
                 game.particles.push({
                     x, y,
@@ -395,24 +398,25 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
                 ctx.restore();
             }
 
-            // Shooting stars
-            game.shootingStars = game.shootingStars.filter(s => {
-                s.x += Math.cos(s.angle) * s.speed;
-                s.y += Math.sin(s.angle) * s.speed;
-                s.opacity -= 0.015;
+            if (!isMobile) {
+                game.shootingStars = game.shootingStars.filter(s => {
+                    s.x += Math.cos(s.angle) * s.speed;
+                    s.y += Math.sin(s.angle) * s.speed;
+                    s.opacity -= 0.015;
 
-                const gradient = ctx.createLinearGradient(s.x, s.y, s.x - Math.cos(s.angle) * s.length, s.y - Math.sin(s.angle) * s.length);
-                gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
-                gradient.addColorStop(1, 'transparent');
-                ctx.beginPath();
-                ctx.moveTo(s.x, s.y);
-                ctx.lineTo(s.x - Math.cos(s.angle) * s.length, s.y - Math.sin(s.angle) * s.length);
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                    const gradient = ctx.createLinearGradient(s.x, s.y, s.x - Math.cos(s.angle) * s.length, s.y - Math.sin(s.angle) * s.length);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.beginPath();
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(s.x - Math.cos(s.angle) * s.length, s.y - Math.sin(s.angle) * s.length);
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
 
-                return s.opacity > 0 && s.y < canvas.height && s.x < canvas.width + 50;
-            });
+                    return s.opacity > 0 && s.y < canvas.height && s.x < canvas.width + 50;
+                });
+            }
 
             // Lasers
             game.lasers = game.lasers.filter(l => {
@@ -421,7 +425,7 @@ const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
 
                 ctx.fillStyle = '#00ffff';
                 ctx.shadowColor = '#00ffff';
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = isMobile ? 0 : 10;
                 ctx.fillRect(l.x - 2, l.y, 4, 20);
                 ctx.shadowBlur = 0;
 

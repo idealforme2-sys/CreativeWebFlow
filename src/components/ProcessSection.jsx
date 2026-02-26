@@ -1,24 +1,62 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Fingerprint, Layout, Terminal, Zap } from 'lucide-react';
-import { AnimatedHeadline, ParticlesBackground, ElectricCurrent, FloatingOrbs } from './UIComponents';
+import { AnimatedHeadline, ParticlesBackground, ElectricCurrent } from './UIComponents';
 
-// Import local images directly
 import discoveryImg from '../assets/process/discovery.png';
 import designImg from '../assets/process/design.png';
 import buildImg from '../assets/process/build.png';
 import launchImg from '../assets/process/launch.png';
 
+const PROCESS_STEPS = [
+    {
+        number: '01',
+        title: 'Discovery',
+        color: 'cyan',
+        icon: Fingerprint,
+        deliverables: ['Market Audit', 'User Personas', 'Product DNA'],
+        description: 'We extract your positioning and audience goals to build a clear growth roadmap.',
+        image: discoveryImg,
+        tag: 'Strategy Alignment'
+    },
+    {
+        number: '02',
+        title: 'Design',
+        color: 'purple',
+        icon: Layout,
+        deliverables: ['UI Strategy', 'Prototypes', 'Design System'],
+        description: 'We design conversion-focused interfaces that feel premium and remain intuitive.',
+        image: designImg,
+        tag: 'Creative Architecture'
+    },
+    {
+        number: '03',
+        title: 'Build',
+        color: 'cyan',
+        icon: Terminal,
+        deliverables: ['Clean Architecture', 'API Core', 'Security'],
+        description: 'We engineer fast, maintainable systems that stay stable as your business grows.',
+        image: buildImg,
+        tag: 'Core Engineering'
+    },
+    {
+        number: '04',
+        title: 'Launch',
+        color: 'purple',
+        icon: Zap,
+        deliverables: ['SEO Setup', 'Cloud Deploy', 'Scaling'],
+        description: 'We launch with monitoring and refinement so performance stays strong after go-live.',
+        image: launchImg,
+        tag: 'Growth Deployment'
+    }
+];
+
 const HorizontalStep = ({ step, index, progress, totalSteps }) => {
-    // Focus math: Determine active state based on overall scroll progress
     const stepInterval = 1 / totalSteps;
     const cardCenter = (index + 0.5) * stepInterval;
     const distanceFromCenter = Math.abs(progress - cardCenter);
-    const isFocused = distanceFromCenter < 0.15; // Slightly wider focus area
-
-    // Calculate a 3D tilt based on position
-    const tilt = (progress - cardCenter) * 40;
-
+    const isFocused = distanceFromCenter < 0.15;
+    const tilt = (progress - cardCenter) * 36;
     const Icon = step.icon;
 
     return (
@@ -36,22 +74,21 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
                     }`}
             >
                 <div className="flex flex-col md:flex-row h-full">
-                    {/* Visual Engine */}
                     <div className="w-full md:w-[45%] h-[40%] md:h-full relative overflow-hidden bg-black">
                         <img
                             src={step.image}
                             alt={step.title}
-                            className={`w-full h-full object-cover transition-transform duration-[5000ms] ${isFocused ? 'scale-105' : 'scale-125'}`}
+                            loading="lazy"
+                            decoding="async"
+                            className={`w-full h-full object-cover transition-transform duration-[4500ms] ${isFocused ? 'scale-105' : 'scale-120'}`}
                         />
                         <div className={`absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-slate-900/90 md:from-transparent via-transparent to-slate-900/95 transition-opacity duration-700 ${isFocused ? 'opacity-100' : 'opacity-0'}`} />
-
                         <div className={`absolute top-6 left-6 flex items-center gap-3 transition-all duration-700 ${isFocused ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
                             <div className={`w-2.5 h-2.5 rounded-full bg-${step.color}-500 animate-ping`} />
                             <span className="text-[9px] font-black tracking-[0.4em] text-white uppercase opacity-60">Phase {step.number}</span>
                         </div>
                     </div>
 
-                    {/* Intel Section */}
                     <div className="w-full md:w-[55%] p-6 md:p-8 flex flex-col justify-center relative">
                         <div className={`mb-4 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 flex-shrink-0 ${isFocused ? `bg-${step.color}-500/20 text-${step.color}-400` : 'bg-white/5 text-white/20'}`}>
                             <Icon size={24} />
@@ -67,14 +104,14 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
 
                         <div className={`flex flex-wrap gap-2 mb-6 transition-all duration-500 delay-100 ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                             {step.deliverables.map((item, i) => (
-                                <span key={i} className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wider border border-white/10 bg-white/5 text-gray-300 transition-colors cursor-default`}>
+                                <span key={i} className="px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wider border border-white/10 bg-white/5 text-gray-300">
                                     {item}
                                 </span>
                             ))}
                         </div>
 
                         <div className={`flex items-center gap-4 transition-all duration-500 delay-200 mt-auto ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                            <span className={`text-[10px] font-bold uppercase tracking-widest text-white/50`}>{step.tag}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">{step.tag}</span>
                         </div>
                     </div>
                 </div>
@@ -83,87 +120,78 @@ const HorizontalStep = ({ step, index, progress, totalSteps }) => {
     );
 };
 
-const ProcessSection = () => {
-    const targetRef = useRef(null);
+const MobileStep = ({ step, index }) => {
+    const Icon = step.icon;
+    return (
+        <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.45, delay: index * 0.06 }}
+            className="rounded-3xl border border-white/10 bg-black/45 backdrop-blur-md overflow-hidden"
+        >
+            <div className="relative h-44 bg-black">
+                <img
+                    src={step.image}
+                    alt={step.title}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={index === 0 ? 'high' : 'low'}
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute top-4 left-4 px-2.5 py-1 rounded-full bg-black/45 border border-white/20 text-[10px] tracking-[0.18em] font-bold text-white/80">
+                    PHASE {step.number}
+                </div>
+            </div>
+            <div className="p-5">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${step.color === 'cyan' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-purple-500/20 text-purple-300'}`}>
+                        <Icon size={18} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white tracking-tight">{step.title}</h3>
+                </div>
+                <p className="text-sm text-white/65 leading-relaxed mb-4">{step.description}</p>
+                <div className="flex flex-wrap gap-2">
+                    {step.deliverables.map((item) => (
+                        <span key={item} className="px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide border border-white/10 bg-white/5 text-white/70">
+                            {item}
+                        </span>
+                    ))}
+                </div>
+            </div>
+        </motion.article>
+    );
+};
 
-    // Use Framer Motion useScroll connected to the targetRef
+const DesktopProcess = () => {
+    const targetRef = useRef(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
-        // Start when the top of the section hits the top of the viewport
-        // End when the bottom of the section hits the bottom of the viewport
-        offset: ["start start", "end end"]
+        offset: ['start start', 'end end']
     });
 
-    // Map scroll progress to horizontal translation
-    // We want to move left by (scrollWidth - windowWidth)
-    // -65% is an approximation that works well for 4 cards of this size
-    const x = useTransform(scrollYProgress, [0, 1], ["0%", "-65%"]);
-
-    // We also need the raw progress value to pass to children for focus calculations
-    const [progressValue, setProgressValue] = React.useState(0);
+    const x = useTransform(scrollYProgress, [0, 1], ['0%', '-65%']);
+    const [progressValue, setProgressValue] = useState(0);
 
     React.useEffect(() => {
-        return scrollYProgress.on("change", (latest) => {
-            setProgressValue(latest);
+        return scrollYProgress.on('change', (latest) => {
+            setProgressValue((prev) => {
+                const next = Math.round(latest * 100) / 100;
+                return Math.abs(prev - next) >= 0.01 ? next : prev;
+            });
         });
     }, [scrollYProgress]);
 
-    const steps = useMemo(() => [
-        {
-            number: "01",
-            title: "Discovery",
-            color: "cyan",
-            icon: Fingerprint,
-            deliverables: ["Market Audit", "User Personas", "Product DNA"],
-            description: "We surgically extract your brand DNA and market positioning to map a data-driven path to dominance.",
-            image: discoveryImg,
-            tag: "Strategy Alignment"
-        },
-        {
-            number: "02",
-            title: "Design",
-            color: "purple",
-            icon: Layout,
-            deliverables: ["UI Strategy", "Prototypes", "Design System"],
-            description: "Crafting sensory interfaces that blend intuitive utility with breathtaking visual storytelling.",
-            image: designImg,
-            tag: "Creative Architecture"
-        },
-        {
-            number: "03",
-            title: "Build",
-            color: "cyan",
-            icon: Terminal,
-            deliverables: ["Clean Architecture", "API Core", "Security"],
-            description: "Engineering high-performance, ultra-fast digital engines that scale effortlessly with your vision.",
-            image: buildImg,
-            tag: "Core Engineering"
-        },
-        {
-            number: "04",
-            title: "Launch",
-            color: "purple",
-            icon: Zap,
-            deliverables: ["SEO Mastery", "Cloud Deploy", "Scaling"],
-            description: "Total deployment and ongoing performance optimization to ensure your product leads its industry.",
-            image: launchImg,
-            tag: "Global Deployment"
-        }
-    ], []);
+    const steps = useMemo(() => PROCESS_STEPS, []);
 
     return (
-        // The outer container establishes the total scrolling height (e.g., 400vh for 4 cards)
         <section id="how-it-works" ref={targetRef} className="relative bg-transparent h-[400vh]">
-
-            {/* The sticky inner container stays in view while we scroll down */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between py-[4vh] md:py-[6vh] overflow-hidden">
                 <ParticlesBackground />
                 <ElectricCurrent color="#06b6d4" className="top-20 left-[10%]" />
                 <ElectricCurrent color="#a855f7" className="bottom-40 right-[10%] rotate-180" />
 
-                {/* Background Gradients removed to showcase global animated background */}
-
-                {/* 1. Header Area - Flows naturally at the top */}
                 <div className="w-full px-6 flex-shrink-0 z-20">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -184,21 +212,19 @@ const ProcessSection = () => {
                             </h2>
                         </AnimatedHeadline>
                         <p className="text-white/60 max-w-2xl mx-auto text-sm md:text-lg leading-relaxed hidden md:block mb-8 md:mb-12">
-                            Our streamlined approach ensures your vision is translated into a pixel-perfect digital experience with speed and precision.
+                            A streamlined process focused on speed, clarity, and measurable business outcomes.
                         </p>
                     </motion.div>
                 </div>
 
-                {/* 2. Scrolling Viewport - Flex 1 takes remaining space, centers cards */}
                 <div className="flex-1 w-full flex items-center overflow-hidden">
-                    {/* The Track Container that Framer Motion animates */}
                     <motion.div
                         style={{ x }}
                         className="flex items-center gap-8 md:gap-12 px-[10vw] flex-nowrap w-max"
                     >
                         {steps.map((step, index) => (
                             <HorizontalStep
-                                key={index}
+                                key={step.number}
                                 step={step}
                                 index={index}
                                 progress={progressValue}
@@ -208,10 +234,9 @@ const ProcessSection = () => {
                     </motion.div>
                 </div>
 
-                {/* 3. Progress Rail - Flows naturally at the bottom */}
                 <div className="w-full max-w-md px-8 flex-shrink-0 z-20">
                     <div className="flex justify-between mb-3 px-2">
-                        {steps.map((s, i) => (
+                        {steps.map((_, i) => (
                             <span
                                 key={i}
                                 className={`text-[10px] uppercase font-bold tracking-widest transition-colors duration-500 ${progressValue * (steps.length - 1) >= (i - 0.1) ? 'text-white' : 'text-white/20'}`}
@@ -223,17 +248,47 @@ const ProcessSection = () => {
                     <div className="h-[2px] w-full bg-white/10 rounded-full relative overflow-hidden">
                         <div
                             className="absolute top-0 left-0 h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-200 ease-out"
-                            style={{ width: `${Math.max(5, progressValue * 100)}%` }} // keep a little sliver active
+                            style={{ width: `${Math.max(5, progressValue * 100)}%` }}
                         />
                     </div>
                 </div>
-
             </div>
 
-            {/* Tailwind JIT Helpers */}
             <div className="hidden border-cyan-500 border-purple-500 bg-cyan-500 bg-purple-500 text-cyan-400 text-purple-400 border-cyan-500/40 border-purple-500/40" />
         </section>
     );
+};
+
+const MobileProcess = () => (
+    <section id="how-it-works" className="relative py-14 pb-20 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-8">
+                <span className="inline-block text-cyan-400 text-[10px] font-black tracking-[0.24em] uppercase">
+                    How It Works
+                </span>
+                <h2 className="mt-3 text-3xl font-bold text-white leading-tight">
+                    From Idea to Launch in
+                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                        4 Simple Steps
+                    </span>
+                </h2>
+                <p className="mt-3 text-sm text-white/60 max-w-xl mx-auto">
+                    Mobile-first flow: quick clarity, fast loading, and a clean path from concept to go-live.
+                </p>
+            </div>
+
+            <div className="space-y-4">
+                {PROCESS_STEPS.map((step, index) => (
+                    <MobileStep key={step.number} step={step} index={index} />
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
+const ProcessSection = ({ isMobile = false }) => {
+    if (isMobile) return <MobileProcess />;
+    return <DesktopProcess />;
 };
 
 export default React.memo(ProcessSection);

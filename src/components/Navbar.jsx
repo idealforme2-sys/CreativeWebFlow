@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
@@ -83,7 +83,7 @@ const Navbar = ({ isMobile = false }) => {
         }
     }, [isMobileMenuOpen]);
 
-    const navLinks = [
+    const navLinks = useMemo(() => [
         { label: 'About', href: '#about', id: 'about' },
         {
             label: 'Services',
@@ -98,7 +98,18 @@ const Navbar = ({ isMobile = false }) => {
         { label: 'Procedure', href: '#how-it-works', id: 'how-it-works' },
         { label: 'Work', href: '#work', id: 'work' },
         { label: 'Contact', href: '#contact', id: 'contact' },
-    ];
+    ], []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) {
+                setIsMobileMenuOpen(false);
+                setMobileServicesOpen(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const scrollToSection = (href) => {
         const [baseHref] = href.split('?');
@@ -218,7 +229,7 @@ const Navbar = ({ isMobile = false }) => {
                         </motion.div>
                     )}
 
-                    <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'} flex justify-between items-center relative z-10`}>
+                    <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4 pt-[max(env(safe-area-inset-top),0px)]' : 'px-6'} flex justify-between items-center relative z-10`}>
                         {/* Logo + Music */}
                         <div className="flex items-center gap-2.5">
                             <a
@@ -384,9 +395,9 @@ const Navbar = ({ isMobile = false }) => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-                        className="fixed inset-0 z-40 bg-black/94 backdrop-blur-xl lg:hidden"
+                        className="fixed inset-0 z-40 bg-black/94 backdrop-blur-xl lg:hidden will-change-transform"
                     >
-                        <div className="h-full overflow-y-auto pt-24 pb-8 px-5">
+                        <div className="h-full overflow-y-auto pt-[max(6rem,env(safe-area-inset-top))] pb-8 px-5">
                             <div className="max-w-md mx-auto">
                                 <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 flex items-center justify-between">
                                     <div className="flex items-center gap-3">

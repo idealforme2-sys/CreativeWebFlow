@@ -102,14 +102,14 @@ const features = [
     },
 ];
 
-const FeatureCard = ({ feature }) => {
+const FeatureCard = ({ feature, compact = false }) => {
     const [titleLine1, titleLine2] = feature.title.split('\n');
 
     return (
-        <div className="group relative rounded-3xl p-6 bg-slate-900/90 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_8px_20px_rgba(0,0,0,0.5)] backdrop-blur-md cursor-default overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_15px_30px_rgba(0,0,0,0.6)]">
+        <div className={`group relative rounded-3xl ${compact ? 'p-5' : 'p-6'} bg-slate-900/90 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_8px_20px_rgba(0,0,0,0.5)] backdrop-blur-md cursor-default overflow-hidden transition-all duration-300 ${compact ? '' : 'hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_15px_30px_rgba(0,0,0,0.6)]'}`}>
             {/* Hover glow */}
             <div
-                className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                className={`absolute inset-0 rounded-3xl ${compact ? 'opacity-60' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-700 pointer-events-none`}
                 style={{ background: `radial-gradient(ellipse at 50% 0%, ${feature.glowColor}, transparent 70%)` }}
             />
 
@@ -128,26 +128,26 @@ const FeatureCard = ({ feature }) => {
             </div>
 
             {/* Icon */}
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.iconBg} border border-white/[0.05] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500`}>
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.iconBg} border border-white/[0.05] flex items-center justify-center mb-5 ${compact ? '' : 'group-hover:scale-110'} transition-transform duration-500`}>
                 {feature.icon}
             </div>
 
             {/* Text */}
             <div className="relative z-10">
-                <h3 className="text-white font-bold text-lg leading-tight mb-2">
+                <h3 className={`${compact ? 'text-base' : 'text-lg'} text-white font-bold leading-tight mb-2`}>
                     {titleLine1}
                     <br />
                     <span className={`text-transparent bg-clip-text bg-gradient-to-r ${feature.gradient}`}>
                         {titleLine2}
                     </span>
                 </h3>
-                <p className="text-white/40 text-sm leading-relaxed">{feature.description}</p>
+                <p className={`${compact ? 'text-[13px]' : 'text-sm'} text-white/40 leading-relaxed`}>{feature.description}</p>
             </div>
         </div>
     );
 };
 
-const WhyChooseUs = () => {
+const WhyChooseUs = ({ isMobile = false }) => {
     // Use all 6 features to prevent duplicate clustering
     const r1Base = features;
     const r2Base = [...features.slice(3), ...features.slice(0, 3)]; // Offset by 3
@@ -157,36 +157,38 @@ const WhyChooseUs = () => {
     const row2 = [...r2Base, ...r2Base, ...r2Base];
 
     return (
-        <section className="relative py-12 md:py-24 lg:py-32 overflow-hidden pb-16 md:pb-32 lg:pb-40">
+        <section className={`relative overflow-hidden ${isMobile ? 'py-8 pb-10' : 'py-12 md:py-24 lg:py-32 pb-16 md:pb-32 lg:pb-40'}`}>
             {/* Ambient Particles */}
-            <SectionParticles color="rgba(6,182,212,0.3)" count={25} />
+            <SectionParticles color="rgba(6,182,212,0.3)" count={isMobile ? 10 : 25} />
 
             {/* Custom CSS for rock-solid hardware-accelerated infinite Marquee without React jitter */}
-            <style>{`
-                @keyframes marquee-left {
-                    0% { transform: translate3d(0, 0, 0); }
-                    100% { transform: translate3d(-25%, 0, 0); }
-                }
-                @keyframes marquee-right {
-                    0% { transform: translate3d(-25%, 0, 0); }
-                    100% { transform: translate3d(0, 0, 0); }
-                }
-                .animate-marquee-left {
-                    animation: marquee-left 45s linear infinite;
-                    will-change: transform;
-                }
-                .animate-marquee-right {
-                    animation: marquee-right 45s linear infinite;
-                    will-change: transform;
-                }
-                .hover-pause:hover .animate-marquee-left,
-                .hover-pause:hover .animate-marquee-right {
-                    animation-play-state: paused;
-                }
-            `}</style>
+            {!isMobile && (
+                <style>{`
+                    @keyframes marquee-left {
+                        0% { transform: translate3d(0, 0, 0); }
+                        100% { transform: translate3d(-25%, 0, 0); }
+                    }
+                    @keyframes marquee-right {
+                        0% { transform: translate3d(-25%, 0, 0); }
+                        100% { transform: translate3d(0, 0, 0); }
+                    }
+                    .animate-marquee-left {
+                        animation: marquee-left 45s linear infinite;
+                        will-change: transform;
+                    }
+                    .animate-marquee-right {
+                        animation: marquee-right 45s linear infinite;
+                        will-change: transform;
+                    }
+                    .hover-pause:hover .animate-marquee-left,
+                    .hover-pause:hover .animate-marquee-right {
+                        animation-play-state: paused;
+                    }
+                `}</style>
+            )}
 
             {/* Header */}
-            <div className="max-w-7xl mx-auto px-6 mb-8 md:mb-20 relative z-20">
+            <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4 mb-6' : 'px-6 mb-8 md:mb-20'} relative z-20`}>
                 <RevealOnScroll>
                     <div className="text-center">
                         <motion.div
@@ -200,7 +202,7 @@ const WhyChooseUs = () => {
                             <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500" />
                         </motion.div>
                         <AnimatedHeadline>
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                            <h2 className={`${isMobile ? 'text-3xl' : 'text-4xl md:text-5xl lg:text-6xl'} font-bold text-white mb-6 leading-tight`}>
                                 Why Local Businesses <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                                     Choose Us
@@ -212,7 +214,7 @@ const WhyChooseUs = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="text-white/60 text-lg sm:text-xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md"
+                            className={`${isMobile ? 'text-sm' : 'text-lg sm:text-xl'} text-white/60 font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md`}
                         >
                             We don't just build websites; we build{' '}
                             <Highlighter action="highlight" color="#ec4899" delay={0.2}>growth engines</Highlighter>. Here's how we{' '}
@@ -222,38 +224,45 @@ const WhyChooseUs = () => {
                 </RevealOnScroll>
             </div>
 
-            {/* Pure CSS Velocity Marquee Container */}
-            <RevealOnScroll delay={0.3}>
-                <div
-                    className="relative w-full flex flex-col gap-6 md:gap-8 z-10 rotate-[-2deg] scale-[1.05] hover-pause"
-                    style={{
-                        maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-                        WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
-                    }}
-                >
-                    {/* Row 1 (Moves Left) */}
-                    <div className="flex w-full overflow-hidden">
-                        <div className="flex w-max animate-marquee-left">
-                            {row1.map((feature, i) => (
-                                <div key={`row1-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
-                                    <FeatureCard feature={feature} />
-                                </div>
-                            ))}
-                        </div>
+            {isMobile ? (
+                <RevealOnScroll delay={0.2}>
+                    <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 gap-3">
+                        {features.map((feature) => (
+                            <FeatureCard key={feature.title} feature={feature} compact />
+                        ))}
                     </div>
+                </RevealOnScroll>
+            ) : (
+                <RevealOnScroll delay={0.3}>
+                    <div
+                        className="relative w-full flex flex-col gap-6 md:gap-8 z-10 rotate-[-2deg] scale-[1.05] hover-pause"
+                        style={{
+                            maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                            WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+                        }}
+                    >
+                        <div className="flex w-full overflow-hidden">
+                            <div className="flex w-max animate-marquee-left">
+                                {row1.map((feature, i) => (
+                                    <div key={`row1-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
+                                        <FeatureCard feature={feature} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-                    {/* Row 2 (Moves Right) */}
-                    <div className="flex w-full overflow-hidden">
-                        <div className="flex w-max animate-marquee-right">
-                            {row2.map((feature, i) => (
-                                <div key={`row2-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
-                                    <FeatureCard feature={feature} />
-                                </div>
-                            ))}
+                        <div className="flex w-full overflow-hidden">
+                            <div className="flex w-max animate-marquee-right">
+                                {row2.map((feature, i) => (
+                                    <div key={`row2-${i}`} className="w-[320px] md:w-[420px] flex-shrink-0 px-3 md:px-4">
+                                        <FeatureCard feature={feature} />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </RevealOnScroll>
+                </RevealOnScroll>
+            )}
 
             <div
                 className="absolute inset-x-0 bottom-0 h-20 pointer-events-none z-20"

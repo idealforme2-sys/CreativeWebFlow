@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Smartphone, Lock, Quote, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { RevealOnScroll, AnimatedHeadline, FloatingOrbs } from './UIComponents';
+import { RevealOnScroll, AnimatedHeadline } from './UIComponents';
 
 // Import local images for commitment cards (Stitch 3D abstract assets)
 import speedImg from '../assets/commitments/speed_bolt.png';
@@ -65,22 +65,22 @@ const testimonials = [
     },
 ];
 
-const SocialProofSection = () => {
+const SocialProofSection = ({ isMobile = false }) => {
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-        }, 6000);
+        }, isMobile ? 9000 : 6000);
         return () => clearInterval(timer);
-    }, []);
+    }, [isMobile]);
 
     const nextTestimonial = () => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     const prevTestimonial = () => setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
     return (
         // Restored transparency: bg-transparent instead of opaque
-        <section className="relative py-24 lg:py-32 overflow-hidden bg-transparent">
+        <section className={`relative overflow-hidden bg-transparent ${isMobile ? 'py-12' : 'py-24 lg:py-32'}`}>
             {/* Custom Keyframes for Crystal Mirror Shine effect */}
             <style>{`
                 @keyframes mirror-shine {
@@ -98,32 +98,34 @@ const SocialProofSection = () => {
             <div className="absolute bottom-[0%] left-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen z-0" />
 
             {/* Noise Overlay */}
-            <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E")` }}
-            />
+            {!isMobile && (
+                <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E")` }}
+                />
+            )}
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6">
+            <div className={`relative z-10 max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}>
                 {/* Header */}
-                <div className="text-center mb-24 relative flex flex-col items-center">
+                <div className={`text-center relative flex flex-col items-center ${isMobile ? 'mb-10' : 'mb-24'}`}>
                     <div className="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                         <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff]"></span>
                         <span className="text-xs tracking-[0.3em] font-bold text-slate-200 uppercase">Core Architecture</span>
                     </div>
                     <AnimatedHeadline>
-                        <h2 className="font-extrabold text-5xl md:text-7xl leading-[1.1] tracking-tight mb-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                        <h2 className={`${isMobile ? 'text-4xl' : 'text-5xl md:text-7xl'} font-extrabold leading-[1.1] tracking-tight mb-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]`}>
                             Built on Promises <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                                 We Actually Keep
                             </span>
                         </h2>
                     </AnimatedHeadline>
-                    <p className="mt-4 text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
+                    <p className={`mt-4 ${isMobile ? 'text-base' : 'text-xl'} text-slate-400 max-w-2xl mx-auto font-light leading-relaxed`}>
                         High-fidelity engineering for the modern web. We focus on the metrics that matter most to your growth.
                     </p>
                 </div>
 
                 {/* 3D Abstract Commitment Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 items-stretch mb-32">
+                <div className={`grid grid-cols-1 md:grid-cols-3 items-stretch ${isMobile ? 'gap-4 mb-14' : 'gap-8 lg:gap-10 mb-32'}`}>
                     {guarantees.map((item, i) => {
                         const Icon = item.icon;
                         return (
@@ -135,27 +137,29 @@ const SocialProofSection = () => {
                                 transition={{ duration: 0.7, delay: i * 0.2 }}
                                 className="h-full"
                             >
-                                <div className="group relative rounded-3xl overflow-hidden h-[460px] border border-white/10 bg-white/[0.02] backdrop-blur-sm hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] flex flex-col transition-all duration-500">
+                                <div className={`group relative rounded-3xl overflow-hidden border border-white/10 bg-white/[0.02] backdrop-blur-sm flex flex-col transition-all duration-500 ${isMobile ? 'h-[390px]' : 'h-[460px] hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
                                     {/* Crystal Mirror Shine Layer (Looping Animation) */}
-                                    <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
-                                        <div className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-mirror-shine drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
-                                    </div>
+                                    {!isMobile && (
+                                        <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+                                            <div className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-mirror-shine drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+                                        </div>
+                                    )}
 
                                     {/* Background Image with Floating Animation */}
                                     <div className="absolute inset-0 z-0">
                                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050508]/20 to-[#050508]/90 z-10" />
                                         <motion.img
-                                            animate={{
-                                                y: [0, -10, 0],
-                                            }}
-                                            transition={{
+                                            animate={isMobile ? undefined : { y: [0, -10, 0] }}
+                                            transition={isMobile ? undefined : {
                                                 duration: 6,
                                                 repeat: Infinity,
-                                                ease: "easeInOut",
+                                                ease: 'easeInOut',
                                                 delay: item.floatDelay
                                             }}
                                             alt={item.label}
-                                            className="w-full h-full object-cover opacity-60 mix-blend-screen scale-100 group-hover:scale-105 group-hover:opacity-80 transition-all duration-700"
+                                            loading="lazy"
+                                            decoding="async"
+                                            className={`w-full h-full object-cover opacity-60 mix-blend-screen scale-100 transition-all duration-700 ${isMobile ? '' : 'group-hover:scale-105 group-hover:opacity-80'}`}
                                             src={item.image}
                                         />
                                         {/* Ambient Glow Spot */}
@@ -166,13 +170,13 @@ const SocialProofSection = () => {
 
                                     {/* Content */}
                                     <div className="relative z-20 h-full flex flex-col pt-12">
-                                        <div className="px-8 text-center flex-1">
+                                        <div className={`${isMobile ? 'px-6' : 'px-8'} text-center flex-1`}>
                                             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 mb-6 backdrop-blur-xl shadow-lg">
                                                 <Icon className="text-3xl" style={{ color: item.neonColor }} />
                                             </div>
                                             <div className="relative">
                                                 <h3
-                                                    className="text-8xl font-bold text-white tracking-tighter drop-shadow-2xl"
+                                                    className={`${isMobile ? 'text-7xl' : 'text-8xl'} font-bold text-white tracking-tighter drop-shadow-2xl`}
                                                     style={{
                                                         textShadow: `0 0 15px ${item.neonColor}80`,
                                                         WebkitTextStroke: '1px rgba(255,255,255,0.1)'
@@ -188,8 +192,8 @@ const SocialProofSection = () => {
                                         </div>
 
                                         {/* Frosted Bottom Panel */}
-                                        <div className="p-8 backdrop-blur-xl bg-black/40 border-t border-white/15 h-full mt-auto">
-                                            <h4 className="text-2xl font-bold text-white mb-3">{item.title}</h4>
+                                        <div className={`${isMobile ? 'p-6' : 'p-8'} backdrop-blur-xl bg-black/40 border-t border-white/15 h-full mt-auto`}>
+                                            <h4 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-white mb-3`}>{item.title}</h4>
                                             <p className="text-slate-300 text-sm leading-relaxed font-light line-clamp-3">
                                                 {item.description}
                                             </p>
@@ -204,14 +208,14 @@ const SocialProofSection = () => {
                 {/* Testimonials */}
                 <RevealOnScroll>
                     <div className="relative max-w-4xl mx-auto">
-                        <div className="text-center mb-10">
-                            <h3 className="text-2xl md:text-3xl font-bold text-white">
+                        <div className={`text-center ${isMobile ? 'mb-6' : 'mb-10'}`}>
+                            <h3 className={`${isMobile ? 'text-xl' : 'text-2xl md:text-3xl'} font-bold text-white`}>
                                 What Our Clients Say
                             </h3>
                         </div>
 
                         {/* Testimonial Display */}
-                        <div className="relative rounded-3xl p-8 md:p-14 min-h-[350px] flex flex-col justify-center border border-white/20 bg-slate-900 shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden">
+                        <div className={`relative rounded-3xl ${isMobile ? 'p-5 min-h-[300px]' : 'p-8 md:p-14 min-h-[350px]'} flex flex-col justify-center border border-white/20 bg-slate-900 shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden`}>
                             {/* Animated Background Glow */}
                             <div className="absolute -inset-24 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 blur-[80px] z-0" />
 
@@ -235,7 +239,7 @@ const SocialProofSection = () => {
                                         ))}
                                     </div>
 
-                                    <p className="text-xl md:text-3xl font-medium text-white leading-relaxed mb-10 max-w-3xl">
+                                    <p className={`${isMobile ? 'text-lg' : 'text-xl md:text-3xl'} font-medium text-white leading-relaxed mb-10 max-w-3xl`}>
                                         "{testimonials[currentTestimonial].quote}"
                                     </p>
 
@@ -247,7 +251,7 @@ const SocialProofSection = () => {
                                             </div>
                                         </div>
                                         <div className="text-left">
-                                            <p className="text-white font-bold text-lg tracking-wide">
+                                            <p className={`${isMobile ? 'text-base' : 'text-lg'} text-white font-bold tracking-wide`}>
                                                 {testimonials[currentTestimonial].name}
                                             </p>
                                             <p className="text-cyan-400 font-medium text-sm">
@@ -262,7 +266,7 @@ const SocialProofSection = () => {
                             </AnimatePresence>
 
                             {/* Navigation Buttons */}
-                            <div className="relative z-10 flex justify-center gap-4 mt-12">
+                            <div className={`relative z-10 flex justify-center gap-4 ${isMobile ? 'mt-8' : 'mt-12'}`}>
                                 <button
                                     onClick={prevTestimonial}
                                     className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white backdrop-blur-md"
