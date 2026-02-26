@@ -1,21 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export const Meteors = ({ number = 20, className = "" }) => {
     const [meteors, setMeteors] = useState([]);
+    const containerRef = useRef(null);
 
     useEffect(() => {
-        setMeteors(
-            new Array(number).fill(true).map(() => ({
-                top: Math.floor(Math.random() * -50) + "px",
-                left: Math.floor(Math.random() * window.innerWidth * 1.5) + "px",
-                animationDelay: Math.random() * (0.8 - 0.2) + 0.2 + "s",
-                animationDuration: Math.floor(Math.random() * (10 - 2) + 2) + "s",
-            }))
-        );
+        const getBounds = () => {
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                return { width: rect.width, height: rect.height };
+            }
+            return { width: window.innerWidth, height: window.innerHeight };
+        };
+
+        const buildMeteors = () => {
+            const { width, height } = getBounds();
+            const safeWidth = Math.max(1, width);
+            const safeHeight = Math.max(1, height);
+            setMeteors(
+                new Array(number).fill(true).map(() => ({
+                    top: Math.floor(Math.random() * (safeHeight * 0.2)) - 50 + "px",
+                    left: Math.floor(Math.random() * safeWidth * 1.2) + "px",
+                    animationDelay: Math.random() * (0.8 - 0.2) + 0.2 + "s",
+                    animationDuration: Math.floor(Math.random() * (10 - 2) + 2) + "s",
+                }))
+            );
+        };
+
+        buildMeteors();
+
+        const handleResize = () => buildMeteors();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, [number]);
 
     return (
-        <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 ${className}`}>
+        <div ref={containerRef} className={`absolute inset-0 overflow-hidden pointer-events-none z-0 ${className}`}>
             <style>{`
           @keyframes meteor {
             0% { transform: rotate(215deg) translateX(0); opacity: 1; }

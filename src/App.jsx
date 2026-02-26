@@ -59,7 +59,17 @@ function App() {
 
         requestAnimationFrame(raf);
 
+        const handleMouseMove = (e) => {
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            if (scrollbarWidth <= 0) return;
+            const overScrollbar = e.clientX >= window.innerWidth - scrollbarWidth;
+            lenis.options.smoothWheel = !overScrollbar;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
         return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
             lenis.destroy();
         };
     }, [loading]);

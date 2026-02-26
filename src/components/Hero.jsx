@@ -229,9 +229,17 @@ const Hero = () => {
             {/* Layered backgrounds */}
             <MorphGrid />
             <FloatingOrbs />
-            {/* White meteors - restored */}
+            {/* White meteors - layered for fuller coverage */}
             <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
                 <Meteors number={50} />
+                <Meteors number={30} className="opacity-60" />
+                <Meteors number={24} className="opacity-35" />
+                <div className="absolute bottom-0 left-0 w-[55vw] h-[35vh]">
+                    <Meteors number={18} className="opacity-70" />
+                </div>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40vw] h-[28vh]">
+                    <Meteors number={14} className="opacity-55" />
+                </div>
             </div>
             <TechHUD />
 

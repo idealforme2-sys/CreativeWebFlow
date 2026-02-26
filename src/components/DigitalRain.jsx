@@ -14,6 +14,7 @@ const DigitalRain = () => {
         const chars = '01XYZEUK';
         const charArray = chars.split('');
         const fontSize = 14;
+        const scaledFontSize = Math.floor(fontSize * RESOLUTION_SCALE);
         let width, height, columns, drops;
 
         const setupCanvas = () => {
@@ -21,9 +22,10 @@ const DigitalRain = () => {
             height = Math.floor(window.innerHeight * RESOLUTION_SCALE);
             canvas.width = width;
             canvas.height = height;
-            const scaledFontSize = Math.floor(fontSize * RESOLUTION_SCALE);
             columns = Math.floor(width / scaledFontSize);
-            drops = new Array(columns).fill(1);
+            drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * (height / scaledFontSize)));
+            ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+            ctx.fillRect(0, 0, width, height);
         };
 
         setupCanvas();
@@ -31,7 +33,6 @@ const DigitalRain = () => {
         let animationId;
         let lastTime = 0;
         const fpsInterval = 1000 / 12; // 12 FPS — matrix rain looks fine at low fps
-        const scaledFontSize = Math.floor(fontSize * RESOLUTION_SCALE);
 
         const draw = (timestamp) => {
             animationId = requestAnimationFrame(draw);

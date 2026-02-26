@@ -60,10 +60,10 @@ const GlassCard = ({ point, index }) => {
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, transition: { duration: 0.3 } }}
-            className="relative group"
+            className="relative group max-w-[22rem] mx-auto"
         >
             {/* Card container */}
-            <div className="relative z-10 p-8 h-full rounded-[2rem] bg-gradient-to-br from-[#050508]/80 to-[#0A0A0F]/90 border border-white/5 overflow-hidden group hover:border-white/10 transition-colors duration-500 shadow-2xl backdrop-blur-md">
+            <div className="relative z-10 p-8 h-full min-h-[400px] md:min-h-[460px] rounded-[2rem] bg-gradient-to-br from-[#050508]/80 to-[#0A0A0F]/90 border border-white/5 overflow-hidden group hover:border-white/10 transition-colors duration-500 shadow-2xl backdrop-blur-md flex flex-col">
 
                 {/* Crystal Mirror Shine Layer */}
                 <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
