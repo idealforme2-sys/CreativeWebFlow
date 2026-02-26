@@ -112,13 +112,26 @@ const Navbar = ({ isMobile = false }) => {
     }, []);
 
     const scrollToSection = (href) => {
-        const [baseHref] = href.split('?');
-        const element = document.querySelector(baseHref);
+        const [baseHref, query] = href.split('?');
 
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-            window.history.pushState(null, '', href);
-            window.dispatchEvent(new HashChangeEvent('hashchange'));
+        if (baseHref === '#') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            const element = document.querySelector(baseHref);
+            if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        if (query) {
+            const params = new URLSearchParams(query);
+            const tab = params.get('tab');
+            if (tab) {
+                window.dispatchEvent(new CustomEvent('changeServiceTab', { detail: { tab } }));
+            }
+        }
+
+        const cleanUrl = `${window.location.pathname}${window.location.search}`;
+        if (window.location.hash) {
+            window.history.replaceState(null, '', cleanUrl);
         }
 
         setIsMobileMenuOpen(false);
