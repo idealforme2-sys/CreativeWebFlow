@@ -21,6 +21,8 @@ const BorderFrame = ({ mobileOptimized = false, paused = false }) => {
         const ctx = canvas.getContext('2d');
         let dpr = Math.min(window.devicePixelRatio || 1, mobileOptimized ? 1.25 : 2);
         let w, h;
+        let lockedMobileHeight = Math.round(window.innerHeight);
+        let lockedMobileWidth = Math.round(window.innerWidth);
         let isVisible = true;
 
         let vertices = [];
@@ -46,9 +48,34 @@ const BorderFrame = ({ mobileOptimized = false, paused = false }) => {
             for (let y = h - inset; y > inset; y -= spacing) vertices.push({ base_x: inset, base_y: y, x: inset, y, vx: 0, vy: 0 });
         };
 
-        const resize = () => {
-            w = document.documentElement.clientWidth;
-            h = window.innerHeight;
+        const getViewportHeight = () => {
+            if (!mobileOptimized) return window.innerHeight;
+            if (window.visualViewport) return Math.round(window.visualViewport.height);
+            return window.innerHeight;
+        };
+
+        const resize = (force = false) => {
+            const nextWidth = Math.round(document.documentElement.clientWidth);
+            let nextHeight = Math.round(getViewportHeight());
+
+            // Keep border stable while browser UI bars collapse/expand during scroll.
+            if (mobileOptimized && !force) {
+                const widthDelta = Math.abs(nextWidth - lockedMobileWidth);
+                const heightDelta = Math.abs(nextHeight - lockedMobileHeight);
+                const significantResize = widthDelta > 2 || heightDelta > 120;
+                if (!significantResize) {
+                    nextHeight = lockedMobileHeight;
+                } else {
+                    lockedMobileWidth = nextWidth;
+                    lockedMobileHeight = nextHeight;
+                }
+            } else if (mobileOptimized) {
+                lockedMobileWidth = nextWidth;
+                lockedMobileHeight = nextHeight;
+            }
+
+            w = nextWidth;
+            h = nextHeight;
 
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
@@ -57,18 +84,31 @@ const BorderFrame = ({ mobileOptimized = false, paused = false }) => {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             buildVertices();
         };
-        resize();
+        resize(true);
 
-        // Debounced resize to prevent flickering during layout changes
-        let resizeTimeout;
-        const debouncedResize = () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(resize, 100);
+        let resizeRafId = null;
+        const scheduleResize = (force = false) => {
+            if (resizeRafId) cancelAnimationFrame(resizeRafId);
+            resizeRafId = requestAnimationFrame(() => {
+                resizeRafId = null;
+                resize(force);
+            });
         };
 
-        const resizeObserver = new ResizeObserver(debouncedResize);
-        resizeObserver.observe(document.documentElement);
-        window.addEventListener('resize', debouncedResize);
+        const handleWindowResize = () => scheduleResize(false);
+        const handleOrientation = () => scheduleResize(true);
+
+        let resizeObserver = null;
+        if (!mobileOptimized) {
+            resizeObserver = new ResizeObserver(() => scheduleResize(false));
+            resizeObserver.observe(document.documentElement);
+        }
+
+        window.addEventListener('resize', handleWindowResize);
+        window.addEventListener('orientationchange', handleOrientation);
+
+        const viewport = window.visualViewport;
+        if (viewport) viewport.addEventListener('resize', handleWindowResize);
 
         let mouseX = -1000;
         let mouseY = -1000;
@@ -255,14 +295,17 @@ const BorderFrame = ({ mobileOptimized = false, paused = false }) => {
         frameId = requestAnimationFrame(render);
 
         return () => {
-            resizeObserver.disconnect();
-            window.removeEventListener('resize', resize);
+            if (resizeObserver) resizeObserver.disconnect();
+            window.removeEventListener('resize', handleWindowResize);
+            window.removeEventListener('orientationchange', handleOrientation);
+            if (viewport) viewport.removeEventListener('resize', handleWindowResize);
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
             window.removeEventListener('touchcancel', handleTouchEnd);
             document.body.removeEventListener('mouseleave', handleMouseLeave);
             document.removeEventListener('visibilitychange', handleVisibility);
+            if (resizeRafId) cancelAnimationFrame(resizeRafId);
             cancelAnimationFrame(frameId);
         };
     }, [mobileOptimized]);

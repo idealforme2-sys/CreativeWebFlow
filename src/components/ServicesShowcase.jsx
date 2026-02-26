@@ -103,7 +103,7 @@ const StatPill = ({ stat, index, accentRgb }) => (
         initial={{ opacity: 0, y: 20, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ delay: index * 0.05 + 0.05, type: 'spring', stiffness: 400, damping: 25 }}
-        className="relative flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-lg group transition-all duration-300"
+        className="relative min-w-0 flex items-center gap-2.5 sm:gap-3 px-3 sm:px-5 py-3 sm:py-3.5 rounded-2xl border backdrop-blur-md shadow-lg group transition-all duration-300"
         style={{
             background: `rgba(${accentRgb}, 0.25)`,
             borderColor: `rgba(${accentRgb}, 0.4)`,
@@ -117,16 +117,18 @@ const StatPill = ({ stat, index, accentRgb }) => (
                 borderColor: `rgba(${accentRgb}, 0.5)`
             }}
         />
-        <div className="relative z-10 flex items-center gap-3">
+        <div className="relative z-10 min-w-0 flex items-center gap-2.5 sm:gap-3">
             <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border border-white/20 flex-shrink-0"
                 style={{ background: `rgba(${accentRgb}, 0.3)` }}
             >
-                <stat.icon className={`w-5 h-5 ${stat.color} drop-shadow-[0_0_8px_currentColor]`} />
+                <stat.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stat.color} drop-shadow-[0_0_8px_currentColor]`} />
             </div>
-            <div>
-                <p className="text-xl font-black text-white tracking-tight leading-none drop-shadow-md">{stat.value}</p>
-                <p className="text-[11px] font-medium text-white/60 uppercase tracking-wider mt-0.5">{stat.label}</p>
+            <div className="min-w-0">
+                <p className="text-lg sm:text-xl font-black text-white tracking-tight leading-none drop-shadow-md">{stat.value}</p>
+                <p className="text-[10px] sm:text-[11px] font-medium text-white/60 uppercase tracking-[0.12em] sm:tracking-wider leading-tight mt-0.5 break-words">
+                    {stat.label}
+                </p>
             </div>
         </div>
     </motion.div>
@@ -290,7 +292,7 @@ const ServicesShowcase = () => {
 
                 {/* ─── Tab Buttons — Upgraded ─── */}
                 <BlurFadeIn delay={0.2}>
-                    <div id="services-tabs" className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar mb-16 pb-4 sm:pb-0 scroll-mt-32">
+                    <div className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar mb-16 pb-4 sm:pb-0 scroll-mt-32">
                         <div className="relative flex space-x-2 min-w-max">
                             {tabsData.map((tab) => {
                                 const isActive = activeTabId === tab.id;
@@ -389,7 +391,7 @@ const ServicesShowcase = () => {
                                 </ul>
 
                                 {/* Stats Row */}
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     {activeData.stats.map((stat, i) => (
                                         <StatPill key={i} stat={stat} index={i} accentRgb={activeData.accentRgb} />
                                     ))}

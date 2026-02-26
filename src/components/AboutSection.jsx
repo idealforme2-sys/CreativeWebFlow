@@ -77,19 +77,21 @@ const GlassCard = ({ point, index, isMobile = false }) => {
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
             whileHover={isMobile ? undefined : { y: -8, transition: { duration: 0.3 } }}
-            className="relative group max-w-[22rem] mx-auto"
+            className={`relative group ${isMobile ? 'w-full' : 'max-w-[22rem] mx-auto'}`}
         >
             {/* Card container */}
-            <div className="relative z-10 p-8 h-full min-h-[400px] md:min-h-[460px] rounded-[2rem] bg-gradient-to-br from-[#050508]/80 to-[#0A0A0F]/90 border border-white/5 overflow-hidden group hover:border-white/10 transition-colors duration-500 shadow-2xl backdrop-blur-md flex flex-col">
+            <div className={`relative z-10 h-full bg-gradient-to-br from-[#050508]/80 to-[#0A0A0F]/90 border border-white/5 overflow-hidden group hover:border-white/10 transition-colors duration-500 shadow-2xl backdrop-blur-md flex flex-col ${isMobile ? 'p-4 min-h-[250px] rounded-2xl' : 'p-8 min-h-[400px] md:min-h-[460px] rounded-[2rem]'}`}>
 
                 {/* Crystal Mirror Shine Layer */}
-                <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
-                    <div className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-mirror-shine drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
-                </div>
+                {!isMobile && (
+                    <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+                        <div className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-mirror-shine drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+                    </div>
+                )}
 
                 {/* Ambient glow matching accent color */}
                 <div
-                    className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    className={`absolute inset-0 ${isMobile ? 'rounded-2xl' : 'rounded-[2rem]'} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
                     style={{ boxShadow: `inset 0 0 40px ${point.glowColor}` }}
                 />
 
@@ -120,7 +122,7 @@ const GlassCard = ({ point, index, isMobile = false }) => {
 
                 {/* Icon square — top-right */}
                 <div
-                    className="absolute top-6 right-6 w-12 h-12 rounded-xl flex items-center justify-center z-10"
+                    className={`absolute ${isMobile ? 'top-4 right-4 w-9 h-9 rounded-lg' : 'top-6 right-6 w-12 h-12 rounded-xl'} flex items-center justify-center z-10`}
                     style={{
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -128,13 +130,13 @@ const GlassCard = ({ point, index, isMobile = false }) => {
                         boxShadow: `0 0 20px ${point.glowColor}`,
                     }}
                 >
-                    <Icon size={24} stroke={point.iconStroke} strokeWidth={2} />
+                    <Icon size={isMobile ? 18 : 24} stroke={point.iconStroke} strokeWidth={2} />
                 </div>
 
                 {/* Text content — bottom */}
                 <div className="relative z-10 mt-auto"> {/* Added mt-auto to push content to bottom */}
-                    <h3 className="text-2xl font-bold text-white mb-3">{point.title}</h3>
-                    <p className="text-gray-400 text-base leading-relaxed font-light">
+                    <h3 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-white mb-2 md:mb-3`}>{point.title}</h3>
+                    <p className={`${isMobile ? 'text-xs' : 'text-base'} text-gray-400 leading-relaxed font-light`}>
                         {point.description}
                     </p>
                 </div>
@@ -217,11 +219,21 @@ const AboutSection = ({ isMobile = false }) => {
                 </div>
 
                 {/* Glass Cards Grid — Stitch Design */}
-                <div className={`grid grid-cols-1 md:grid-cols-3 ${isMobile ? 'gap-4 mb-10' : 'gap-8 mb-16'}`}>
-                    {focusPoints.map((point, i) => (
-                        <GlassCard key={point.title} point={point} index={i} isMobile={isMobile} />
-                    ))}
-                </div>
+                {isMobile ? (
+                    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-6 px-6 pb-2 mb-10">
+                        {focusPoints.map((point, i) => (
+                            <div key={point.title} className="snap-center shrink-0 w-[72vw] max-w-[270px]">
+                                <GlassCard point={point} index={i} isMobile />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                        {focusPoints.map((point, i) => (
+                            <GlassCard key={point.title} point={point} index={i} />
+                        ))}
+                    </div>
+                )}
 
                 {/* Bottom Trust Statement */}
                 <RevealOnScroll delay={0.3}>

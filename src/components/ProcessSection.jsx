@@ -200,9 +200,13 @@ const DesktopProcess = () => {
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-4xl mx-auto"
                     >
-                        <span className="inline-block text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">
-                            How It Works
-                        </span>
+                        <div className="flex items-center justify-center gap-4 mb-3">
+                            <div className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-500" />
+                            <span className="text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">
+                                How It Works
+                            </span>
+                            <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500" />
+                        </div>
                         <AnimatedHeadline>
                             <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 md:mb-4 tracking-tight">
                                 From Idea to Launch in{' '}
@@ -259,32 +263,127 @@ const DesktopProcess = () => {
     );
 };
 
-const MobileProcess = () => (
-    <section id="how-it-works" className="relative py-14 pb-20 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-8">
-                <span className="inline-block text-cyan-400 text-[10px] font-black tracking-[0.24em] uppercase">
-                    How It Works
-                </span>
-                <h2 className="mt-3 text-3xl font-bold text-white leading-tight">
-                    From Idea to Launch in
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
-                        4 Simple Steps
-                    </span>
-                </h2>
-                <p className="mt-3 text-sm text-white/60 max-w-xl mx-auto">
-                    Mobile-first flow: quick clarity, fast loading, and a clean path from concept to go-live.
-                </p>
-            </div>
+const MobileProcess = () => {
+    const trackRef = useRef(null);
+    const [activeIndex, setActiveIndex] = useState(0);
 
-            <div className="space-y-4">
-                {PROCESS_STEPS.map((step, index) => (
-                    <MobileStep key={step.number} step={step} index={index} />
-                ))}
+    const updateActiveFromScroll = React.useCallback(() => {
+        const track = trackRef.current;
+        if (!track) return;
+
+        const cards = track.querySelectorAll('[data-step-card="true"]');
+        if (!cards.length) return;
+
+        const viewportCenter = track.scrollLeft + track.clientWidth / 2;
+        let nearestIndex = 0;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+
+        cards.forEach((card, idx) => {
+            const cardCenter = card.offsetLeft + card.clientWidth / 2;
+            const distance = Math.abs(viewportCenter - cardCenter);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestIndex = idx;
+            }
+        });
+
+        setActiveIndex((prev) => (prev === nearestIndex ? prev : nearestIndex));
+    }, []);
+
+    const scrollToStep = (index) => {
+        const track = trackRef.current;
+        if (!track) return;
+
+        const target = Math.max(0, Math.min(PROCESS_STEPS.length - 1, index));
+        const cards = track.querySelectorAll('[data-step-card="true"]');
+        const card = cards[target];
+        if (!card) return;
+
+        const left = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+        track.scrollTo({
+            left: Math.max(0, left),
+            behavior: 'smooth'
+        });
+    };
+
+    return (
+        <section id="how-it-works" className="relative py-14 pb-20 overflow-hidden">
+            <div className="max-w-6xl mx-auto px-4">
+                <div className="text-center mb-8">
+                    <div className="flex items-center justify-center gap-3">
+                        <div className="h-px w-10 bg-gradient-to-r from-transparent to-cyan-500" />
+                        <span className="text-cyan-400 text-[10px] font-black tracking-[0.24em] uppercase">
+                            How It Works
+                        </span>
+                        <div className="h-px w-10 bg-gradient-to-l from-transparent to-cyan-500" />
+                    </div>
+                    <h2 className="mt-3 text-3xl font-bold text-white leading-tight">
+                        From Idea to Launch in
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                            4 Simple Steps
+                        </span>
+                    </h2>
+                    <p className="mt-3 text-sm text-white/60 max-w-xl mx-auto">
+                        Swipe through the full process horizontally, step by step.
+                    </p>
+                </div>
+
+                <div className="relative">
+                    <div
+                        ref={trackRef}
+                        onScroll={updateActiveFromScroll}
+                        className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 px-[8.5vw] -mx-4"
+                        style={{ WebkitOverflowScrolling: 'touch' }}
+                    >
+                        {PROCESS_STEPS.map((step, index) => (
+                            <div key={step.number} data-step-card="true" className="snap-center shrink-0 w-[83vw] max-w-[360px]">
+                                <MobileStep step={step} index={index} />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-5 px-1">
+                        <div className="flex items-center justify-between gap-3 mb-3">
+                            <button
+                                type="button"
+                                onClick={() => scrollToStep(activeIndex - 1)}
+                                disabled={activeIndex === 0}
+                                className="px-3 py-1.5 rounded-lg border border-white/15 bg-white/5 text-[10px] tracking-[0.14em] uppercase font-bold text-white/75 disabled:opacity-40"
+                            >
+                                Prev
+                            </button>
+                            <div className="flex items-center gap-2">
+                                {PROCESS_STEPS.map((step, index) => (
+                                    <button
+                                        key={step.number}
+                                        type="button"
+                                        onClick={() => scrollToStep(index)}
+                                        aria-label={`Go to ${step.title}`}
+                                        className={`h-2 rounded-full transition-all ${index === activeIndex ? 'w-6 bg-cyan-400' : 'w-2 bg-white/30'}`}
+                                    />
+                                ))}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => scrollToStep(activeIndex + 1)}
+                                disabled={activeIndex === PROCESS_STEPS.length - 1}
+                                className="px-3 py-1.5 rounded-lg border border-white/15 bg-white/5 text-[10px] tracking-[0.14em] uppercase font-bold text-white/75 disabled:opacity-40"
+                            >
+                                Next
+                            </button>
+                        </div>
+                        <div className="h-[2px] w-full rounded-full bg-white/10 overflow-hidden">
+                            <div
+                                className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-300"
+                                style={{ width: `${((activeIndex + 1) / PROCESS_STEPS.length) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
 const ProcessSection = ({ isMobile = false }) => {
     if (isMobile) return <MobileProcess />;

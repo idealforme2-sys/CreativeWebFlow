@@ -34,15 +34,8 @@ const SectionFallback = () => (
     </div>
 );
 
-const SectionShell = ({ children, isMobile = false }) => (
-    <div
-        style={isMobile ? {
-            contentVisibility: 'auto',
-            containIntrinsicSize: '900px',
-        } : undefined}
-    >
-        {children}
-    </div>
+const SectionShell = ({ children }) => (
+    <div>{children}</div>
 );
 
 function App() {
@@ -186,52 +179,52 @@ function App() {
 
                         {/* Content sections - below fold, lazy loaded */}
                         <div className="relative z-20 bg-black/30 md:bg-black/20 shadow-[0_-20px_40px_black] md:shadow-[0_-50px_100px_black]">
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <InfiniteMarquee />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <AboutSection isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <ProcessSection isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <ServicesShowcase isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <WorkSection isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <DetailedCaseStudies isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <WhyChooseUs isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <SocialProofSection isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <ContactSection isMobile={isMobileDevice} />
                                 </Suspense>
                             </SectionShell>
-                            <SectionShell isMobile={isMobileDevice}>
+                            <SectionShell>
                                 <Suspense fallback={<SectionFallback />}>
                                     <Footer />
                                 </Suspense>

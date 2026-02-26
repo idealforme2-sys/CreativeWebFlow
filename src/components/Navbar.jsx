@@ -384,6 +384,27 @@ const Navbar = ({ isMobile = false }) => {
                             </AnimatePresence>
                         </motion.button>
                     </div>
+
+                    {isMobile && !isMobileMenuOpen && (
+                        <div className="lg:hidden mt-3 px-4 pb-1 overflow-x-auto no-scrollbar">
+                            <div className="min-w-max flex items-center gap-2">
+                                {navLinks.map((link) => (
+                                    <button
+                                        key={`quick-${link.label}`}
+                                        type="button"
+                                        onClick={() => scrollToSection(link.href)}
+                                        className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.14em] border transition-colors ${
+                                            activeSection === link.id
+                                                ? 'border-cyan-500/45 bg-cyan-500/15 text-cyan-300'
+                                                : 'border-white/15 bg-black/25 text-white/75'
+                                        }`}
+                                    >
+                                        {link.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </motion.nav>
 

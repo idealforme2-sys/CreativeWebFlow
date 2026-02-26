@@ -90,9 +90,20 @@ const AnimatedLogo = ({ size = 40, className = '', interactive = true }) => {
                     fill="rgba(0,0,0,0.7)"
                 />
 
-                <g clipPath={`url(#${clipId})`} filter={`url(#${glowId})`} stroke={`url(#${textGradId})`} strokeLinecap="round" strokeLinejoin="round" fill="none" transform="translate(1.5 0)">
-                    <path d="M53 49 C49 45.5 45 45.5 41 49 C38.8 53 38.8 59 41 63 C45 66.5 49 66.5 53 63" strokeWidth="4.2" />
-                    <path d="M57 48 L61 64 L65 54 L69 64 L73 48" strokeWidth="4.2" />
+                <g clipPath={`url(#${clipId})`} filter={`url(#${glowId})`}>
+                    <text
+                        x="60"
+                        y="60"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill={`url(#${textGradId})`}
+                        fontFamily="Inter, system-ui, sans-serif"
+                        fontWeight="700"
+                        fontSize="26"
+                        letterSpacing="1"
+                    >
+                        CW
+                    </text>
                 </g>
 
                 <circle r="2" fill="#06b6d4" opacity="0.9" filter={`url(#${glowId})`}>

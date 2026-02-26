@@ -70,8 +70,13 @@ const caseStudies = [
 
 const LightweightPreview = ({ study, compact = false }) => (
     <div className={`relative rounded-3xl overflow-hidden border border-white/10 bg-slate-950 ${compact ? 'aspect-[4/3]' : 'h-full'}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-purple-500/10 to-pink-500/15" />
-        <div className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <iframe
+            src={study.url}
+            className="absolute inset-0 w-[200%] h-[200%] transform scale-50 origin-top-left border-0 pointer-events-none bg-transparent"
+            title={`${study.title} mobile preview`}
+            loading="lazy"
+            style={{ colorScheme: 'dark' }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
         <div className="relative z-10 h-full p-5 md:p-6 flex flex-col justify-between">
             <div>
