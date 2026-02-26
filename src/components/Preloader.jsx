@@ -170,6 +170,7 @@ const Preloader = ({ onComplete }) => {
     const [count, setCount] = useState(0);
     const [phase, setPhase] = useState('loading');
     const [visibleLogs, setVisibleLogs] = useState([]);
+    const lite = false;
 
     // Eased counter
     useEffect(() => {
@@ -218,10 +219,12 @@ const Preloader = ({ onComplete }) => {
             exit={{ clipPath: 'circle(0% at 50% 50%)', transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}
         >
             {/* Warp speed star field */}
-            <WarpCanvas progress={count} />
+            {!lite && <WarpCanvas progress={count} />}
 
             {/* Noise grain */}
-            <div className="absolute inset-0 z-[1] opacity-[0.025] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '128px 128px' }} />
+            {!lite && (
+                <div className="absolute inset-0 z-[1] opacity-[0.025] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '128px 128px' }} />
+            )}
 
             {/* Vignette */}
             <div className="absolute inset-0 z-[2] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(3,0,20,0.7) 100%)' }} />
@@ -239,17 +242,18 @@ const Preloader = ({ onComplete }) => {
                             {/* Logo hub with rings */}
                             <div className="relative flex items-center justify-center mb-10" style={{ width: 260, height: 260 }}>
                                 {/* Morphing geometric ring */}
-                                <GeometricRing progress={count} size={260} />
+                                {!lite && <GeometricRing progress={count} size={260} />}
 
                                 {/* Progress ring with glow */}
                                 <svg width="220" height="220" className="absolute -rotate-90 z-[5]">
                                     <circle cx="110" cy="110" r={ringR} stroke="rgba(255,255,255,0.02)" strokeWidth="1" fill="none" />
                                     {/* Graduated tick marks */}
-                                    {Array.from({ length: 72 }, (_, i) => {
-                                        const angle = (i / 72) * Math.PI * 2 - Math.PI / 2;
+                                    {Array.from({ length: lite ? 36 : 72 }, (_, i) => {
+                                        const totalTicks = lite ? 36 : 72;
+                                        const angle = (i / totalTicks) * Math.PI * 2 - Math.PI / 2;
                                         const inner = ringR - (i % 6 === 0 ? 5 : 2);
                                         const outer = ringR + (i % 6 === 0 ? 5 : 2);
-                                        const filled = (i / 72) * 100 <= count;
+                                        const filled = (i / totalTicks) * 100 <= count;
                                         return (
                                             <line
                                                 key={i}
@@ -284,21 +288,23 @@ const Preloader = ({ onComplete }) => {
                                 </svg>
 
                                 {/* Orbiting dots on progress ring */}
-                                <motion.div
-                                    className="absolute z-[6]"
-                                    style={{ width: 220, height: 220 }}
-                                    animate={{ rotate: -count * 3.6 }}
-                                    transition={{ duration: 0, ease: 'linear' }}
-                                >
-                                    <div
-                                        className="absolute w-3 h-3 rounded-full"
-                                        style={{
-                                            top: 0, left: '50%', transform: 'translate(-50%, -50%)',
-                                            background: 'radial-gradient(circle, #06b6d4, transparent)',
-                                            boxShadow: '0 0 12px 4px rgba(6,182,212,0.6)',
-                                        }}
-                                    />
-                                </motion.div>
+                                {!lite && (
+                                    <motion.div
+                                        className="absolute z-[6]"
+                                        style={{ width: 220, height: 220 }}
+                                        animate={{ rotate: -count * 3.6 }}
+                                        transition={{ duration: 0, ease: 'linear' }}
+                                    >
+                                        <div
+                                            className="absolute w-3 h-3 rounded-full"
+                                            style={{
+                                                top: 0, left: '50%', transform: 'translate(-50%, -50%)',
+                                                background: 'radial-gradient(circle, #06b6d4, transparent)',
+                                                boxShadow: '0 0 12px 4px rgba(6,182,212,0.6)',
+                                            }}
+                                        />
+                                    </motion.div>
+                                )}
 
                                 {/* Logo */}
                                 <div className="absolute z-10 flex items-center justify-center overflow-hidden rounded-full" style={{ width: 118, height: 118 }}>
@@ -329,7 +335,7 @@ const Preloader = ({ onComplete }) => {
                             </div>
 
                             {/* Terminal-style log feed */}
-                            <div className="w-64 md:w-80 text-center font-mono mb-4 h-20 overflow-hidden mx-auto flex flex-col items-center">
+                            {!lite && <div className="w-64 md:w-80 text-center font-mono mb-4 h-20 overflow-hidden mx-auto flex flex-col items-center">
                                 <AnimatePresence>
                                     {visibleLogs.map((log, i) => (
                                         <motion.div
@@ -352,10 +358,10 @@ const Preloader = ({ onComplete }) => {
                                         </motion.div>
                                     ))}
                                 </AnimatePresence>
-                            </div>
+                            </div>}
 
                             {/* Waveform visualizer */}
-                            <div className="flex items-center gap-[1.5px] h-6">
+                            {!lite && <div className="flex items-center gap-[1.5px] h-6">
                                 {Array.from({ length: 30 }, (_, i) => {
                                     const dist = Math.abs(i - 15) / 15;
                                     return (
@@ -377,7 +383,7 @@ const Preloader = ({ onComplete }) => {
                                         />
                                     );
                                 })}
-                            </div>
+                            </div>}
                         </motion.div>
                     )}
 
@@ -433,13 +439,13 @@ const Preloader = ({ onComplete }) => {
                             </motion.div>
 
                             {/* Brand text — staggered 3D entrance */}
-                            <div className="flex flex-wrap justify-center items-center px-4 mb-4 text-center w-full max-w-4xl" style={{ perspective: '1500px' }}>
+                            <div className="flex flex-wrap justify-center items-center px-4 mb-4 text-center w-full max-w-4xl" style={{ perspective: lite ? 'none' : '1500px' }}>
                                 {brandText.split('').map((char, i) => (
                                     <motion.span
                                         key={i}
                                         initial={{ y: 100, opacity: 0, rotateX: -90, scale: 0.5, filter: 'blur(8px)' }}
                                         animate={{ y: 0, opacity: 1, rotateX: 0, scale: 1, filter: 'blur(0px)' }}
-                                        transition={{ delay: 0.15 + i * 0.035, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                                        transition={{ delay: lite ? 0.08 + i * 0.02 : 0.15 + i * 0.035, duration: lite ? 0.45 : 0.7, ease: [0.16, 1, 0.3, 1] }}
                                         className={`text-3xl md:text-6xl lg:text-7xl font-black tracking-tight inline-block ${char === ' ' ? 'mx-2 md:mx-3' : ''}`}
                                         style={{
                                             background: `linear-gradient(135deg, #06b6d4 ${i * 5}%, #a855f7 ${35 + i * 3}%, #ec4899 ${80 + i * 2}%)`,
@@ -463,17 +469,17 @@ const Preloader = ({ onComplete }) => {
                             />
 
                             {/* Tagline with letter-spacing morph */}
-                            <motion.p
+                            {!lite && <motion.p
                                 initial={{ opacity: 0, y: 20, letterSpacing: '0.6em' }}
                                 animate={{ opacity: 0.4, y: 0, letterSpacing: '0.18em' }}
                                 transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 className="text-xs md:text-sm text-white font-light uppercase mb-6"
                             >
                                 Crafting Digital Excellence
-                            </motion.p>
+                            </motion.p>}
 
                             {/* Entry pulse */}
-                            <motion.div
+                            {!lite && <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: [0, 0.4, 0] }}
                                 transition={{ delay: 1.4, duration: 1.5, repeat: Infinity }}
@@ -486,7 +492,7 @@ const Preloader = ({ onComplete }) => {
                                     ▼
                                 </motion.div>
                                 Entering Experience
-                            </motion.div>
+                            </motion.div>}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -515,7 +521,7 @@ const Preloader = ({ onComplete }) => {
             </div>
 
             {/* Top HUD */}
-            <motion.div
+            {!lite && <motion.div
                 className="absolute top-5 left-0 w-full flex justify-between items-center px-6 md:px-10 z-30"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -530,10 +536,10 @@ const Preloader = ({ onComplete }) => {
                     <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.15em]">Creative Webflow</span>
                 </div>
                 <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.15em]">v2.0</span>
-            </motion.div>
+            </motion.div>}
 
             {/* Bottom HUD */}
-            <motion.div
+            {!lite && <motion.div
                 className="absolute bottom-5 left-0 w-full flex justify-between items-center px-6 md:px-10 z-30"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -541,10 +547,10 @@ const Preloader = ({ onComplete }) => {
             >
                 <span className="text-[8px] font-mono text-white/10 uppercase tracking-wider">Premium Digital Agency</span>
                 <span className="text-[8px] font-mono text-white/10 tabular-nums">{new Date().getFullYear()}</span>
-            </motion.div>
+            </motion.div>}
 
             {/* Corner HUD brackets */}
-            {[
+            {!lite && [
                 { cls: 'top-4 left-4', c1: 'from-cyan-400/50', c2: 'from-cyan-400/50', dH: 'to-r', dV: 'to-b' },
                 { cls: 'top-4 right-4', c1: 'from-purple-400/50', c2: 'from-purple-400/50', dH: 'to-l', dV: 'to-b' },
                 { cls: 'bottom-4 left-4', c1: 'from-cyan-400/30', c2: 'from-cyan-400/30', dH: 'to-r', dV: 'to-t' },
