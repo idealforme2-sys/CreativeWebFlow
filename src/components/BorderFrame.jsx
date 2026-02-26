@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 */
 
 const BorderFrame = ({ mobileOptimized = false, paused = false }) => {
+    if (mobileOptimized) return null;
+
     const canvasRef = useRef(null);
     const isPausedRef = useRef(paused);
 

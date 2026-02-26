@@ -324,7 +324,7 @@ const MobileProcess = () => {
                         </span>
                     </h2>
                     <p className="mt-3 text-sm text-white/60 max-w-xl mx-auto">
-                        Swipe through the full process horizontally, step by step.
+                        A streamlined process focused on speed, clarity, and measurable business outcomes.
                     </p>
                 </div>
 

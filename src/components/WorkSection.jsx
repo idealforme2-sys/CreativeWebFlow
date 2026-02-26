@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Plus, Stethoscope, Dumbbell, Building2, Arro
 import dentalImg from '../assets/industries/dental-medical.png';
 import fitnessImg from '../assets/industries/fitness-gyms.png';
 import restaurantImg from '../assets/industries/restaurants.png';
-import realEstateImg from '../assets/industries/real-estate.png';
+import realEstateImg from '../assets/industries/realestate.png';
 
 const PROJECTS = [
     {

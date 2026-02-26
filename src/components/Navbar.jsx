@@ -185,20 +185,18 @@ const Navbar = ({ isMobile = false }) => {
                 transition={{ duration: isMobile ? 0.45 : 1, ease: [0.16, 1, 0.3, 1] }}
                 className="fixed z-50 w-full top-0"
                 style={{
-                    paddingLeft: horizontalPadding,
-                    paddingRight: horizontalPadding,
-                    paddingTop: isMobile ? (isScrolled ? '8px' : '0px') : (isScrolled ? '12px' : '0px'),
+                    paddingLeft: isMobile ? '0%' : horizontalPadding,
+                    paddingRight: isMobile ? '0%' : horizontalPadding,
+                    paddingTop: isMobile ? '0px' : (isScrolled ? '12px' : '0px'),
                     transition: 'padding 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
             >
                 <div
-                    className={`relative transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${!isMobile ? 'nav-noise' : ''} ${isScrolled
-                        ? isMobile
-                            ? 'mx-3 rounded-xl bg-[#0a0f1c]/90 backdrop-blur-xl border border-white/10 py-2.5 shadow-[0_6px_30px_rgba(0,0,0,0.45)]'
-                            : 'rounded-2xl bg-[#0a0f1c]/85 backdrop-blur-3xl shadow-[0_8px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] py-3'
-                        : isMobile
-                            ? 'rounded-none bg-gradient-to-b from-black/75 via-black/40 to-transparent py-3'
-                            : 'rounded-none bg-gradient-to-b from-black/80 via-black/40 to-transparent py-5'
+                    className={`relative transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${!isMobile ? 'nav-noise' : ''} ${isMobile
+                            ? 'rounded-none bg-[#0a0f1c]/95 backdrop-blur-2xl border-b border-white/10 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.5)]'
+                            : isScrolled
+                                ? 'rounded-2xl bg-[#0a0f1c]/85 backdrop-blur-3xl shadow-[0_8px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] py-3'
+                                : 'rounded-none bg-gradient-to-b from-black/80 via-black/40 to-transparent py-5'
                         }`}
                 >
                     {/* Desktop-only high-cost visual layers */}
@@ -393,11 +391,10 @@ const Navbar = ({ isMobile = false }) => {
                                         key={`quick-${link.label}`}
                                         type="button"
                                         onClick={() => scrollToSection(link.href)}
-                                        className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.14em] border transition-colors ${
-                                            activeSection === link.id
+                                        className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.14em] border transition-colors ${activeSection === link.id
                                                 ? 'border-cyan-500/45 bg-cyan-500/15 text-cyan-300'
                                                 : 'border-white/15 bg-black/25 text-white/75'
-                                        }`}
+                                            }`}
                                     >
                                         {link.label}
                                     </button>

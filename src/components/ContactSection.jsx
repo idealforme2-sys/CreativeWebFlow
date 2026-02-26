@@ -153,12 +153,41 @@ const ContactSection = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Dispatch to client's default email agent
-        window.location.href = `mailto:ventureforbusiness@gmail.com?subject=New Inquiry from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company || 'N/A'}\n\nProject Details:\n${formData.message}`)}`;
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            // NOTE: Replace 'YOUR_ACCESS_KEY_HERE' with your actual Web3Forms access key
+            // You can get one for free at https://web3forms.com/
+            const res = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    access_key: 'YOUR_ACCESS_KEY_HERE',
+                    subject: `New Inquiry from ${formData.name}`,
+                    from_name: formData.name,
+                    email: formData.email,
+                    company: formData.company || 'N/A',
+                    budget: formData.budget || 'Not Selected',
+                    message: formData.message
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                setSubmitted(true);
+            } else {
+                console.error("Form submission failed:", result.message);
+                window.location.href = `mailto:ventureforbusiness@gmail.com?subject=New Inquiry from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company || 'N/A'}\n\nProject Details:\n${formData.message}`)}`;
+                setSubmitted(true);
+            }
+        } catch (error) {
+            console.error("Form fetch error:", error);
+            window.location.href = `mailto:ventureforbusiness@gmail.com?subject=New Inquiry from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company || 'N/A'}\n\nProject Details:\n${formData.message}`)}`;
+            setSubmitted(true);
+        }
+
         setIsSubmitting(false);
-        setSubmitted(true);
     };
 
     const handleChange = (e) => {
