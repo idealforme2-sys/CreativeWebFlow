@@ -80,7 +80,7 @@ const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
     }, [isInView, index, setActiveIndex]);
 
     return (
-        <div id={study.id} ref={ref} className="min-h-[62vh] md:min-h-[74vh] lg:min-h-[90vh] flex flex-col justify-center py-12 md:py-16 lg:py-20 pr-0 lg:pr-12">
+        <div id={study.id} ref={ref} className="min-h-0 md:min-h-[74vh] lg:min-h-[90vh] flex flex-col justify-center py-10 md:py-16 lg:py-20 pr-0 lg:pr-12">
 
             {/* Mobile View: Iframe Preview (Hidden on Desktop) */}
             <div className="block lg:hidden w-full aspect-[4/3] rounded-3xl overflow-hidden mb-10 relative border border-white/10 shadow-2xl bg-slate-950">
@@ -177,11 +177,11 @@ const DetailedCaseStudies = () => {
                 <div className="absolute bottom-[20%] right-[-5%] w-[40%] h-[60%] bg-blue-900/10 rounded-full blur-[120px]" />
             </div>
 
-            <section className="relative z-10 max-w-7xl mx-auto px-6 py-14 md:py-20 lg:py-32">
+            <section className="relative z-10 max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-32">
 
                 {/* Section Header */}
                 <RevealOnScroll>
-                    <header className="mb-10 md:mb-14 lg:mb-20">
+                    <header className="mb-8 md:mb-14 lg:mb-20">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}

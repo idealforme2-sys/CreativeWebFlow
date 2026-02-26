@@ -7,8 +7,13 @@ import { motion } from 'framer-motion';
   visibility-aware, conditional physics only when mouse near edges.
 */
 
-const BorderFrame = ({ mobileOptimized = false }) => {
+const BorderFrame = ({ mobileOptimized = false, paused = false }) => {
     const canvasRef = useRef(null);
+    const isPausedRef = useRef(paused);
+
+    useEffect(() => {
+        isPausedRef.current = paused;
+    }, [paused]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -114,7 +119,7 @@ const BorderFrame = ({ mobileOptimized = false }) => {
         const render = (now) => {
             frameId = requestAnimationFrame(render);
 
-            if (!isVisible) return;
+            if (!isVisible || isPausedRef.current) return;
 
             const elapsed = now - lastRenderTime;
             if (elapsed < fpsInterval) return;

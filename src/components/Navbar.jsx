@@ -5,28 +5,40 @@ import AnimatedLogo from './AnimatedLogo';
 import MusicPlayer from './MusicPlayer';
 import { MagneticWrapper } from './UIComponents';
 
-const Navbar = () => {
+const Navbar = ({ isMobile = false }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [activeSection, setActiveSection] = useState('');
+    const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
     const navRef = useRef(null);
 
-    // Scroll listener
+    // rAF-throttled scroll listener to reduce mobile re-render pressure
     useEffect(() => {
+        let rafId = null;
         const handleScroll = () => {
-            const y = window.scrollY;
-            setIsScrolled(y > 50);
-            setScrollProgress(Math.min(y / 300, 1));
+            if (rafId) return;
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+                const y = window.scrollY;
+                const nextScrolled = y > 50;
+                const nextProgress = Math.min(y / 300, 1);
+                setIsScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+                setScrollProgress((prev) => (Math.abs(prev - nextProgress) < 0.01 ? prev : nextProgress));
+            });
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
     }, []);
 
-    // Active section tracking via IntersectionObserver
+    // Active section tracking
     useEffect(() => {
-        const sectionIds = ['about', 'what-we-do', 'work', 'mission', 'contact'];
+        const sectionIds = ['about', 'what-we-do', 'how-it-works', 'work', 'contact'];
         const observers = [];
 
         sectionIds.forEach((id) => {
@@ -44,6 +56,32 @@ const Navbar = () => {
 
         return () => observers.forEach((o) => o.disconnect());
     }, []);
+
+    // Lock background scroll when mobile menu is open
+    useEffect(() => {
+        if (!isMobileMenuOpen) return;
+        const html = document.documentElement;
+        const body = document.body;
+        const prevHtmlOverflow = html.style.overflow;
+        const prevBodyOverflow = body.style.overflow;
+        const prevBodyOverscroll = body.style.overscrollBehavior;
+
+        html.style.overflow = 'hidden';
+        body.style.overflow = 'hidden';
+        body.style.overscrollBehavior = 'none';
+
+        return () => {
+            html.style.overflow = prevHtmlOverflow;
+            body.style.overflow = prevBodyOverflow;
+            body.style.overscrollBehavior = prevBodyOverscroll;
+        };
+    }, [isMobileMenuOpen]);
+
+    useEffect(() => {
+        if (!isMobileMenuOpen) {
+            setMobileServicesOpen(false);
+        }
+    }, [isMobileMenuOpen]);
 
     const navLinks = [
         { label: 'About', href: '#about', id: 'about' },
@@ -63,21 +101,21 @@ const Navbar = () => {
     ];
 
     const scrollToSection = (href) => {
-        const [baseHref, query] = href.split('?');
+        const [baseHref] = href.split('?');
         const element = document.querySelector(baseHref);
 
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
-            // Update URL without jump to trigger hash changes
             window.history.pushState(null, '', href);
             window.dispatchEvent(new HashChangeEvent('hashchange'));
         }
 
         setIsMobileMenuOpen(false);
         setActiveDropdown(null);
+        setMobileServicesOpen(false);
     };
 
-    const horizontalPadding = isScrolled ? `${4 + scrollProgress * 8}%` : '0%';
+    const horizontalPadding = isMobile ? '0%' : (isScrolled ? `${4 + scrollProgress * 8}%` : '0%');
 
     return (
         <>
@@ -133,23 +171,27 @@ const Navbar = () => {
                 ref={navRef}
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: isMobile ? 0.45 : 1, ease: [0.16, 1, 0.3, 1] }}
                 className="fixed z-50 w-full top-0"
                 style={{
                     paddingLeft: horizontalPadding,
                     paddingRight: horizontalPadding,
-                    paddingTop: isScrolled ? '12px' : '0px',
-                    transition: 'padding 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
+                    paddingTop: isMobile ? (isScrolled ? '8px' : '0px') : (isScrolled ? '12px' : '0px'),
+                    transition: 'padding 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
             >
                 <div
-                    className={`relative transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] nav-noise ${isScrolled
-                        ? 'rounded-2xl bg-[#0a0f1c]/85 backdrop-blur-3xl shadow-[0_8px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] py-3'
-                        : 'rounded-none bg-gradient-to-b from-black/80 via-black/40 to-transparent py-5'
+                    className={`relative transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${!isMobile ? 'nav-noise' : ''} ${isScrolled
+                        ? isMobile
+                            ? 'mx-3 rounded-xl bg-[#0a0f1c]/90 backdrop-blur-xl border border-white/10 py-2.5 shadow-[0_6px_30px_rgba(0,0,0,0.45)]'
+                            : 'rounded-2xl bg-[#0a0f1c]/85 backdrop-blur-3xl shadow-[0_8px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] py-3'
+                        : isMobile
+                            ? 'rounded-none bg-gradient-to-b from-black/75 via-black/40 to-transparent py-3'
+                            : 'rounded-none bg-gradient-to-b from-black/80 via-black/40 to-transparent py-5'
                         }`}
                 >
-                    {/* Animated gradient border on scroll */}
-                    {isScrolled && (
+                    {/* Desktop-only high-cost visual layers */}
+                    {isScrolled && !isMobile && (
                         <div className="absolute inset-0 rounded-2xl -z-10 p-[1px] overflow-hidden">
                             <div
                                 className="absolute inset-0 rounded-2xl"
@@ -166,8 +208,7 @@ const Navbar = () => {
                         </div>
                     )}
 
-                    {/* Shimmer sweep */}
-                    {isScrolled && (
+                    {isScrolled && !isMobile && (
                         <motion.div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
                             <motion.div
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent -skew-x-12"
@@ -177,26 +218,30 @@ const Navbar = () => {
                         </motion.div>
                     )}
 
-                    <div className="max-w-7xl mx-auto px-6 flex justify-between items-center relative z-10">
+                    <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'} flex justify-between items-center relative z-10`}>
                         {/* Logo + Music */}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5">
                             <a
                                 href="#"
-                                onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                className="flex items-center gap-3 group cursor-pointer"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    setIsMobileMenuOpen(false);
+                                }}
+                                className="flex items-center gap-2.5 group cursor-pointer"
                             >
-                                <AnimatedLogo size={isScrolled ? 36 : 42} />
-                                <motion.span
-                                    animate={{ opacity: isScrolled ? 0 : 1, width: isScrolled ? 0 : 'auto' }}
-                                    transition={{ duration: 0.4 }}
-                                    className="text-sm font-bold text-white/90 tracking-tight overflow-hidden whitespace-nowrap"
-                                >
-                                    Creative WebFlow
-                                </motion.span>
+                                <AnimatedLogo size={isMobile ? (isScrolled ? 32 : 34) : (isScrolled ? 36 : 42)} />
+                                {!isMobile && (
+                                    <motion.span
+                                        animate={{ opacity: isScrolled ? 0 : 1, width: isScrolled ? 0 : 'auto' }}
+                                        transition={{ duration: 0.4 }}
+                                        className="text-sm font-bold text-white/90 tracking-tight overflow-hidden whitespace-nowrap"
+                                    >
+                                        Creative WebFlow
+                                    </motion.span>
+                                )}
                             </a>
-
-                            {/* Music toggle — right next to logo */}
-                            <MusicPlayer size={16} />
+                            <MusicPlayer size={isMobile ? 14 : 16} />
                         </div>
 
                         {/* Desktop Navigation */}
@@ -242,13 +287,9 @@ const Navbar = () => {
                                                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                                                     className="absolute top-[100%] left-0 pt-4 w-64 pointer-events-none z-50"
                                                 >
-                                                    {/* Invisible block to bridge hover gap */}
                                                     <div className="absolute top-0 left-0 w-full h-4 pointer-events-auto" />
-
                                                     <div className="relative w-full py-2 bg-[#0a0f1c]/95 backdrop-blur-3xl border border-white/[0.08] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden nav-noise pointer-events-auto">
-                                                        {/* Top accent line */}
                                                         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
-                                                        {/* Grid pattern overlay */}
                                                         <div
                                                             className="absolute inset-0 opacity-[0.02] pointer-events-none"
                                                             style={{
@@ -281,7 +322,7 @@ const Navbar = () => {
                             ))}
                         </div>
 
-                        {/* CTA Button — animated gradient border */}
+                        {/* Desktop CTA */}
                         <MagneticWrapper strength={0.2} className="hidden lg:block">
                             <motion.button
                                 onClick={() => scrollToSection('#contact')}
@@ -289,7 +330,6 @@ const Navbar = () => {
                                 whileTap={{ scale: 0.95 }}
                                 className="relative flex items-center gap-2 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] text-white overflow-hidden group"
                             >
-                                {/* Rotating gradient border */}
                                 <div
                                     className="absolute -inset-[1px] rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-500"
                                     style={{
@@ -297,26 +337,18 @@ const Navbar = () => {
                                         animation: 'nav-gradient-rotate 3s linear infinite',
                                     }}
                                 />
-                                {/* Inner background */}
                                 <div className="absolute inset-[1px] rounded-full bg-[#0a0f1c]/90 backdrop-blur-sm" />
-
-                                {/* Hover glow fill */}
                                 <div className="absolute inset-[1px] rounded-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                {/* Shimmer */}
                                 <motion.div
                                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent -skew-x-12"
                                     animate={{ x: ['-200%', '200%'] }}
                                     transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
                                 />
-
-                                {/* Pulsing glow behind */}
                                 <motion.div
                                     className="absolute -inset-2 rounded-full bg-cyan-500/10 blur-xl pointer-events-none"
                                     animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
                                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                                 />
-
                                 <Sparkles size={12} className="relative z-10 text-cyan-400" />
                                 <span className="relative z-10">Start Project</span>
                             </motion.button>
@@ -324,17 +356,17 @@ const Navbar = () => {
 
                         {/* Mobile Menu Button */}
                         <motion.button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            whileTap={{ scale: 0.9 }}
-                            className="lg:hidden w-10 h-10 flex items-center justify-center border border-white/15 rounded-xl hover:border-cyan-500/40 hover:bg-white/[0.03] transition-all duration-300"
+                            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                            whileTap={{ scale: 0.94 }}
+                            className="lg:hidden w-11 h-11 flex items-center justify-center border border-white/15 rounded-xl bg-black/20 hover:border-cyan-500/40 hover:bg-white/[0.04] transition-all duration-300"
                         >
                             <AnimatePresence mode="wait">
                                 {isMobileMenuOpen ? (
-                                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.16 }}>
                                         <X size={18} />
                                     </motion.div>
                                 ) : (
-                                    <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                    <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.16 }}>
                                         <Menu size={18} />
                                     </motion.div>
                                 )}
@@ -345,75 +377,87 @@ const Navbar = () => {
             </motion.nav>
 
             {/* Mobile Menu */}
-            < AnimatePresence >
+            <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, clipPath: 'circle(0% at 95% 5%)' }}
-                        animate={{ opacity: 1, clipPath: 'circle(150% at 95% 5%)' }}
-                        exit={{ opacity: 0, clipPath: 'circle(0% at 95% 5%)' }}
-                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                        className="fixed inset-0 z-40 bg-black/98 backdrop-blur-3xl lg:hidden"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+                        className="fixed inset-0 z-40 bg-black/94 backdrop-blur-xl lg:hidden"
                     >
-                        {/* Background decorative */}
-                        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px]" />
-                        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px]" />
-
-                        <div className="flex flex-col items-center justify-center h-full gap-6">
-                            <AnimatedLogo size={60} className="mb-4" />
-
-                            {/* Music toggle in mobile */}
-                            <div className="mb-4">
-                                <MusicPlayer size={20} />
-                            </div>
-
-                            {navLinks.map((link, i) => (
-                                <motion.div
-                                    key={link.label}
-                                    initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                                    transition={{ delay: 0.1 + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                                >
-                                    {link.dropdown ? (
-                                        <div className="flex flex-col items-center gap-1.5">
-                                            <span className="text-base font-bold text-white/40 uppercase tracking-widest">{link.label}</span>
-                                            <div className="flex flex-col items-center gap-1">
-                                                {link.dropdown.map((item) => (
-                                                    <button
-                                                        key={item.label}
-                                                        onClick={() => {
-                                                            scrollToSection(item.href);
-                                                            setIsMobileMenuOpen(false);
-                                                        }}
-                                                        className="text-sm text-white/60 hover:text-cyan-400 transition-colors py-1"
-                                                    >
-                                                        {item.label}
-                                                    </button>
-                                                ))}
-                                            </div>
+                        <div className="h-full overflow-y-auto pt-24 pb-8 px-5">
+                            <div className="max-w-md mx-auto">
+                                <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <AnimatedLogo size={34} />
+                                        <div>
+                                            <p className="text-sm font-semibold text-white">Creative WebFlow</p>
+                                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Navigation</p>
                                         </div>
-                                    ) : (
-                                        <button
-                                            onClick={() => {
-                                                scrollToSection(link.href);
-                                                setIsMobileMenuOpen(false);
-                                            }}
-                                            className={`text-lg font-bold uppercase tracking-widest transition-colors ${activeSection === link.id ? 'text-cyan-400' : 'text-white hover:text-cyan-400'}`}
-                                        >
-                                            {link.label}
-                                        </button>
-                                    )}
-                                </motion.div>
-                            ))}
+                                    </div>
+                                    <MusicPlayer size={18} />
+                                </div>
 
-                            <motion.button
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.6, duration: 0.6 }}
-                                onClick={() => scrollToSection('#contact')}
-                                className="mt-6 px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest text-white border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all"
-                            >
-                                Start Project
-                            </motion.button>
+                                <div className="space-y-2">
+                                    {navLinks.map((link) => (
+                                        <div key={link.label}>
+                                            {link.dropdown ? (
+                                                <div className="rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden">
+                                                    <button
+                                                        onClick={() => setMobileServicesOpen((prev) => !prev)}
+                                                        className="w-full flex items-center justify-between px-4 py-3.5 text-left"
+                                                    >
+                                                        <span className={`text-sm font-bold uppercase tracking-[0.18em] ${activeSection === link.id ? 'text-cyan-400' : 'text-white/85'}`}>
+                                                            {link.label}
+                                                        </span>
+                                                        <ChevronDown size={16} className={`transition-transform duration-300 ${mobileServicesOpen ? 'rotate-180 text-cyan-400' : 'text-white/50'}`} />
+                                                    </button>
+                                                    <AnimatePresence initial={false}>
+                                                        {mobileServicesOpen && (
+                                                            <motion.div
+                                                                initial={{ height: 0, opacity: 0 }}
+                                                                animate={{ height: 'auto', opacity: 1 }}
+                                                                exit={{ height: 0, opacity: 0 }}
+                                                                transition={{ duration: 0.22 }}
+                                                                className="border-t border-white/10"
+                                                            >
+                                                                {link.dropdown.map((item) => (
+                                                                    <button
+                                                                        key={item.label}
+                                                                        onClick={() => scrollToSection(item.href)}
+                                                                        className="w-full px-4 py-3 text-left hover:bg-cyan-500/[0.08] transition-colors"
+                                                                    >
+                                                                        <div className="text-sm font-semibold text-white/85">{item.label}</div>
+                                                                        {item.subText && <div className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-white/45">{item.subText}</div>}
+                                                                    </button>
+                                                                ))}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => scrollToSection(link.href)}
+                                                    className={`w-full rounded-xl border px-4 py-3.5 text-left text-sm font-bold uppercase tracking-[0.18em] transition-colors ${activeSection === link.id
+                                                        ? 'border-cyan-500/40 bg-cyan-500/[0.08] text-cyan-400'
+                                                        : 'border-white/10 bg-white/[0.02] text-white/85 hover:text-cyan-400 hover:border-cyan-500/30'
+                                                        }`}
+                                                >
+                                                    {link.label}
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={() => scrollToSection('#contact')}
+                                    className="w-full mt-6 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-[0.18em] text-white border border-cyan-500/35 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 transition-all"
+                                >
+                                    Start Project
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}

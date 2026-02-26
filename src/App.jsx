@@ -35,21 +35,45 @@ const SectionFallback = () => (
 );
 
 function App() {
-    const [loading, setLoading] = useState(true);
+    const detectMobile = () => {
+        if (typeof window === 'undefined') return false;
+        const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+        const smallViewport = window.matchMedia('(max-width: 1023px)').matches;
+        return coarsePointer || smallViewport;
+    };
+
+    const detectLowPower = (mobile) => {
+        if (typeof navigator === 'undefined') return mobile;
+        const cores = navigator.hardwareConcurrency || 4;
+        const memory = navigator.deviceMemory || 4;
+        return mobile || cores <= 4 || memory <= 4;
+    };
+
+    const initialMobile = detectMobile();
+    const [loading, setLoading] = useState(!initialMobile);
     const [gameActive, setGameActive] = useState(false);
-    const [isMobileDevice, setIsMobileDevice] = useState(false);
+    const [isMobileDevice, setIsMobileDevice] = useState(initialMobile);
+    const [isLowPowerDevice, setIsLowPowerDevice] = useState(detectLowPower(initialMobile));
 
     // Device capability detection for mobile-first behavior tuning
     useEffect(() => {
         const checkDevice = () => {
             const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
             const smallViewport = window.matchMedia('(max-width: 1023px)').matches;
-            setIsMobileDevice(coarsePointer || smallViewport);
+            const mobile = coarsePointer || smallViewport;
+            setIsMobileDevice(mobile);
+            setIsLowPowerDevice(detectLowPower(mobile));
         };
         checkDevice();
         window.addEventListener('resize', checkDevice);
         return () => window.removeEventListener('resize', checkDevice);
     }, []);
+
+    // Skip heavy preloader on mobile for faster first interaction
+    useEffect(() => {
+        if (!isMobileDevice) return;
+        setLoading(false);
+    }, [isMobileDevice]);
 
     // Initialize Lenis smooth scrolling only on non-mobile devices
     useEffect(() => {
@@ -115,26 +139,28 @@ function App() {
     return (
         <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative bg-[#030014]">
             {/* Dynamic Viewport Border */}
-            <BorderFrame mobileOptimized={isMobileDevice} />
+            <BorderFrame mobileOptimized={isMobileDevice} paused={gameActive} />
 
             {/* Custom Cursor */}
             {!isMobileDevice && <CustomCursor />}
 
             {/* Global Backgrounds */}
-            <WebGLBackground />
-            <DigitalRain lowPower={isMobileDevice} />
+            <WebGLBackground lowPower={isLowPowerDevice} paused={gameActive} />
+            <DigitalRain lowPower={isLowPowerDevice} paused={gameActive} />
 
             {/* Preloader */}
-            <AnimatePresence mode="wait">
-                {loading && <Preloader onComplete={() => setLoading(false)} />}
-            </AnimatePresence>
+            {!isMobileDevice && (
+                <AnimatePresence mode="wait">
+                    {loading && <Preloader onComplete={() => setLoading(false)} />}
+                </AnimatePresence>
+            )}
 
             {/* Main Content */}
             {!loading && (
                 <>
                     {/* Navigation - Suspense wrapped with minimal fallback */}
                     <Suspense fallback={<div className="fixed top-0 left-0 right-0 z-50 h-16 bg-black/80 backdrop-blur-md border-b border-white/10"></div>}>
-                        <Navbar />
+                        <Navbar isMobile={isMobileDevice} />
                     </Suspense>
                     {!isMobileDevice && <ScrollProgress />}
                     <GameTriggerButton onClick={() => setGameActive(true)} isMobile={isMobileDevice} />

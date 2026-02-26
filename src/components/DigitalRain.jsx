@@ -1,8 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
-const DigitalRain = ({ lowPower = false }) => {
+const DigitalRain = ({ lowPower = false, paused = false }) => {
     const canvasRef = useRef(null);
     const isVisibleRef = useRef(true);
+    const isPausedRef = useRef(paused);
+
+    useEffect(() => {
+        isPausedRef.current = paused;
+    }, [paused]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -36,7 +41,7 @@ const DigitalRain = ({ lowPower = false }) => {
             animationId = requestAnimationFrame(draw);
 
             // Skip when tab is hidden
-            if (!isVisibleRef.current) return;
+            if (!isVisibleRef.current || isPausedRef.current) return;
 
             if (!lastTime) lastTime = timestamp;
             const elapsed = timestamp - lastTime;

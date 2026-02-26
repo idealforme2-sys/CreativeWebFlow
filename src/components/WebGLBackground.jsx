@@ -204,22 +204,27 @@ const fragmentShader = `
   }
 `;
 
-// Resolution scale factor — render at full resolution for crisp visuals
-const RESOLUTION_SCALE = 1.0;
-
-const WebGLBackground = () => {
+const WebGLBackground = ({ lowPower = false, paused = false }) => {
   const canvasRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const intensityRef = useRef(1.0);
   const targetIntensityRef = useRef(1.0);
   const startTimeRef = useRef(Date.now());
   const isVisibleRef = useRef(true);
+  const isPausedRef = useRef(paused);
+
+  useEffect(() => {
+    isPausedRef.current = paused;
+  }, [paused]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: 'low-power' });
+    const resolutionScale = lowPower ? 0.55 : 1.0;
+    const fpsInterval = 1000 / (lowPower ? 18 : 30);
+
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: lowPower ? 'low-power' : 'high-performance' });
     if (!gl) return;
 
     const createShader = (type, source) => {
@@ -257,24 +262,24 @@ const WebGLBackground = () => {
     const uIntensity = gl.getUniformLocation(program, "u_intensity");
 
     const resize = () => {
-      // Render at half resolution — CSS scales it up
-      canvas.width = Math.floor(window.innerWidth * RESOLUTION_SCALE);
-      canvas.height = Math.floor(window.innerHeight * RESOLUTION_SCALE);
+      canvas.width = Math.floor(window.innerWidth * resolutionScale);
+      canvas.height = Math.floor(window.innerHeight * resolutionScale);
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
     resize();
     window.addEventListener("resize", resize);
 
-    // Throttled mouse handler
+    // Throttled pointer response (disabled in low power mode)
     let mouseThrottleId = null;
     const onMouseMove = (e) => {
+      if (lowPower) return;
       if (mouseThrottleId) return;
       mouseThrottleId = requestAnimationFrame(() => {
         mouseThrottleId = null;
         const rect = canvas.getBoundingClientRect();
-        mouseRef.current.x = (e.clientX - rect.left) * RESOLUTION_SCALE;
-        mouseRef.current.y = (rect.height - (e.clientY - rect.top)) * RESOLUTION_SCALE;
+        mouseRef.current.x = (e.clientX - rect.left) * resolutionScale;
+        mouseRef.current.y = (rect.height - (e.clientY - rect.top)) * resolutionScale;
         targetIntensityRef.current = 1.05;
         setTimeout(() => {
           targetIntensityRef.current = 1.0;
@@ -292,13 +297,12 @@ const WebGLBackground = () => {
 
     let animationId;
     let lastTime = 0;
-    const fpsInterval = 1000 / 30; // 30 FPS cap
 
     const animate = (timestamp) => {
       animationId = requestAnimationFrame(animate);
 
       // Skip rendering when tab is hidden
-      if (!isVisibleRef.current) return;
+      if (!isVisibleRef.current || isPausedRef.current) return;
 
       if (!lastTime) lastTime = timestamp;
       const elapsed = timestamp - lastTime;
@@ -328,13 +332,13 @@ const WebGLBackground = () => {
       cancelAnimationFrame(animationId);
       if (mouseThrottleId) cancelAnimationFrame(mouseThrottleId);
     };
-  }, []);
+  }, [lowPower]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0, width: '100%', height: '100%', imageRendering: 'auto' }}
+      style={{ zIndex: 0, width: '100%', height: '100%', imageRendering: 'auto', opacity: lowPower ? 0.8 : 1 }}
     />
   );
 };
