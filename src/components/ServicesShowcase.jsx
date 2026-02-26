@@ -235,26 +235,34 @@ const ServicesShowcase = () => {
             <ParticlesBackground />
 
             {/* Dynamic Ambient Orbs — color shifts with active tab */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={activeData.id + '-orb1'}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute top-1/4 left-[10%] w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none"
-                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.15) 0%, transparent 65%)`, transform: 'translateZ(0)' }}
-                />
-                <motion.div
-                    key={activeData.id + '-orb2'}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none"
-                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.1) 0%, transparent 65%)`, transform: 'translateZ(0)' }}
-                />
-            </AnimatePresence>
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, black 0%, black 86%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 86%, transparent 100%)',
+                }}
+            >
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeData.id + '-orb1'}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute top-1/4 left-[10%] w-[500px] h-[500px] rounded-full mix-blend-screen"
+                        style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.15) 0%, transparent 65%)`, transform: 'translateZ(0)' }}
+                    />
+                    <motion.div
+                        key={activeData.id + '-orb2'}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full mix-blend-screen"
+                        style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.1) 0%, transparent 65%)`, transform: 'translateZ(0)' }}
+                    />
+                </AnimatePresence>
+            </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
 

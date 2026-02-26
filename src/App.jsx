@@ -37,27 +37,40 @@ const SectionFallback = () => (
 function App() {
     const [loading, setLoading] = useState(true);
     const [gameActive, setGameActive] = useState(false);
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
 
-    // Initialize Lenis smooth scrolling
+    // Device capability detection for mobile-first behavior tuning
     useEffect(() => {
-        if (loading) return;
+        const checkDevice = () => {
+            const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+            const smallViewport = window.matchMedia('(max-width: 1023px)').matches;
+            setIsMobileDevice(coarsePointer || smallViewport);
+        };
+        checkDevice();
+        window.addEventListener('resize', checkDevice);
+        return () => window.removeEventListener('resize', checkDevice);
+    }, []);
+
+    // Initialize Lenis smooth scrolling only on non-mobile devices
+    useEffect(() => {
+        if (loading || isMobileDevice) return;
 
         const lenis = new Lenis({
-            duration: 1.4,
+            duration: 1.25,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             orientation: 'vertical',
             gestureOrientation: 'vertical',
             smoothWheel: true,
             wheelMultiplier: 0.9,
-            touchMultiplier: 1.8,
+            touchMultiplier: 1.2,
         });
 
-        function raf(time) {
+        let rafId;
+        const raf = (time) => {
             lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-
-        requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
+        };
+        rafId = requestAnimationFrame(raf);
 
         const handleMouseMove = (e) => {
             const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -70,21 +83,46 @@ function App() {
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            if (rafId) cancelAnimationFrame(rafId);
             lenis.destroy();
         };
-    }, [loading]);
+    }, [loading, isMobileDevice]);
+
+    // Lock page scroll while gameplay overlay is active (desktop + mobile)
+    useEffect(() => {
+        if (!gameActive) return;
+
+        const html = document.documentElement;
+        const body = document.body;
+        const prevHtmlOverflow = html.style.overflow;
+        const prevBodyOverflow = body.style.overflow;
+        const prevBodyTouchAction = body.style.touchAction;
+        const prevBodyOverscroll = body.style.overscrollBehavior;
+
+        html.style.overflow = 'hidden';
+        body.style.overflow = 'hidden';
+        body.style.touchAction = 'none';
+        body.style.overscrollBehavior = 'none';
+
+        return () => {
+            html.style.overflow = prevHtmlOverflow;
+            body.style.overflow = prevBodyOverflow;
+            body.style.touchAction = prevBodyTouchAction;
+            body.style.overscrollBehavior = prevBodyOverscroll;
+        };
+    }, [gameActive]);
 
     return (
         <div className="min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans cursor-none overflow-clip relative bg-[#030014]">
             {/* Dynamic Viewport Border */}
-            <BorderFrame />
+            <BorderFrame mobileOptimized={isMobileDevice} />
 
             {/* Custom Cursor */}
-            <CustomCursor />
+            {!isMobileDevice && <CustomCursor />}
 
             {/* Global Backgrounds */}
             <WebGLBackground />
-            <DigitalRain />
+            <DigitalRain lowPower={isMobileDevice} />
 
             {/* Preloader */}
             <AnimatePresence mode="wait">
@@ -98,12 +136,13 @@ function App() {
                     <Suspense fallback={<div className="fixed top-0 left-0 right-0 z-50 h-16 bg-black/80 backdrop-blur-md border-b border-white/10"></div>}>
                         <Navbar />
                     </Suspense>
-                    <ScrollProgress />
-                    <GameTriggerButton onClick={() => setGameActive(true)} />
+                    {!isMobileDevice && <ScrollProgress />}
+                    <GameTriggerButton onClick={() => setGameActive(true)} isMobile={isMobileDevice} />
 
                     <InSiteSpaceGame
                         isActive={gameActive}
                         onClose={() => setGameActive(false)}
+                        isMobile={isMobileDevice}
                     />
 
                     <main className="relative z-10">
@@ -113,7 +152,7 @@ function App() {
                         </Suspense>
 
                         {/* Content sections - below fold, lazy loaded */}
-                        <div className="relative z-20 bg-black/20 shadow-[0_-50px_100px_black]">
+                        <div className="relative z-20 bg-black/30 md:bg-black/20 shadow-[0_-20px_40px_black] md:shadow-[0_-50px_100px_black]">
                             <Suspense fallback={<SectionFallback />}>
                                 <InfiniteMarquee />
                             </Suspense>

@@ -157,7 +157,7 @@ const WhyChooseUs = () => {
     const row2 = [...r2Base, ...r2Base, ...r2Base];
 
     return (
-        <section className="relative py-24 lg:py-32 overflow-hidden pb-40">
+        <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden pb-20 md:pb-32 lg:pb-40">
             {/* Ambient Particles */}
             <SectionParticles color="rgba(6,182,212,0.3)" count={25} />
 
@@ -186,7 +186,7 @@ const WhyChooseUs = () => {
             `}</style>
 
             {/* Header */}
-            <div className="max-w-7xl mx-auto px-6 mb-20 relative z-20">
+            <div className="max-w-7xl mx-auto px-6 mb-12 md:mb-20 relative z-20">
                 <RevealOnScroll>
                     <div className="text-center">
                         <motion.div
@@ -254,6 +254,13 @@ const WhyChooseUs = () => {
                     </div>
                 </div>
             </RevealOnScroll>
+
+            <div
+                className="absolute inset-x-0 bottom-0 h-20 pointer-events-none z-20"
+                style={{
+                    background: 'linear-gradient(to bottom, rgba(3,0,20,0), rgba(3,0,20,0.35))',
+                }}
+            />
         </section>
     );
 };

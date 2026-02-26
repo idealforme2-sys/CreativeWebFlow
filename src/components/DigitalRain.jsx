@@ -1,9 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-// Resolution scale — render at higher resolution for crisp visuals
-const RESOLUTION_SCALE = 0.8;
-
-const DigitalRain = () => {
+const DigitalRain = ({ lowPower = false }) => {
     const canvasRef = useRef(null);
     const isVisibleRef = useRef(true);
 
@@ -11,15 +8,16 @@ const DigitalRain = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
 
-        const chars = '01XYZEUK';
+        const chars = lowPower ? '01XY' : '01XYZEUK';
         const charArray = chars.split('');
-        const fontSize = 14;
-        const scaledFontSize = Math.floor(fontSize * RESOLUTION_SCALE);
+        const resolutionScale = lowPower ? 0.55 : 0.8;
+        const fontSize = lowPower ? 12 : 14;
+        const scaledFontSize = Math.floor(fontSize * resolutionScale);
         let width, height, columns, drops;
 
         const setupCanvas = () => {
-            width = Math.floor(window.innerWidth * RESOLUTION_SCALE);
-            height = Math.floor(window.innerHeight * RESOLUTION_SCALE);
+            width = Math.floor(window.innerWidth * resolutionScale);
+            height = Math.floor(window.innerHeight * resolutionScale);
             canvas.width = width;
             canvas.height = height;
             columns = Math.floor(width / scaledFontSize);
@@ -32,7 +30,7 @@ const DigitalRain = () => {
 
         let animationId;
         let lastTime = 0;
-        const fpsInterval = 1000 / 12; // 12 FPS — matrix rain looks fine at low fps
+        const fpsInterval = 1000 / (lowPower ? 8 : 12);
 
         const draw = (timestamp) => {
             animationId = requestAnimationFrame(draw);
@@ -46,17 +44,17 @@ const DigitalRain = () => {
             if (elapsed > fpsInterval) {
                 lastTime = timestamp - (elapsed % fpsInterval);
 
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+                ctx.fillStyle = lowPower ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.06)';
                 ctx.fillRect(0, 0, width, height);
                 ctx.font = `${scaledFontSize}px monospace`;
 
                 for (let i = 0; i < drops.length; i++) {
                     const text = charArray[Math.floor(Math.random() * charArray.length)];
-                    ctx.fillStyle = Math.random() > 0.98 ? '#fff' :
+                    ctx.fillStyle = Math.random() > (lowPower ? 0.992 : 0.98) ? '#fff' :
                         Math.random() > 0.9 ? '#06b6d4' : '#d946ef';
                     ctx.fillText(text, i * scaledFontSize, drops[i] * scaledFontSize);
 
-                    if (drops[i] * scaledFontSize > height && Math.random() > 0.975) {
+                    if (drops[i] * scaledFontSize > height && Math.random() > (lowPower ? 0.985 : 0.975)) {
                         drops[i] = 0;
                     }
                     drops[i]++;
@@ -82,13 +80,13 @@ const DigitalRain = () => {
             window.removeEventListener('resize', handleResize);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, []);
+    }, [lowPower]);
 
     return (
         <canvas
             ref={canvasRef}
             className="fixed inset-0 pointer-events-none mix-blend-screen"
-            style={{ zIndex: 1, width: '100%', height: '100%', opacity: 0.35, imageRendering: 'auto' }}
+            style={{ zIndex: 1, width: '100%', height: '100%', opacity: lowPower ? 0.22 : 0.35, imageRendering: 'auto' }}
         />
     );
 };

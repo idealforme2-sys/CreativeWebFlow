@@ -7,19 +7,19 @@ import { motion } from 'framer-motion';
   visibility-aware, conditional physics only when mouse near edges.
 */
 
-const BorderFrame = () => {
+const BorderFrame = ({ mobileOptimized = false }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR at 2
+        let dpr = Math.min(window.devicePixelRatio || 1, mobileOptimized ? 1.25 : 2);
         let w, h;
         let isVisible = true;
 
         let vertices = [];
-        const spacing = 40; // Doubled from 20 — halves vertex count
+        const spacing = mobileOptimized ? 72 : 40;
 
         const buildVertices = () => {
             vertices = [];
@@ -70,6 +70,8 @@ const BorderFrame = () => {
         let lastMouseX = -1000;
         let lastMouseY = -1000;
         let mouseVelocity = 0;
+        let lastTouchX = -1000;
+        let lastTouchY = -1000;
 
         const handleMouseMove = (e) => {
             mouseX = e.clientX;
@@ -80,7 +82,23 @@ const BorderFrame = () => {
             mouseY = -1000;
             mouseVelocity = 0;
         };
+        const handleTouchMove = (e) => {
+            if (!e.touches || e.touches.length === 0) return;
+            const t = e.touches[0];
+            mouseX = t.clientX;
+            mouseY = t.clientY;
+        };
+        const handleTouchEnd = () => {
+            mouseX = -1000;
+            mouseY = -1000;
+            mouseVelocity = 0;
+            lastTouchX = -1000;
+            lastTouchY = -1000;
+        };
         window.addEventListener('mousemove', handleMouseMove, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
+        window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
         document.body.addEventListener('mouseleave', handleMouseLeave);
 
         const handleVisibility = () => {
@@ -91,7 +109,7 @@ const BorderFrame = () => {
         let frameId;
         let lastRenderTime = 0;
         let globalTime = 0;
-        const fpsInterval = 1000 / 30; // 30 FPS cap
+        const fpsInterval = 1000 / (mobileOptimized ? 20 : 30);
 
         const render = (now) => {
             frameId = requestAnimationFrame(render);
@@ -106,12 +124,17 @@ const BorderFrame = () => {
             globalTime += dt;
 
             // Track kinetic velocity
-            const dVMX = mouseX - lastMouseX;
-            const dVMY = mouseY - lastMouseY;
+            const useTouchVelocity = lastTouchX > -999 && lastTouchY > -999;
+            const dVMX = useTouchVelocity ? (mouseX - lastTouchX) : (mouseX - lastMouseX);
+            const dVMY = useTouchVelocity ? (mouseY - lastTouchY) : (mouseY - lastMouseY);
             const currentSpeed = Math.sqrt(dVMX * dVMX + dVMY * dVMY);
             mouseVelocity = mouseVelocity * 0.9 + currentSpeed * 0.1;
             lastMouseX = mouseX;
             lastMouseY = mouseY;
+            if (mouseX > -999 && mouseY > -999) {
+                lastTouchX = mouseX;
+                lastTouchY = mouseY;
+            }
 
             const kineticFactor = Math.min(mouseVelocity * 0.15, 1);
 
@@ -123,9 +146,9 @@ const BorderFrame = () => {
             }
 
             // Physics
-            const tension = 0.04;
-            const friction = 0.85;
-            const magneticRadius = 250;
+            const tension = mobileOptimized ? 0.032 : 0.04;
+            const friction = mobileOptimized ? 0.88 : 0.85;
+            const magneticRadius = mobileOptimized ? 140 : 250;
 
             const isNearEdge = (
                 mouseX < magneticRadius ||
@@ -158,7 +181,7 @@ const BorderFrame = () => {
                     if (dist < magneticRadius) {
                         const waveSpeed = globalTime * 12;
                         const ripplePhase = (dist * 0.04) - waveSpeed;
-                        const amplitude = 4;
+                        const amplitude = mobileOptimized ? 2.4 : 4;
                         const falloff = Math.pow((magneticRadius - dist) / magneticRadius, 2);
                         const rippleForce = Math.sin(ripplePhase) * amplitude * falloff * (1 - pinForce) * kineticFactor;
 
@@ -210,12 +233,12 @@ const BorderFrame = () => {
             grad.addColorStop(0.66, '#ec4899');
             grad.addColorStop(1, '#06b6d4');
 
-            ctx.lineWidth = 2;
+            ctx.lineWidth = mobileOptimized ? 1.5 : 2;
             ctx.strokeStyle = grad;
-            ctx.globalAlpha = 0.9;
+            ctx.globalAlpha = mobileOptimized ? 0.75 : 0.9;
 
             // Single glow pass instead of triple stroke (major GPU savings)
-            ctx.shadowBlur = 12;
+            ctx.shadowBlur = mobileOptimized ? 7 : 12;
             ctx.shadowColor = 'rgba(6,182,212,0.5)';
             ctx.stroke();
 
@@ -230,11 +253,14 @@ const BorderFrame = () => {
             resizeObserver.disconnect();
             window.removeEventListener('resize', resize);
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('touchcancel', handleTouchEnd);
             document.body.removeEventListener('mouseleave', handleMouseLeave);
             document.removeEventListener('visibilitychange', handleVisibility);
             cancelAnimationFrame(frameId);
         };
-    }, []);
+    }, [mobileOptimized]);
 
     const corners = [
         {
@@ -262,7 +288,7 @@ const BorderFrame = () => {
     return (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
             {/* Subtle inner vignette */}
-            <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(168,85,247,0.08)] pointer-events-none" />
+            <div className={`absolute inset-0 pointer-events-none ${mobileOptimized ? 'shadow-[inset_0_0_40px_rgba(168,85,247,0.06)]' : 'shadow-[inset_0_0_80px_rgba(168,85,247,0.08)]'}`} />
 
             {/* Elastic tracking line canvas - simplified to prevent flickering */}
             <canvas
@@ -272,7 +298,7 @@ const BorderFrame = () => {
             />
 
             {/* Tech Corner Brackets - static without animations */}
-            {corners.map((c, i) => (
+            {!mobileOptimized && corners.map((c, i) => (
                 <div
                     key={i}
                     className="absolute"

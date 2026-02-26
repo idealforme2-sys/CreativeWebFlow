@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Rocket, Zap, Heart, Trophy } from 'lucide-react';
 
 // In-Site Space Game - Plays directly on the website
-const InSiteSpaceGame = ({ isActive, onClose }) => {
+const InSiteSpaceGame = ({ isActive, onClose, isMobile = false }) => {
     const canvasRef = useRef(null);
     const animationRef = useRef(null);
     const intervalsRef = useRef([]);
@@ -23,7 +23,8 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         gameOver: false,
         keys: {},
         lastShot: 0,
-        initialized: false
+        initialized: false,
+        invulnerableUntil: 0
     });
 
     const [score, setScore] = useState(0);
@@ -34,12 +35,49 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
     const [gameOver, setGameOver] = useState(false);
     const [showTutorial, setShowTutorial] = useState(true);
     const [gameStarted, setGameStarted] = useState(false);
+    const [restartNonce, setRestartNonce] = useState(0);
+    const [highScore, setHighScore] = useState(0);
 
     // Start game after tutorial dismissed
     const startGame = () => {
         setShowTutorial(false);
         setGameStarted(true);
     };
+
+    const restartGame = () => {
+        setGameOver(false);
+        setShowTutorial(false);
+        setGameStarted(true);
+        setRestartNonce((n) => n + 1);
+    };
+
+    const updateHighScore = (value) => {
+        try {
+            const prev = parseInt(window.localStorage.getItem('space_defender_high_score') || '0', 10);
+            const next = Math.max(prev, Math.floor(value));
+            window.localStorage.setItem('space_defender_high_score', String(next));
+            setHighScore(next);
+        } catch {
+            setHighScore((prev) => Math.max(prev, Math.floor(value)));
+        }
+    };
+
+    useEffect(() => {
+        if (!isActive) return;
+        try {
+            const stored = parseInt(window.localStorage.getItem('space_defender_high_score') || '0', 10);
+            setHighScore(Number.isNaN(stored) ? 0 : stored);
+        } catch {
+            setHighScore(0);
+        }
+    }, [isActive]);
+
+    useEffect(() => {
+        if (isActive) return;
+        setShowTutorial(true);
+        setGameStarted(false);
+        setGameOver(false);
+    }, [isActive]);
 
     // Main game effect - only runs when game is started
     useEffect(() => {
@@ -52,9 +90,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         const game = gameStateRef.current;
         const isRunning = { current: true };
 
-        // Ensure the game only captures necessary input, leaving scroll mostly intact
-        // We removed the overflow hidden and scroll blocking to prevent "scroll jacking"
-        // Let the game be an overlay without breaking the global page experience.
+        canvas.style.touchAction = 'none';
 
         // Initialize game state
         const resize = () => {
@@ -62,7 +98,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             canvas.height = window.innerHeight;
             if (!game.initialized) {
                 game.player.x = canvas.width / 2;
-                game.player.y = canvas.height - 120;
+                game.player.y = canvas.height - (isMobile ? 160 : 120);
             }
         };
         resize();
@@ -81,6 +117,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         game.particles = [];
         game.explosions = [];
         game.shootingStars = [];
+        game.invulnerableUntil = 0;
         game.initialized = true;
 
         setScore(0);
@@ -185,9 +222,9 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
         // Mouse handler — attach to window so we never miss events
         const handleMouseMove = (e) => {
             if (!game.gameOver) {
-                game.player.x += (e.clientX - game.player.x) * 0.15;
-                game.player.y += (e.clientY - game.player.y) * 0.10;
-                game.player.y = Math.max(100, Math.min(canvas.height - 50, game.player.y));
+                game.player.x += (e.clientX - game.player.x) * 0.18;
+                game.player.y += (e.clientY - game.player.y) * 0.12;
+                game.player.y = Math.max(90, Math.min(canvas.height - 50, game.player.y));
             }
         };
 
@@ -212,22 +249,65 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             if (!game.gameOver) shoot();
         };
 
-        // Auto-fire while mouse held down
         let autoFireInterval = null;
-        const handleMouseDown = () => {
-            if (!game.gameOver) {
-                shoot();
-                autoFireInterval = setInterval(() => { if (!game.gameOver) shoot(); }, 150);
-            }
+        const startAutoFire = () => {
+            if (autoFireInterval || game.gameOver) return;
+            shoot();
+            autoFireInterval = setInterval(() => {
+                if (!game.gameOver) shoot();
+            }, 140);
         };
-        const handleMouseUp = () => {
-            if (autoFireInterval) { clearInterval(autoFireInterval); autoFireInterval = null; }
+        const stopAutoFire = () => {
+            if (!autoFireInterval) return;
+            clearInterval(autoFireInterval);
+            autoFireInterval = null;
+        };
+        const handleMouseDown = () => startAutoFire();
+        const handleMouseUp = () => stopAutoFire();
+
+        // Mobile touch controls: drag ship and hold to auto-fire
+        const touchState = { id: null };
+        const syncTouchToPlayer = (touch) => {
+            game.player.x += (touch.clientX - game.player.x) * 0.35;
+            game.player.y += (touch.clientY - game.player.y) * 0.35;
+            game.player.x = Math.max(30, Math.min(canvas.width - 30, game.player.x));
+            game.player.y = Math.max(90, Math.min(canvas.height - 50, game.player.y));
+        };
+        const handleTouchStart = (e) => {
+            if (game.gameOver || e.touches.length === 0) return;
+            const touch = e.touches[0];
+            touchState.id = touch.identifier;
+            syncTouchToPlayer(touch);
+            startAutoFire();
+            e.preventDefault();
+        };
+        const handleTouchMove = (e) => {
+            if (game.gameOver) return;
+            const touch = [...e.touches].find((t) => t.identifier === touchState.id) || e.touches[0];
+            if (!touch) return;
+            syncTouchToPlayer(touch);
+            e.preventDefault();
+        };
+        const handleTouchEnd = (e) => {
+            const stillActive = [...e.touches].some((t) => t.identifier === touchState.id);
+            if (!stillActive) {
+                touchState.id = null;
+                stopAutoFire();
+            }
+            e.preventDefault();
         };
 
-        window.addEventListener('mousemove', handleMouseMove);
-        canvas.addEventListener('click', handleClick);
-        canvas.addEventListener('mousedown', handleMouseDown);
-        window.addEventListener('mouseup', handleMouseUp);
+        if (!isMobile) {
+            window.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('click', handleClick);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            window.addEventListener('mouseup', handleMouseUp);
+        } else {
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+            canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        }
 
         // Explosion effect
         const createExplosion = (x, y, color = '#06b6d4', count = 15) => {
@@ -272,6 +352,9 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                 // Draw ship
                 ctx.save();
                 ctx.translate(game.player.x, game.player.y);
+                if (Date.now() < game.invulnerableUntil) {
+                    ctx.globalAlpha = Math.floor(Date.now() / 80) % 2 === 0 ? 0.35 : 1;
+                }
 
                 if (game.player.shield) {
                     ctx.beginPath();
@@ -393,17 +476,19 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                 }
 
                 // Player collision
-                if (!game.gameOver && !game.player.shield) {
+                if (!game.gameOver && Date.now() > game.invulnerableUntil && !game.player.shield) {
                     const dx = game.player.x - a.x, dy = game.player.y - a.y;
                     if (Math.sqrt(dx * dx + dy * dy) < a.size + 20) {
                         createExplosion(a.x, a.y, '#ec4899', 20);
                         game.lives--;
                         game.combo = 0;
+                        game.invulnerableUntil = Date.now() + 1200;
                         setLives(game.lives);
                         setCombo(0);
                         if (game.lives <= 0) {
                             game.gameOver = true;
                             setGameOver(true);
+                            updateHighScore(game.score);
                             createExplosion(game.player.x, game.player.y, '#ff0000', 30);
                         }
                         return false;
@@ -500,9 +585,13 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             canvas.removeEventListener('click', handleClick);
             canvas.removeEventListener('mousedown', handleMouseDown);
             window.removeEventListener('mouseup', handleMouseUp);
+            canvas.removeEventListener('touchstart', handleTouchStart);
+            canvas.removeEventListener('touchmove', handleTouchMove);
+            canvas.removeEventListener('touchend', handleTouchEnd);
+            canvas.removeEventListener('touchcancel', handleTouchEnd);
             if (autoFireInterval) clearInterval(autoFireInterval);
         };
-    }, [isActive, gameStarted, onClose]);
+    }, [isActive, gameStarted, onClose, isMobile, restartNonce]);
 
     // Handle Escape key globally for the overlay, even during tutorial
     useEffect(() => {
@@ -518,7 +607,11 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
 
     return (
         <>
-            <canvas ref={canvasRef} className="fixed inset-0 z-[100] cursor-crosshair" style={{ display: gameStarted ? 'block' : 'none' }} />
+            <canvas
+                ref={canvasRef}
+                className={`fixed inset-0 z-[100] touch-none ${isMobile ? 'cursor-default' : 'cursor-crosshair'}`}
+                style={{ display: gameStarted ? 'block' : 'none' }}
+            />
 
             {/* Tutorial */}
             <AnimatePresence>
@@ -532,20 +625,20 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
                         <motion.div
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
-                            className="text-center p-10 bg-black/90 border border-cyan-500/40 rounded-3xl max-w-md mx-4"
+                            className="text-center p-6 md:p-10 bg-black/90 border border-cyan-500/40 rounded-3xl max-w-md mx-4"
                         >
-                            <Rocket className="w-20 h-20 text-cyan-400 mx-auto mb-6" />
-                            <h2 className="text-4xl font-black text-white mb-6">SPACE DEFENDER</h2>
+                            <Rocket className="w-16 h-16 md:w-20 md:h-20 text-cyan-400 mx-auto mb-5 md:mb-6" />
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-6">SPACE DEFENDER</h2>
                             <div className="space-y-4 text-gray-300 mb-8">
-                                <p><span className="text-cyan-400 font-bold">Move:</span> Mouse or WASD / Arrows</p>
-                                <p><span className="text-purple-400 font-bold">Shoot:</span> Click or Spacebar</p>
-                                <p><span className="text-pink-400 font-bold">Exit:</span> Press ESC</p>
+                                <p><span className="text-cyan-400 font-bold">Move:</span> {isMobile ? 'Drag anywhere on screen' : 'Mouse or WASD / Arrows'}</p>
+                                <p><span className="text-purple-400 font-bold">Shoot:</span> {isMobile ? 'Hold touch to auto-fire' : 'Click/hold or Spacebar'}</p>
+                                <p><span className="text-pink-400 font-bold">Exit:</span> {isMobile ? 'Use the Exit button' : 'Press ESC'}</p>
                             </div>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={startGame}
-                                className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-lg font-bold rounded-full"
+                                className="px-8 md:px-10 py-3.5 md:py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-base md:text-lg font-bold rounded-full"
                             >
                                 START GAME
                             </motion.button>
@@ -557,27 +650,27 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             {/* HUD */}
             {gameStarted && !showTutorial && (
                 <>
-                    <div className="fixed top-6 left-6 z-[120] flex items-center gap-4">
-                        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-xl border border-cyan-500/30 rounded-full">
-                            <Zap className="text-yellow-400" size={20} />
-                            <span className="text-white font-mono text-lg font-bold">{score}</span>
+                    <div className="fixed top-4 md:top-6 left-4 md:left-6 z-[120] flex items-center gap-2 md:gap-4">
+                        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex items-center gap-2 px-3 md:px-4 py-2 bg-black/80 backdrop-blur-xl border border-cyan-500/30 rounded-full">
+                            <Zap className="text-yellow-400" size={18} />
+                            <span className="text-white font-mono text-sm md:text-lg font-bold">{score}</span>
                         </motion.div>
                         {combo > 1 && (
-                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center gap-2 px-4 py-2 bg-purple-900/70 backdrop-blur-xl border border-purple-500/30 rounded-full">
-                                <span className="text-white font-bold">{combo}x</span>
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center gap-2 px-3 md:px-4 py-2 bg-purple-900/70 backdrop-blur-xl border border-purple-500/30 rounded-full">
+                                <span className="text-white font-bold text-sm md:text-base">{combo}x</span>
                             </motion.div>
                         )}
-                        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-xl border border-purple-500/30 rounded-full">
-                            <Trophy className="text-purple-400" size={18} />
-                            <span className="text-white font-mono">LVL {level}</span>
+                        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="hidden sm:flex items-center gap-2 px-3 md:px-4 py-2 bg-black/80 backdrop-blur-xl border border-purple-500/30 rounded-full">
+                            <Trophy className="text-purple-400" size={16} />
+                            <span className="text-white font-mono text-xs md:text-sm">LVL {level}</span>
                         </motion.div>
                     </div>
-                    <div className="fixed top-6 right-6 z-[120] flex items-center gap-1 px-4 py-2 bg-black/80 backdrop-blur-xl border border-pink-500/30 rounded-full">
+                    <div className="fixed top-4 md:top-6 right-4 md:right-6 z-[120] flex items-center gap-1 px-3 md:px-4 py-2 bg-black/80 backdrop-blur-xl border border-pink-500/30 rounded-full">
                         {[...Array(5)].map((_, i) => (
-                            <Heart key={i} size={18} className={i < lives ? 'text-pink-500 fill-pink-500' : 'text-gray-700'} />
+                            <Heart key={i} size={16} className={i < lives ? 'text-pink-500 fill-pink-500' : 'text-gray-700'} />
                         ))}
                     </div>
-                    <button onClick={onClose} className="fixed bottom-6 right-6 z-[120] px-6 py-3 bg-black/80 backdrop-blur-xl border border-white/20 rounded-full text-white font-bold hover:bg-white/10">Exit (ESC)</button>
+                    <button onClick={onClose} className="fixed bottom-4 md:bottom-6 right-4 md:right-6 z-[120] px-4 md:px-6 py-2.5 md:py-3 bg-black/80 backdrop-blur-xl border border-white/20 rounded-full text-white text-sm md:text-base font-bold hover:bg-white/10">{isMobile ? 'Exit Game' : 'Exit (ESC)'}</button>
                 </>
             )}
 
@@ -585,16 +678,17 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
             <AnimatePresence>
                 {gameOver && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-[130] flex items-center justify-center bg-black/85 backdrop-blur-xl">
-                        <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-center">
-                            <h2 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 mb-6">GAME OVER</h2>
-                            <div className="grid grid-cols-2 gap-8 mb-8">
-                                <div><p className="text-gray-400 text-sm">Final Score</p><p className="text-4xl font-mono font-bold text-cyan-400">{score}</p></div>
-                                <div><p className="text-gray-400 text-sm">Max Combo</p><p className="text-4xl font-mono font-bold text-purple-400">{maxCombo}x</p></div>
+                        <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-center px-5">
+                            <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 mb-6">GAME OVER</h2>
+                            <div className="grid grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-8">
+                                <div><p className="text-gray-400 text-xs md:text-sm">Final Score</p><p className="text-3xl md:text-4xl font-mono font-bold text-cyan-400">{score}</p></div>
+                                <div><p className="text-gray-400 text-xs md:text-sm">Max Combo</p><p className="text-3xl md:text-4xl font-mono font-bold text-purple-400">{maxCombo}x</p></div>
                             </div>
-                            <p className="text-gray-400 mb-6">Level Reached: {level}</p>
-                            <div className="flex gap-4 justify-center">
-                                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => window.location.reload()} className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-full">Play Again</motion.button>
-                                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onClose} className="px-8 py-4 border border-white/20 text-white font-bold rounded-full">Exit</motion.button>
+                            <p className="text-gray-400 mb-2 text-sm md:text-base">Level Reached: {level}</p>
+                            <p className="text-gray-500 mb-6 text-xs md:text-sm">Best Score: {highScore}</p>
+                            <div className="flex gap-3 md:gap-4 justify-center">
+                                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={restartGame} className="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-sm md:text-base font-bold rounded-full">Play Again</motion.button>
+                                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onClose} className="px-6 md:px-8 py-3 md:py-4 border border-white/20 text-white text-sm md:text-base font-bold rounded-full">Exit</motion.button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -605,7 +699,7 @@ const InSiteSpaceGame = ({ isActive, onClose }) => {
 };
 
 // Game Trigger Button
-export const GameTriggerButton = ({ onClick }) => {
+export const GameTriggerButton = ({ onClick, isMobile = false }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -613,11 +707,11 @@ export const GameTriggerButton = ({ onClick }) => {
             onClick={onClick}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
-            className="fixed bottom-8 right-8 z-[90] group"
+            className={`fixed z-[90] group ${isMobile ? 'bottom-4 right-4' : 'bottom-8 right-8'}`}
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 2, type: 'spring', stiffness: 200 }}
-            whileHover={{ scale: 1.1 }}
+            transition={{ delay: isMobile ? 1.2 : 2, type: 'spring', stiffness: 200 }}
+            whileHover={isMobile ? undefined : { scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
         >
             <div className="relative">
@@ -626,18 +720,18 @@ export const GameTriggerButton = ({ onClick }) => {
                     animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
                     transition={{ duration: 2, repeat: Infinity }}
                 />
-                <div className="relative w-16 h-16 bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Rocket className="text-white" size={28} />
+                <div className={`relative bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg ${isMobile ? 'w-14 h-14' : 'w-16 h-16'}`}>
+                    <Rocket className="text-white" size={isMobile ? 24 : 28} />
                 </div>
                 <AnimatePresence>
-                    {isHovered && (
+                    {isHovered && !isMobile && (
                         <motion.div
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 10 }}
                             className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-black/90 border border-cyan-500/30 rounded-lg whitespace-nowrap"
                         >
-                            <span className="text-white text-sm font-medium">🚀 Play Space Defender!</span>
+                            <span className="text-white text-sm font-medium">Play Space Defender</span>
                         </motion.div>
                     )}
                 </AnimatePresence>

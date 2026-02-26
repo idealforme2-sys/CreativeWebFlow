@@ -157,7 +157,13 @@ const WorkSection = () => {
     return (
         <section id="work" className="relative pt-12 lg:pt-16 pb-32 lg:pb-48 overflow-hidden">
             {/* Background elements same as StackedCarousel/current design */}
-            <div className="absolute inset-0 pointer-events-none z-0">
+            <div
+                className="absolute inset-0 pointer-events-none z-0"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, black 0%, black 84%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 84%, transparent 100%)',
+                }}
+            >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[120px]" />
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-400/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-pink-500/5 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/4" />

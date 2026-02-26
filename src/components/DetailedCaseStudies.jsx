@@ -80,7 +80,7 @@ const CaseStudyTextItem = ({ study, index, setActiveIndex }) => {
     }, [isInView, index, setActiveIndex]);
 
     return (
-        <div id={study.id} ref={ref} className="min-h-[90vh] flex flex-col justify-center py-20 pr-0 lg:pr-12">
+        <div id={study.id} ref={ref} className="min-h-[62vh] md:min-h-[74vh] lg:min-h-[90vh] flex flex-col justify-center py-12 md:py-16 lg:py-20 pr-0 lg:pr-12">
 
             {/* Mobile View: Iframe Preview (Hidden on Desktop) */}
             <div className="block lg:hidden w-full aspect-[4/3] rounded-3xl overflow-hidden mb-10 relative border border-white/10 shadow-2xl bg-slate-950">
@@ -166,16 +166,22 @@ const DetailedCaseStudies = () => {
         <div className="relative z-10 font-sans antialiased">
             {/* Background atmospherics */}
             <SectionParticles color="rgba(168,85,247,0.3)" count={30} />
-            <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-60">
+            <div
+                className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-60"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 100%)',
+                }}
+            >
                 <div className="absolute top-[10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[20%] right-[-5%] w-[40%] h-[60%] bg-blue-900/10 rounded-full blur-[120px]" />
             </div>
 
-            <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 lg:py-32">
+            <section className="relative z-10 max-w-7xl mx-auto px-6 py-14 md:py-20 lg:py-32">
 
                 {/* Section Header */}
                 <RevealOnScroll>
-                    <header className="mb-20">
+                    <header className="mb-10 md:mb-14 lg:mb-20">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -207,7 +213,7 @@ const DetailedCaseStudies = () => {
                 <div className="flex flex-col lg:flex-row relative">
 
                     {/* Left Column: Text Items */}
-                    <div className="w-full lg:w-[40%] xl:w-[35%] relative z-20 pb-[20vh]">
+                    <div className="w-full lg:w-[40%] xl:w-[35%] relative z-20 pb-0 lg:pb-[20vh]">
                         {caseStudies.map((study, index) => (
                             <CaseStudyTextItem
                                 key={`study-${study.id}`}
