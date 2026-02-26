@@ -1,14 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import TechHUD from './TechHUD';
-import { ShootingStars, MagneticWrapper } from './UIComponents';
+import { MagneticWrapper } from './UIComponents';
 import { Meteors } from './magicui/Meteors';
 import { LineShadowText } from './magicui/LineShadowText';
 import { PulsatingButton } from './magicui/PulsatingButton';
 
-// GlitchText removed to restore pristine typography
-
-// Morphing grid background for depth
+// Morphing grid background — simplified to static CSS (removed willChange + JS animation overhead)
 const MorphGrid = () => {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.07]">
@@ -20,41 +18,47 @@ const MorphGrid = () => {
                         linear-gradient(90deg, rgba(0,240,255,0.3) 1px, transparent 1px)
                     `,
                     backgroundSize: '60px 60px',
-                    willChange: 'transform',
-                    animation: 'gridPulse 12s ease-in-out infinite',
+                    transform: 'perspective(500px) rotateX(35deg) scale(2.0) translateY(-5%)',
                     maskImage: 'radial-gradient(ellipse 70% 50% at 50% 50%, black, transparent)',
                     WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 50% 50%, black, transparent)',
                 }}
             />
-            <style>{`
-                @keyframes gridPulse {
-                    0%, 100% { transform: perspective(500px) rotateX(35deg) scale(2.0) translateY(-5%); }
-                    50% { transform: perspective(500px) rotateX(40deg) scale(2.1) translateY(-8%); }
-                }
-            `}</style>
         </div>
     );
 };
 
-// Floating orbs component for ambient atmosphere
-// Reduced radius and blur to heavily save on CSS rasterization overhead
+// Floating orbs — pure CSS keyframes instead of framer-motion (removes 2 JS animation loops)
 const FloatingOrbs = () => (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-            animate={{
-                x: [0, 50, -25, 0],
-                y: [0, -40, 20, 0],
+        <style>{`
+            @keyframes floatOrb1 {
+                0%, 100% { transform: translate(0, 0); }
+                33% { transform: translate(50px, -40px); }
+                66% { transform: translate(-25px, 20px); }
+            }
+            @keyframes floatOrb2 {
+                0%, 100% { transform: translate(0, 0); }
+                33% { transform: translate(-60px, 30px); }
+                66% { transform: translate(30px, -50px); }
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `}</style>
+        <div
+            className="absolute top-1/4 left-[15%] w-[400px] h-[400px] rounded-full"
+            style={{
+                background: 'radial-gradient(circle at center, rgba(6,182,212,0.15) 0%, transparent 60%)',
+                animation: 'floatOrb1 25s ease-in-out infinite',
             }}
-            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/4 left-[15%] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.15)_0,transparent_60%)] will-change-transform"
         />
-        <motion.div
-            animate={{
-                x: [0, -60, 30, 0],
-                y: [0, 30, -50, 0],
+        <div
+            className="absolute top-1/3 right-[10%] w-[350px] h-[350px] rounded-full"
+            style={{
+                background: 'radial-gradient(circle at center, rgba(168,85,247,0.15) 0%, transparent 60%)',
+                animation: 'floatOrb2 30s ease-in-out infinite',
             }}
-            transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/3 right-[10%] w-[350px] h-[350px] rounded-full bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15)_0,transparent_60%)] will-change-transform"
         />
     </div>
 );
@@ -89,41 +93,34 @@ const PrimaryCTA = ({ onClick }) => {
                     animation: 'pulseBackground 4s linear infinite',
                 }}
             >
-                {/* Shimmer */}
-                <motion.div
+                {/* Shimmer — CSS animation instead of framer-motion */}
+                <div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.15] to-transparent -skew-x-12 pointer-events-none"
-                    animate={{ x: ['-200%', '200%'] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                    style={{
+                        animation: 'shimmerSweep 5.5s linear infinite',
+                    }}
                 />
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                    <motion.span
-                        animate={{ rotate: isHovered ? 360 : 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="text-cyan-200"
-                    >
+                    <span className={`text-cyan-200 transition-transform duration-500 ${isHovered ? 'rotate-[360deg]' : ''}`}>
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 2L4 7l8 5 8-5-8-5z" />
                             <path d="M4 12l8 5 8-5" />
                             <path d="M4 17l8 5 8-5" />
                         </svg>
-                    </motion.span>
+                    </span>
                     <span className="text-xs font-bold uppercase tracking-wider text-white">
                         Get More Customers
                     </span>
-                    <motion.span
-                        animate={{ x: isHovered ? [0, 5, 0] : 0 }}
-                        transition={{ duration: 0.8, repeat: isHovered ? Infinity : 0 }}
-                        className="text-purple-200"
-                    >
+                    <span className={`text-purple-200 transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`}>
                         →
-                    </motion.span>
+                    </span>
                 </span>
             </motion.button>
         </MagneticWrapper>
     );
 };
 
-// Secondary CTA — static gradient border + shimmer sweep
+// Secondary CTA
 const SecondaryCTA = ({ onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -140,24 +137,26 @@ const SecondaryCTA = ({ onClick }) => {
                 style={{
                     padding: '1px',
                     background: 'linear-gradient(135deg, rgba(6,182,212,0.4), rgba(168,85,247,0.4), rgba(236,72,153,0.4))',
+                    boxShadow: isHovered ? '0 0 25px rgba(6,182,212,0.5), 0 0 50px rgba(168,85,247,0.3)' : 'none',
+                    transition: 'box-shadow 0.3s ease'
                 }}
             >
                 <div className="rounded-full bg-black/85 backdrop-blur-md px-6 py-3 relative overflow-hidden">
-                    {/* Shimmer sweep */}
-                    <motion.div
+                    {/* Shimmer sweep — CSS only */}
+                    <div
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.07] to-transparent -skew-x-12 pointer-events-none"
-                        animate={{ x: ['-200%', '200%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                        style={{
+                            animation: 'shimmerSweep 6s linear infinite',
+                        }}
                     />
                     <div className="relative z-10 flex items-center gap-2">
-                        <motion.svg
-                            className="w-4 h-4 text-white/60 group-hover:text-cyan-400 transition-colors"
+                        <svg
+                            className={`w-4 h-4 text-white/60 transition-all duration-300 ${isHovered ? 'text-cyan-400 scale-110' : ''}`}
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                            animate={{ scale: isHovered ? 1.1 : 1 }}
                         >
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                             <circle cx="12" cy="12" r="3" />
-                        </motion.svg>
+                        </svg>
                         <span className="text-sm font-bold uppercase tracking-wider text-white/80 group-hover:text-white transition-colors">
                             View Our Work
                         </span>
@@ -174,13 +173,13 @@ const Hero = () => {
     const headingOpacity = useTransform(scrollY, [0, 400], [1, 0]);
     const headingScale = useTransform(scrollY, [0, 400], [1, 0.95]);
 
-    const rotatingWords = [
+    const rotatingWords = useMemo(() => [
         { text: 'customers', gradient: 'from-cyan-400 via-blue-400 to-cyan-300' },
         { text: 'bookings', gradient: 'from-purple-400 via-violet-400 to-purple-300' },
         { text: 'calls', gradient: 'from-pink-400 via-rose-400 to-pink-300' },
         { text: 'growth', gradient: 'from-emerald-400 via-teal-400 to-emerald-300' },
         { text: 'results', gradient: 'from-amber-400 via-orange-400 to-amber-300' },
-    ];
+    ], []);
 
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
@@ -191,7 +190,6 @@ const Hero = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // Stagger animation for the hero elements
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -213,7 +211,7 @@ const Hero = () => {
 
     return (
         <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-24 pb-12">
-            {/* Custom Animation for Text Gleam */}
+            {/* CSS keyframes for shimmer */}
             <style>{`
                 @keyframes text-shine {
                     0% { background-position: 200% center; }
@@ -222,20 +220,25 @@ const Hero = () => {
                 .animate-text-shine {
                     animation: text-shine 4s linear infinite;
                 }
+                @keyframes shimmerSweep {
+                    0% { transform: translateX(-200%) skewX(-12deg); }
+                    100% { transform: translateX(200%) skewX(-12deg); }
+                }
             `}</style>
+
             {/* Layered backgrounds */}
             <MorphGrid />
             <FloatingOrbs />
+            {/* White meteors - restored */}
             <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-                <Meteors number={80} />
+                <Meteors number={50} />
             </div>
-            <ShootingStars count={25} color="#bd00ff" />
             <TechHUD />
 
-            {/* Radial spotlight from center */}
+            {/* Radial spotlight */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vh] bg-[radial-gradient(ellipse_at_center,rgba(0,240,255,0.04)_0%,transparent_50%)] pointer-events-none" />
 
-            {/* Hero Content — Centered */}
+            {/* Hero Content */}
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -255,7 +258,7 @@ const Hero = () => {
                     </div>
                 </motion.div>
 
-                {/* Main Headline - Smaller Size */}
+                {/* Main Headline */}
                 <motion.div
                     variants={itemVariants}
                     className="mb-3 relative z-20"
@@ -272,7 +275,7 @@ const Hero = () => {
                     </h1>
                 </motion.div>
 
-                {/* Rotating Word with smooth transition */}
+                {/* Rotating Word */}
                 <motion.div
                     variants={itemVariants}
                     className="mb-14 h-[1.3em] relative"
@@ -356,14 +359,10 @@ const Hero = () => {
                 transition={{ delay: 2 }}
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 flex justify-center z-20"
             >
-                <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="flex flex-col items-center gap-2"
-                >
+                <div className="flex flex-col items-center gap-2 animate-bounce" style={{ animationDuration: '2s' }}>
                     <span className="text-[8px] font-mono text-white/20 uppercase tracking-[0.4em]">Scroll</span>
                     <div className="w-px h-10 bg-gradient-to-b from-cyan-500/50 via-white/20 to-transparent" />
-                </motion.div>
+                </div>
             </motion.div>
 
             {/* Decorative Bottom Fade */}

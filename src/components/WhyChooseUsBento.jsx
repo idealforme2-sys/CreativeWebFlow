@@ -136,9 +136,9 @@ const WhyChooseUsBento = () => {
                     className="text-center mb-20 relative z-10"
                 >
                     <div className="inline-flex items-center justify-center gap-4 mb-6">
-                        <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-pink-500" />
-                        <span className="text-pink-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]">Why Us</span>
-                        <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-pink-500" />
+                        <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-cyan-500" />
+                        <span className="text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">Why Us</span>
+                        <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-cyan-500" />
                     </div>
                     <h2 className="font-extrabold text-4xl md:text-5xl lg:text-7xl leading-[1.1] text-white tracking-tight mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                         Why Local Businesses

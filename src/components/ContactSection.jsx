@@ -215,8 +215,8 @@ const ContactSection = () => {
                             transition={{ duration: 0.6 }}
                             className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-amber-500/10 border border-amber-500/20"
                         >
-                            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                            <span className="text-xs font-semibold text-amber-300">
+                            <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-pulse" />
+                            <span className="text-xs font-semibold text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">
                                 Limited spots: 2 available this month
                             </span>
                         </motion.div>
@@ -230,7 +230,7 @@ const ContactSection = () => {
                             className="flex items-center gap-4 mb-6 justify-center"
                         >
                             <div className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-500" />
-                            <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Start Your Project</span>
+                            <span className="text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">Start Your Project</span>
                             <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500" />
                         </motion.div>
 
@@ -395,8 +395,8 @@ const ContactSection = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="relative group/input col-span-1 md:col-span-2 mt-2" ref={dropdownRef}>
-                                                <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-3">
+                                            <div className="relative group/input" ref={dropdownRef}>
+                                                <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
                                                     Budget Range
                                                 </label>
                                                 <div className="relative">
@@ -405,8 +405,8 @@ const ContactSection = () => {
                                                         onClick={() => setIsBudgetOpen(!isBudgetOpen)}
                                                         className="contact-input flex items-center justify-between"
                                                     >
-                                                        <span className={formData.budget ? 'text-white font-medium' : 'text-white/30'}>
-                                                            {formData.budget ? budgetTiers.find(t => t.id === formData.budget)?.label : 'Select your budget...'}
+                                                        <span className={formData.budget ? 'text-white font-medium' : 'text-gray-300'}>
+                                                            {formData.budget ? budgetTiers.find(t => t.id === formData.budget)?.label : 'Select your budget'}
                                                         </span>
                                                         <motion.div
                                                             animate={{ rotate: isBudgetOpen ? 180 : 0 }}

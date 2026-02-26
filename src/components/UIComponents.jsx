@@ -631,34 +631,41 @@ export const SectionParticles = React.memo(({ type = 'dust', color = 'rgba(6,182
 // ADVANCED SECTION EFFECTS (Phase 30)
 // ==========================================
 
+// CSS-only ShootingStars — no framer-motion instances, pure GPU-composited CSS animations
 export const ShootingStars = ({ count = 15, color = '#06b6d4' }) => {
+    // Pre-compute star configs once
+    const stars = React.useMemo(() =>
+        [...Array(count)].map((_, i) => ({
+            top: `${Math.random() * 50}%`,
+            right: `${Math.random() * 50 - 20}%`,
+            width: `${Math.random() * 150 + 50}px`,
+            duration: `${Math.random() * 2 + 1.5}s`,
+            delay: `${Math.random() * 15}s`,
+        })),
+        [count]);
+
     return (
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-            {[...Array(count)].map((_, i) => (
-                <motion.div
+            <style>{`
+                @keyframes shootingStar {
+                    0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
+                    5% { opacity: 1; }
+                    90% { opacity: 1; }
+                    100% { transform: rotate(-45deg) translateX(-120vw); opacity: 0; }
+                }
+            `}</style>
+            {stars.map((s, i) => (
+                <div
                     key={i}
-                    initial={{ x: '100vw', y: '-10vh', opacity: 0, scale: 0 }}
-                    animate={{
-                        x: '-20vw',
-                        y: '120vh',
-                        opacity: [0, 1, 1, 0],
-                        scale: [0, 1, 0.5, 0]
-                    }}
-                    transition={{
-                        duration: Math.random() * 2 + 1.5,
-                        repeat: Infinity,
-                        ease: "linear",
-                        delay: Math.random() * 15
-                    }}
-                    className="absolute rounded-full"
+                    className="absolute"
                     style={{
-                        top: `${Math.random() * 50}%`,
-                        right: `${Math.random() * 50 - 20}%`,
-                        width: `${Math.random() * 150 + 50}px`,
+                        top: s.top,
+                        right: s.right,
+                        width: s.width,
                         height: '2px',
                         background: `linear-gradient(90deg, ${color}, transparent)`,
-                        transform: 'rotate(-45deg)',
-                        filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.8))'
+                        animation: `shootingStar ${s.duration} linear ${s.delay} infinite`,
+                        opacity: 0,
                     }}
                 />
             ))}
@@ -734,37 +741,32 @@ export const ElectricCurrent = ({ color = '#06b6d4', style, className }) => {
     );
 };
 
-export const FloatingOrbs = ({ count = 5, color1 = '#06b6d4', color2 = '#a855f7' }) => {
+// Enhanced FloatingOrbs — CSS keyframes with radial gradient for soft edges (no blur for performance)
+export const FloatingOrbs = ({ count = 3, color1 = '#06b6d4', color2 = '#a855f7' }) => {
+    const orbs = React.useMemo(() =>
+        [...Array(count)].map((_, i) => ({
+            size: Math.random() * 300 + 150,
+            color: i % 2 === 0 ? color1 : color2,
+            duration: Math.random() * 20 + 25,
+            left: Math.random() * 80,
+            top: Math.random() * 80,
+        })),
+        [count, color1, color2]);
+
     return (
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden mix-blend-screen opacity-30">
-            {[...Array(count)].map((_, i) => (
-                <motion.div
+            {orbs.map((orb, i) => (
+                <div
                     key={i}
-                    animate={{
-                        x: [
-                            `${Math.random() * 100}%`,
-                            `${Math.random() * 100}%`,
-                            `${Math.random() * 100}%`
-                        ],
-                        y: [
-                            `${Math.random() * 100}%`,
-                            `${Math.random() * 100}%`,
-                            `${Math.random() * 100}%`
-                        ],
-                        scale: [1, 1.5, 1],
-                        opacity: [0.3, 0.6, 0.3]
-                    }}
-                    transition={{
-                        duration: Math.random() * 20 + 20,
-                        repeat: Infinity,
-                        ease: "linear"
-                    }}
                     className="absolute rounded-full mix-blend-screen"
                     style={{
-                        width: `${Math.random() * 300 + 150}px`,
-                        height: `${Math.random() * 300 + 150}px`,
-                        background: `radial-gradient(circle, ${i % 2 === 0 ? color1 : color2} 0%, transparent 70%)`,
-                        filter: 'blur(40px)',
+                        width: `${orb.size}px`,
+                        height: `${orb.size}px`,
+                        left: `${orb.left}%`,
+                        top: `${orb.top}%`,
+                        // Radial gradient with soft edges - no blur filter for crisp rendering
+                        background: `radial-gradient(circle, ${orb.color}50 0%, ${orb.color}20 40%, transparent 70%)`,
+                        animation: `floatOrb${(i % 2) + 1} ${orb.duration}s ease-in-out infinite`,
                     }}
                 />
             ))}

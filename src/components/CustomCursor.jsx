@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const CustomCursor = () => {
@@ -7,17 +7,10 @@ const CustomCursor = () => {
     const [isHovering, setIsHovering] = useState(false);
     const [isClicking, setIsClicking] = useState(false);
     const [isTouchDevice, setIsTouchDevice] = useState(false);
-    const trailRef = useRef([]);
-    const rafRef = useRef(null);
 
     const springConfig = { stiffness: 300, damping: 25, mass: 0.5 };
     const springX = useSpring(mouseX, springConfig);
     const springY = useSpring(mouseY, springConfig);
-
-    // Smooth trail with spring physics
-    const trailSpringConfig = { stiffness: 150, damping: 20, mass: 0.8 };
-    const trailX = useSpring(mouseX, trailSpringConfig);
-    const trailY = useSpring(mouseY, trailSpringConfig);
 
     useEffect(() => {
         const checkTouch = () => {
@@ -29,7 +22,7 @@ const CustomCursor = () => {
     }, []);
 
     useEffect(() => {
-        if (isTouchDevice) return; // Completely bypass heavy logic on mobile/touch devices
+        if (isTouchDevice) return;
 
         const move = (e) => {
             mouseX.set(e.clientX);
@@ -42,28 +35,36 @@ const CustomCursor = () => {
         const handleHoverStart = () => setIsHovering(true);
         const handleHoverEnd = () => setIsHovering(false);
 
-        window.addEventListener('mousemove', move);
+        window.addEventListener('mousemove', move, { passive: true });
         window.addEventListener('mousedown', handleMouseDown);
         window.addEventListener('mouseup', handleMouseUp);
 
-        // Use MutationObserver to catch dynamically added elements
+        // Debounced MutationObserver — only re-scan after 500ms of DOM stability
+        let debounceTimer = null;
+        let currentElements = new Set();
+
         const addHoverListeners = () => {
-            const elements = document.querySelectorAll('a, button, input, textarea, [data-cursor="hover"], [role="button"]');
-            elements.forEach(el => {
-                el.addEventListener('mouseenter', handleHoverStart);
-                el.addEventListener('mouseleave', handleHoverEnd);
-            });
-            return elements;
-        };
-
-        let currentElements = addHoverListeners();
-
-        const observer = new MutationObserver(() => {
+            // Remove old listeners
             currentElements.forEach(el => {
                 el.removeEventListener('mouseenter', handleHoverStart);
                 el.removeEventListener('mouseleave', handleHoverEnd);
             });
-            currentElements = addHoverListeners();
+            currentElements.clear();
+
+            const elements = document.querySelectorAll('a, button, input, textarea, [data-cursor="hover"], [role="button"]');
+            elements.forEach(el => {
+                el.addEventListener('mouseenter', handleHoverStart);
+                el.addEventListener('mouseleave', handleHoverEnd);
+                currentElements.add(el);
+            });
+        };
+
+        addHoverListeners();
+
+        const observer = new MutationObserver(() => {
+            // Debounce: wait 500ms after last DOM change before re-scanning
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(addHoverListeners, 500);
         });
 
         observer.observe(document.body, { childList: true, subtree: true });
@@ -73,6 +74,7 @@ const CustomCursor = () => {
             window.removeEventListener('mousedown', handleMouseDown);
             window.removeEventListener('mouseup', handleMouseUp);
             observer.disconnect();
+            clearTimeout(debounceTimer);
             currentElements.forEach(el => {
                 el.removeEventListener('mouseenter', handleHoverStart);
                 el.removeEventListener('mouseleave', handleHoverEnd);
@@ -82,22 +84,9 @@ const CustomCursor = () => {
 
     if (isTouchDevice) return null;
 
+    // Simplified to 2 elements (removed glow backdrop and crosshair — saves 2 compositing layers)
     return (
         <>
-            {/* Glow backdrop - subtle ambient glow that follows cursor */}
-            <motion.div
-                className="fixed top-0 left-0 pointer-events-none z-[99] hidden md:block"
-                style={{
-                    x: trailX,
-                    y: trailY,
-                    translateX: '-50%',
-                    translateY: '-50%',
-                    width: 200,
-                    height: 200,
-                    background: 'radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)',
-                }}
-            />
-
             {/* Inner dot - precise position */}
             <motion.div
                 className="fixed top-0 left-0 rounded-full pointer-events-none z-[100] hidden md:block"
@@ -118,9 +107,9 @@ const CustomCursor = () => {
                 transition={{ duration: 0.15, ease: 'easeOut' }}
             />
 
-            {/* Outer ring - spring-delayed for magnetic feel */}
+            {/* Outer ring - spring-delayed */}
             <motion.div
-                className="fixed top-0 left-0 rounded-full pointer-events-none z-[100] hidden md:block"
+                className="fixed top-0 left-0 rounded-full pointer-events-none z-[100] hidden md:block border border-solid"
                 style={{
                     x: springX,
                     y: springY,
@@ -140,33 +129,6 @@ const CustomCursor = () => {
                 }}
                 transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             />
-
-            {/* Crosshair lines - appear on hover */}
-            <motion.div
-                className="fixed top-0 left-0 pointer-events-none z-[100] hidden md:block"
-                style={{
-                    x: springX,
-                    y: springY,
-                    translateX: '-50%',
-                    translateY: '-50%',
-                }}
-                animate={{
-                    opacity: isHovering ? 1 : 0,
-                    scale: isHovering ? 1 : 0.5,
-                }}
-                transition={{ duration: 0.2 }}
-            >
-                <div className="relative w-14 h-14 flex items-center justify-center">
-                    {/* Top tick */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-2 bg-cyan-400/60" />
-                    {/* Bottom tick */}
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1px] h-2 bg-cyan-400/60" />
-                    {/* Left tick */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-[1px] bg-cyan-400/60" />
-                    {/* Right tick */}
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-[1px] bg-cyan-400/60" />
-                </div>
-            </motion.div>
         </>
     );
 };

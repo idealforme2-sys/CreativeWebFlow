@@ -103,7 +103,7 @@ const ProcessSection = () => {
     const [progressValue, setProgressValue] = React.useState(0);
 
     React.useEffect(() => {
-        return scrollYProgress.onChange((latest) => {
+        return scrollYProgress.on("change", (latest) => {
             setProgressValue(latest);
         });
     }, [scrollYProgress]);
@@ -172,7 +172,7 @@ const ProcessSection = () => {
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-4xl mx-auto"
                     >
-                        <span className="inline-block text-cyan-400 text-xs font-bold tracking-[0.2em] uppercase mb-3 md:mb-4 cyan-glow-text">
+                        <span className="inline-block text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">
                             How It Works
                         </span>
                         <AnimatedHeadline>

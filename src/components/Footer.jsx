@@ -13,9 +13,9 @@ const Footer = () => {
             { label: 'Contact', href: '#contact' }
         ],
         services: [
-            { label: 'Web Development', href: '#services' },
-            { label: 'Smart Features', href: '#services' },
-            { label: 'Local Marketing', href: '#services' }
+            { label: 'Web Development', href: '#services-tabs?tab=web' },
+            { label: 'Smart Features', href: '#services-tabs?tab=smart' },
+            { label: 'Local Marketing', href: '#services-tabs?tab=local' }
         ],
         legal: [
             { label: 'Privacy Policy', href: '#' },
@@ -26,6 +26,20 @@ const Footer = () => {
     const scrollToSection = (href) => {
         if (href === '#') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (href.includes('?')) {
+            // Handle query params like #services-tabs?tab=web
+            const [hash, query] = href.split('?');
+            const element = document.querySelector(hash);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                // Extract tab from query (e.g., tab=web)
+                const params = new URLSearchParams(query);
+                const tab = params.get('tab');
+                if (tab) {
+                    // Dispatch custom event to change tab
+                    window.dispatchEvent(new CustomEvent('changeServiceTab', { detail: { tab } }));
+                }
+            }
         } else {
             const element = document.querySelector(href);
             if (element) element.scrollIntoView({ behavior: 'smooth' });

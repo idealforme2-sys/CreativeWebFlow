@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Activity, Scan } from 'lucide-react';
 
 const TechHUD = () => {
+    // Memoize hex values so they don't regenerate on every re-render
+    const hexValues = useMemo(() =>
+        [...Array(6)].map(() => '0x' + Math.random().toString(16).slice(2, 8).toUpperCase()),
+        []);
+
     return (
         <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden select-none">
             {/* Corner Brackets */}
@@ -35,7 +40,7 @@ const TechHUD = () => {
             {/* Side Data Streams - Right */}
             <div className="absolute top-1/3 right-8 hidden md:flex flex-col items-end gap-6">
                 <div className="flex items-center gap-3 flex-row-reverse">
-                    <Scan size={16} className="text-pink-400 animate-spin" style={{ animationDuration: '10s' }} />
+                    <Scan size={16} className="text-pink-400" style={{ animation: 'spin 10s linear infinite' }} />
                     <div className="flex flex-col items-end">
                         <span className="text-[10px] font-mono text-pink-400/80 tracking-widest">SECURITY_LAYER</span>
                         <span className="text-xs font-bold text-white tracking-widest">ENCRYPTED</span>
@@ -43,8 +48,8 @@ const TechHUD = () => {
                 </div>
                 <div className="w-32 h-[1px] bg-gradient-to-l from-pink-500/50 to-transparent" />
                 <div className="font-mono text-[10px] text-pink-300/60 space-y-1 text-right">
-                    {[...Array(6)].map((_, i) => (
-                        <p key={i} className="opacity-70">0x{Math.random().toString(16).slice(2, 8).toUpperCase()}</p>
+                    {hexValues.map((hex, i) => (
+                        <p key={i} className="opacity-70">{hex}</p>
                     ))}
                 </div>
             </div>
@@ -52,4 +57,4 @@ const TechHUD = () => {
     );
 };
 
-export default TechHUD;
+export default React.memo(TechHUD);

@@ -196,13 +196,13 @@ const WhyChooseUs = () => {
                             className="flex items-center justify-center gap-4 mb-6"
                         >
                             <div className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-500" />
-                            <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-[0.25em]">Why Us</span>
+                            <span className="text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">Why Us</span>
                             <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500" />
                         </motion.div>
                         <AnimatedHeadline>
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                                Why Local <Highlighter action="highlight" color="rgba(168, 85, 247, 0.4)">Businesses</Highlighter> <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                                Why Local Businesses <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]">
                                     Choose Us
                                 </span>
                             </h2>

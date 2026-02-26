@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-/* --- REVOLUTION HERO SHADER (Vivid, Spaced, Looping) --- */
+/* --- OPTIMIZED HERO SHADER (Half-res, simplified noise) --- */
 const vertexShader = `
   attribute vec4 position;
   void main() {
@@ -15,7 +15,7 @@ const fragmentShader = `
   uniform vec2 u_mouse;
   uniform float u_intensity;
 
-  // Advanced noise functions
+  // Simplified noise
   vec3 hash3(vec2 p) {
     vec3 q = vec3(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)), dot(p, vec2(419.2, 371.9)));
     return fract(sin(q) * 43758.5453);
@@ -24,19 +24,19 @@ const fragmentShader = `
   float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
-    vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    vec2 u = f * f * (3.0 - 2.0 * f); // Cheaper smoothstep instead of quintic
     return mix(mix(dot(hash3(i + vec2(0.0,0.0)).xy, f - vec2(0.0,0.0)),
                    dot(hash3(i + vec2(1.0,0.0)).xy, f - vec2(1.0,0.0)), u.x),
                mix(dot(hash3(i + vec2(0.0,1.0)).xy, f - vec2(0.0,1.0)),
                    dot(hash3(i + vec2(1.0,1.0)).xy, f - vec2(1.0,1.0)), u.x), u.y);
   }
 
+  // Reduced to max 3 octaves (was 5)
   float fbm(vec2 p, int octaves) {
     float value = 0.0;
     float amplitude = 1.0;
     float frequency = 0.25;
-    // Hard cap the loop to 5 max octaves to save GPU (was 10)
-    for(int i = 0; i < 5; i++) {
+    for(int i = 0; i < 3; i++) {
       if(i >= octaves) break;
       value += amplitude * noise(p * frequency);
       amplitude *= 0.52;
@@ -45,12 +45,13 @@ const fragmentShader = `
     return value;
   }
 
+  // Simplified voronoi: [-1,1] range = 9 iterations instead of 25
   float voronoi(vec2 p) {
     vec2 n = floor(p);
     vec2 f = fract(p);
     float md = 50.0;
-    for(int i = -2; i <= 2; i++) {
-      for(int j = -2; j <= 2; j++) {
+    for(int i = -1; i <= 1; i++) {
+      for(int j = -1; j <= 1; j++) {
         vec2 g = vec2(i, j);
         vec2 o = hash3(n + g).xy;
         o = 0.5 + 0.41 * sin(u_time * 1.5 + 6.28 * o);
@@ -70,12 +71,13 @@ const fragmentShader = `
     return (a + b + c + d) * 0.5;
   }
 
+  // Simplified curl: only 2 fbm calls with 2 octaves each (was 4 calls with 6 octaves)
   vec2 curl(vec2 p, float time) {
     float eps = 0.5;
-    float n1 = fbm(p + vec2(eps, 0.0), 6);
-    float n2 = fbm(p - vec2(eps, 0.0), 6);
-    float n3 = fbm(p + vec2(0.0, eps), 6);
-    float n4 = fbm(p - vec2(0.0, eps), 6);
+    float n1 = fbm(p + vec2(eps, 0.0), 2);
+    float n2 = fbm(p - vec2(eps, 0.0), 2);
+    float n3 = fbm(p + vec2(0.0, eps), 2);
+    float n4 = fbm(p - vec2(0.0, eps), 2);
     return vec2((n3 - n4) / (2.0 * eps), (n2 - n1) / (2.0 * eps));
   }
 
@@ -94,34 +96,31 @@ const fragmentShader = `
     vec2 curlForce = curl(st * 2.0, time) * 0.6;
     vec2 flowField = st + curlForce;
 
-    float dist1 = fbm(flowField * 1.5 + time * 1.2, 5) * 0.4;
-    float dist2 = fbm(flowField * 2.3 - time * 0.8, 4) * 0.3;
-    float dist3 = fbm(flowField * 3.1 + time * 1.8, 3) * 0.2;
-    float dist4 = fbm(flowField * 4.7 - time * 1.1, 2) * 0.15;
+    // Reduced distortion layers from 4 to 3, lower octaves
+    float dist1 = fbm(flowField * 1.5 + time * 1.2, 3) * 0.4;
+    float dist2 = fbm(flowField * 2.3 - time * 0.8, 2) * 0.3;
+    float dist3 = fbm(flowField * 3.1 + time * 1.8, 2) * 0.2;
 
     float cells = voronoi(flowField * 2.5 + time * 0.5);
     cells = smoothstep(0.1, 0.7, cells);
 
     float plasmaEffect = plasma(flowField + vec2(dist1, dist2), time * 1.5) * 0.2;
 
-    float totalDist = dist1 + dist2 + dist3 + dist4 + plasmaEffect;
+    float totalDist = dist1 + dist2 + dist3 + plasmaEffect;
 
+    // Reduced from 3 streaks to 2
     float streak1 = sin((st.x + totalDist) * 15.0 + time * 3.0) * 0.5 + 0.5;
     float streak2 = sin((st.x + totalDist * 0.7) * 25.0 - time * 2.0) * 0.5 + 0.5;
-    float streak3 = sin((st.x + totalDist * 1.3) * 35.0 + time * 4.0) * 0.5 + 0.5;
 
     streak1 = smoothstep(0.3, 0.7, streak1);
     streak2 = smoothstep(0.2, 0.8, streak2);
-    streak3 = smoothstep(0.4, 0.6, streak3);
-    float combinedStreaks = streak1 * 0.6 + streak2 * 0.4 + streak3 * 0.5;
+    float combinedStreaks = streak1 * 0.6 + streak2 * 0.5;
 
     float shape1 = 1.0 - abs(st.x + totalDist * 0.6);
     float shape2 = 1.0 - abs(st.x + totalDist * 0.4 + sin(st.y * 3.0 + time) * 0.15);
-    float shape3 = 1.0 - abs(st.x + totalDist * 0.8 + cos(st.y * 2.0 - time) * 0.1);
     shape1 = smoothstep(0.0, 1.0, shape1);
     shape2 = smoothstep(0.1, 0.9, shape2);
-    shape3 = smoothstep(0.2, 0.8, shape3);
-    float finalShape = max(shape1 * 0.8, max(shape2 * 0.6, shape3 * 0.4));
+    float finalShape = max(shape1 * 0.8, shape2 * 0.6);
 
     vec3 color1 = vec3(1.0, 0.1, 0.6);
     vec3 color2 = vec3(1.0, 0.3, 0.1);
@@ -132,7 +131,7 @@ const fragmentShader = `
     vec3 color7 = vec3(1.0, 0.8, 0.1);
 
     float gradient = 1.0 - uv.y;
-    float colorNoise = fbm(flowField * 3.0 + time * 0.5, 4) * 0.5 + 0.5;
+    float colorNoise = fbm(flowField * 3.0 + time * 0.5, 2) * 0.5 + 0.5;
     float colorShift = sin(time * 1.5 + st.y * 2.0) * 0.5 + 0.5;
 
     vec3 finalColor;
@@ -193,12 +192,11 @@ const fragmentShader = `
 
     result = mix(vec3(dot(result, vec3(0.299, 0.587, 0.114))), result, 1.3);
 
-    float grainAmount = 0.11;
+    float grainAmount = 0.03; // Reduced for cleaner look
     float grainValue = grain(uv, time * 0.5) * 2.0 - 1.0;
     result += grainValue * grainAmount;
 
-    float scanline = sin(uv.y * u_resolution.y * 2.0) * 0.04;
-    result += scanline;
+    // Removed scanline effect (barely visible, costs sin() per pixel)
 
     result *= 1.1;
 
@@ -206,18 +204,22 @@ const fragmentShader = `
   }
 `;
 
+// Resolution scale factor — render at full resolution for crisp visuals
+const RESOLUTION_SCALE = 1.0;
+
 const WebGLBackground = () => {
   const canvasRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const intensityRef = useRef(1.0);
   const targetIntensityRef = useRef(1.0);
   const startTimeRef = useRef(Date.now());
+  const isVisibleRef = useRef(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: 'low-power' });
     if (!gl) return;
 
     const createShader = (type, source) => {
@@ -255,32 +257,48 @@ const WebGLBackground = () => {
     const uIntensity = gl.getUniformLocation(program, "u_intensity");
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Render at half resolution — CSS scales it up
+      canvas.width = Math.floor(window.innerWidth * RESOLUTION_SCALE);
+      canvas.height = Math.floor(window.innerHeight * RESOLUTION_SCALE);
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
     resize();
     window.addEventListener("resize", resize);
 
+    // Throttled mouse handler
+    let mouseThrottleId = null;
     const onMouseMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current.x = e.clientX - rect.left;
-      mouseRef.current.y = rect.height - (e.clientY - rect.top);
-      targetIntensityRef.current = 1.05;
-      setTimeout(() => {
-        targetIntensityRef.current = 1.0;
-      }, 200);
+      if (mouseThrottleId) return;
+      mouseThrottleId = requestAnimationFrame(() => {
+        mouseThrottleId = null;
+        const rect = canvas.getBoundingClientRect();
+        mouseRef.current.x = (e.clientX - rect.left) * RESOLUTION_SCALE;
+        mouseRef.current.y = (rect.height - (e.clientY - rect.top)) * RESOLUTION_SCALE;
+        targetIntensityRef.current = 1.05;
+        setTimeout(() => {
+          targetIntensityRef.current = 1.0;
+        }, 200);
+      });
     };
 
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+
+    // Page Visibility API — pause when tab is hidden
+    const handleVisibility = () => {
+      isVisibleRef.current = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     let animationId;
     let lastTime = 0;
-    const fpsInterval = 1000 / 30; // Hard cap at 30 FPS for background
+    const fpsInterval = 1000 / 30; // 30 FPS cap
 
     const animate = (timestamp) => {
       animationId = requestAnimationFrame(animate);
+
+      // Skip rendering when tab is hidden
+      if (!isVisibleRef.current) return;
 
       if (!lastTime) lastTime = timestamp;
       const elapsed = timestamp - lastTime;
@@ -291,10 +309,11 @@ const WebGLBackground = () => {
         const time = (Date.now() - startTimeRef.current) * 0.001;
         intensityRef.current += (targetIntensityRef.current - intensityRef.current) * 0.05;
 
-        gl.uniform1f(uTime, time);
-        gl.uniform2f(uResolution, canvas.width, canvas.height);
-        gl.uniform2f(uMouse, mouseRef.current.x, mouseRef.current.y);
-        gl.uniform1f(uIntensity, intensityRef.current);
+        // Only set uniforms if locations are valid
+        if (uTime) gl.uniform1f(uTime, time);
+        if (uResolution) gl.uniform2f(uResolution, canvas.width, canvas.height);
+        if (uMouse) gl.uniform2f(uMouse, mouseRef.current.x, mouseRef.current.y);
+        if (uIntensity) gl.uniform1f(uIntensity, intensityRef.current);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }
@@ -305,15 +324,17 @@ const WebGLBackground = () => {
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener('visibilitychange', handleVisibility);
       cancelAnimationFrame(animationId);
+      if (mouseThrottleId) cancelAnimationFrame(mouseThrottleId);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 0 }}
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: 0, width: '100%', height: '100%', imageRendering: 'auto' }}
     />
   );
 };

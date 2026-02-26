@@ -167,7 +167,7 @@ const WorkSection = () => {
                 <div className="text-center mb-24">
                     <div className="flex items-center justify-center gap-4 mb-6">
                         <div className="h-px w-12 bg-cyan-500" />
-                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-[0.2em]">Example Projects</span>
+                        <span className="text-cyan-400 text-[10px] sm:text-xs font-black tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">Example Projects</span>
                         <div className="h-px w-12 bg-cyan-500" />
                     </div>
                     <motion.h2

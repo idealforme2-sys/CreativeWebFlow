@@ -1,11 +1,62 @@
-import React from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Warp } from '@paper-design/shaders-react';
 import { Sparkles, Zap, Layers, Mouse, Waves, Smartphone } from 'lucide-react';
 import { SectionHeader, RevealOnScroll, StaggerContainer, StaggerItem } from './UIComponents';
 
+// Lazy shader wrapper — only mounts Warp when card is in viewport
+const LazyShader = ({ config }) => {
+    const ref = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            { rootMargin: '100px' } // Start loading slightly before visible
+        );
+
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
+    return (
+        <div ref={ref} className="absolute inset-0 rounded-3xl overflow-hidden">
+            {isVisible ? (
+                <Warp
+                    style={{ height: "100%", width: "100%" }}
+                    proportion={config.proportion}
+                    softness={config.softness}
+                    distortion={config.distortion}
+                    swirl={config.swirl}
+                    swirlIterations={config.swirlIterations}
+                    shape={config.shape}
+                    shapeScale={config.shapeScale}
+                    scale={1}
+                    rotation={0}
+                    speed={0.5}
+                    colors={config.colors}
+                />
+            ) : (
+                // Static gradient fallback when offscreen
+                <div
+                    className="w-full h-full"
+                    style={{
+                        background: `linear-gradient(135deg, ${config.colors[0]}, ${config.colors[2]})`,
+                        opacity: 0.3,
+                    }}
+                />
+            )}
+        </div>
+    );
+};
+
 const ShaderFeatureCards = () => {
-    const features = [
+    const features = useMemo(() => [
         {
             title: "Premium WebGL Shaders",
             description: "Advanced visual effects with fluid animations that create stunning, dynamic backgrounds powered by WebGL technology.",
@@ -42,8 +93,9 @@ const ShaderFeatureCards = () => {
             icon: Smartphone,
             color: "pink"
         }
-    ];
+    ], []);
 
+    // Reduced swirlIterations across all configs (was 8-15, now 4-6)
     const getShaderConfig = (index) => {
         const configs = [
             {
@@ -51,7 +103,7 @@ const ShaderFeatureCards = () => {
                 softness: 0.8,
                 distortion: 0.15,
                 swirl: 0.6,
-                swirlIterations: 8,
+                swirlIterations: 4,
                 shape: "checks",
                 shapeScale: 0.08,
                 colors: ["hsl(190, 100%, 30%)", "hsl(190, 100%, 60%)", "hsl(200, 90%, 40%)", "hsl(180, 100%, 70%)"]
@@ -61,7 +113,7 @@ const ShaderFeatureCards = () => {
                 softness: 1.2,
                 distortion: 0.2,
                 swirl: 0.9,
-                swirlIterations: 12,
+                swirlIterations: 5,
                 shape: "dots",
                 shapeScale: 0.12,
                 colors: ["hsl(320, 100%, 35%)", "hsl(320, 100%, 65%)", "hsl(330, 90%, 45%)", "hsl(310, 100%, 75%)"]
@@ -71,7 +123,7 @@ const ShaderFeatureCards = () => {
                 softness: 0.9,
                 distortion: 0.18,
                 swirl: 0.7,
-                swirlIterations: 10,
+                swirlIterations: 4,
                 shape: "checks",
                 shapeScale: 0.1,
                 colors: ["hsl(270, 100%, 30%)", "hsl(270, 100%, 60%)", "hsl(280, 90%, 35%)", "hsl(260, 100%, 70%)"]
@@ -81,7 +133,7 @@ const ShaderFeatureCards = () => {
                 softness: 1.1,
                 distortion: 0.22,
                 swirl: 0.8,
-                swirlIterations: 15,
+                swirlIterations: 6,
                 shape: "dots",
                 shapeScale: 0.09,
                 colors: ["hsl(200, 100%, 35%)", "hsl(200, 100%, 65%)", "hsl(210, 90%, 40%)", "hsl(190, 100%, 75%)"]
@@ -91,7 +143,7 @@ const ShaderFeatureCards = () => {
                 softness: 0.95,
                 distortion: 0.16,
                 swirl: 0.85,
-                swirlIterations: 11,
+                swirlIterations: 5,
                 shape: "checks",
                 shapeScale: 0.11,
                 colors: ["hsl(190, 100%, 30%)", "hsl(190, 100%, 65%)", "hsl(180, 90%, 35%)", "hsl(200, 100%, 70%)"]
@@ -101,7 +153,7 @@ const ShaderFeatureCards = () => {
                 softness: 1.0,
                 distortion: 0.19,
                 swirl: 0.75,
-                swirlIterations: 9,
+                swirlIterations: 4,
                 shape: "dots",
                 shapeScale: 0.13,
                 colors: ["hsl(310, 100%, 30%)", "hsl(330, 100%, 60%)", "hsl(320, 90%, 35%)", "hsl(325, 100%, 75%)"]
@@ -150,28 +202,13 @@ const ShaderFeatureCards = () => {
                                     transition={{ duration: 0.3 }}
                                     className="relative h-80 group"
                                 >
-                                    {/* Shader Background */}
-                                    <div className="absolute inset-0 rounded-3xl overflow-hidden">
-                                        <Warp
-                                            style={{ height: "100%", width: "100%" }}
-                                            proportion={shaderConfig.proportion}
-                                            softness={shaderConfig.softness}
-                                            distortion={shaderConfig.distortion}
-                                            swirl={shaderConfig.swirl}
-                                            swirlIterations={shaderConfig.swirlIterations}
-                                            shape={shaderConfig.shape}
-                                            shapeScale={shaderConfig.shapeScale}
-                                            scale={1}
-                                            rotation={0}
-                                            speed={0.8}
-                                            colors={shaderConfig.colors}
-                                        />
-                                    </div>
+                                    {/* Lazy-loaded Shader Background */}
+                                    <LazyShader config={shaderConfig} />
 
                                     {/* Content Overlay */}
                                     <div className="relative z-10 p-8 rounded-3xl h-full flex flex-col bg-black/80 backdrop-blur-sm border border-white/20 group-hover:border-white/40 transition-all">
                                         {/* Icon */}
-                                        <div className="mb-6 filter drop-shadow-lg">
+                                        <div className="mb-6">
                                             <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
                                                 <Icon size={28} className="text-white" />
                                             </div>

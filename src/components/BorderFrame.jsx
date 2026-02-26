@@ -1,15 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
 
 /*
   Premium Constant Glowing Border with Magnetic Elasticity.
-  Matches the exact visual style of the static CSS border but runs on Canvas
-  to allow real-time physics bending when the cursor approaches the edge.
-  Features: 
-  - 2px continuous stroke matching the site palette (cyan, purple, pink)
-  - Double neon drop shadow
-  - No scrolling chasers
-  - Colored tech corners (no white crosshairs)
+  OPTIMIZED: Increased vertex spacing (40px), 30fps cap, single shadow pass,
+  visibility-aware, conditional physics only when mouse near edges.
 */
 
 const BorderFrame = () => {
@@ -19,15 +14,16 @@ const BorderFrame = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let dpr = window.devicePixelRatio || 1;
+        let dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR at 2
         let w, h;
+        let isVisible = true;
 
         let vertices = [];
-        const spacing = 20; // Distance between physics nodes
+        const spacing = 40; // Doubled from 20 — halves vertex count
 
         const buildVertices = () => {
             vertices = [];
-            const inset = 2; // Restore bounding box to absolute 2px outward edge
+            const inset = 2;
 
             // Top edge
             for (let x = inset; x < w - inset; x += spacing) vertices.push({ base_x: x, base_y: inset, x, y: inset, vx: 0, vy: 0 });
@@ -46,7 +42,6 @@ const BorderFrame = () => {
         };
 
         const resize = () => {
-            // Use clientWidth to precisely avoid scrollbars on the right edge
             w = document.documentElement.clientWidth;
             h = window.innerHeight;
 
@@ -54,15 +49,21 @@ const BorderFrame = () => {
             canvas.style.height = h + 'px';
             canvas.width = w * dpr;
             canvas.height = h * dpr;
-            ctx.scale(dpr, dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             buildVertices();
         };
         resize();
 
-        // ResizeObserver is required to catch when the layout shifts due to the scrollbar appearing
-        const resizeObserver = new ResizeObserver(() => resize());
+        // Debounced resize to prevent flickering during layout changes
+        let resizeTimeout;
+        const debouncedResize = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(resize, 100);
+        };
+
+        const resizeObserver = new ResizeObserver(debouncedResize);
         resizeObserver.observe(document.documentElement);
-        window.addEventListener('resize', resize);
+        window.addEventListener('resize', debouncedResize);
 
         let mouseX = -1000;
         let mouseY = -1000;
@@ -79,36 +80,53 @@ const BorderFrame = () => {
             mouseY = -1000;
             mouseVelocity = 0;
         };
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
         document.body.addEventListener('mouseleave', handleMouseLeave);
 
+        const handleVisibility = () => {
+            isVisible = !document.hidden;
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+
         let frameId;
-        let lastTime = performance.now();
+        let lastRenderTime = 0;
         let globalTime = 0;
+        const fpsInterval = 1000 / 30; // 30 FPS cap
 
         const render = (now) => {
-            const dt = Math.min((now - lastTime) / 1000, 0.1); // Cap delta time to prevent physics explosions
-            lastTime = now;
+            frameId = requestAnimationFrame(render);
+
+            if (!isVisible) return;
+
+            const elapsed = now - lastRenderTime;
+            if (elapsed < fpsInterval) return;
+
+            const dt = Math.min(elapsed / 1000, 0.1);
+            lastRenderTime = now - (elapsed % fpsInterval);
             globalTime += dt;
 
-            // Track kinetic velocity so the ripple requires mouse movement
+            // Track kinetic velocity
             const dVMX = mouseX - lastMouseX;
             const dVMY = mouseY - lastMouseY;
             const currentSpeed = Math.sqrt(dVMX * dVMX + dVMY * dVMY);
-            mouseVelocity = mouseVelocity * 0.9 + currentSpeed * 0.1; // Smooth decay
+            mouseVelocity = mouseVelocity * 0.9 + currentSpeed * 0.1;
             lastMouseX = mouseX;
             lastMouseY = mouseY;
 
-            const kineticFactor = Math.min(mouseVelocity * 0.15, 1); // Capped at 1
+            const kineticFactor = Math.min(mouseVelocity * 0.15, 1);
 
-            ctx.clearRect(0, 0, w, h);
+            // Only clear if dimensions are valid
+            if (w > 0 && h > 0) {
+                ctx.clearRect(0, 0, w, h);
+            } else {
+                return;
+            }
 
-            // ─── Physics Update ───
-            const tension = 0.04;  // Lowered for watery looseness (was 0.08)
-            const friction = 0.85; // Increased for longer traveling waves (was 0.75)
-            const magneticRadius = 250; // Distance to trigger ripple
+            // Physics
+            const tension = 0.04;
+            const friction = 0.85;
+            const magneticRadius = 250;
 
-            // Optimization: check if mouse is near ANY edge
             const isNearEdge = (
                 mouseX < magneticRadius ||
                 mouseX > w - magneticRadius ||
@@ -122,7 +140,6 @@ const BorderFrame = () => {
                 let ty = v.base_y;
 
                 if (isNearEdge) {
-                    // Calculate distance to nearest corner to freeze the physics
                     const inset = 2;
                     let pinForce = 0;
                     const dTL = Math.sqrt(Math.pow(v.base_x - inset, 2) + Math.pow(v.base_y - inset, 2));
@@ -131,7 +148,6 @@ const BorderFrame = () => {
                     const dBR = Math.sqrt(Math.pow(v.base_x - (w - inset), 2) + Math.pow(v.base_y - (h - inset), 2));
                     const minDist = Math.min(dTL, dTR, dBL, dBR);
 
-                    // Fully pin nodes within 60px of corners, smooth falloff up to 200px
                     if (minDist < 60) pinForce = 1;
                     else if (minDist < 200) pinForce = 1 - ((minDist - 60) / 140);
 
@@ -140,30 +156,20 @@ const BorderFrame = () => {
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < magneticRadius) {
-                        // Water Ripple Physics
-                        // Calculate a traveling sine wave based on distance and time
-                        const waveSpeed = globalTime * 12; // Speed of the ripple
+                        const waveSpeed = globalTime * 12;
                         const ripplePhase = (dist * 0.04) - waveSpeed;
-                        const amplitude = 4; // Drastically reduced from 35 to 4 for sublety
-
-                        // Smooth falloff so the ripple gently dies out at the edges of the radius
+                        const amplitude = 4;
                         const falloff = Math.pow((magneticRadius - dist) / magneticRadius, 2);
-
-                        // The actual displacement force of the wave at this node, modified by mouse movement speed
                         const rippleForce = Math.sin(ripplePhase) * amplitude * falloff * (1 - pinForce) * kineticFactor;
 
-                        // Apply the ripple force perpendicularly (inward/outward) depending on which edge the node belongs to
                         const isTopOrBottomEdge = v.base_y <= inset + 1 || v.base_y >= h - inset - 1;
                         const isLeftOrRightEdge = v.base_x <= inset + 1 || v.base_x >= w - inset - 1;
 
                         if (isTopOrBottomEdge && !isLeftOrRightEdge) {
-                            // On top/bottom edges, ripple vertically
                             ty += (v.base_y <= inset + 1) ? rippleForce : -rippleForce;
                         } else if (isLeftOrRightEdge && !isTopOrBottomEdge) {
-                            // On left/right edges, ripple horizontally
                             tx += (v.base_x <= inset + 1) ? rippleForce : -rippleForce;
                         } else {
-                            // Corners (though pinned, mathematically they ripple diagonally)
                             const dirX = (v.base_x <= w / 2) ? 1 : -1;
                             const dirY = (v.base_y <= h / 2) ? 1 : -1;
                             tx += rippleForce * 0.707 * dirX;
@@ -182,7 +188,7 @@ const BorderFrame = () => {
 
             if (vertices.length === 0) return;
 
-            // ─── Draw Elastic Tube Core ───
+            // Draw path
             ctx.beginPath();
             ctx.moveTo(vertices[0].x, vertices[0].y);
             for (let i = 1; i < vertices.length; i++) {
@@ -190,7 +196,7 @@ const BorderFrame = () => {
             }
             ctx.closePath();
 
-            // Flowing gradient spanning the viewport to simulate the animated CSS background
+            // Flowing gradient
             const gradRot = globalTime * 0.4;
             const cx = w / 2;
             const cy = h / 2;
@@ -204,25 +210,18 @@ const BorderFrame = () => {
             grad.addColorStop(0.66, '#ec4899');
             grad.addColorStop(1, '#06b6d4');
 
-            ctx.lineWidth = 2; // Exact match to CSS 2px border
+            ctx.lineWidth = 2;
             ctx.strokeStyle = grad;
             ctx.globalAlpha = 0.9;
 
-            // First glow layer (cyan tint, tight)
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(6,182,212,0.6)';
+            // Single glow pass instead of triple stroke (major GPU savings)
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = 'rgba(6,182,212,0.5)';
             ctx.stroke();
 
-            // Second glow layer (purple tint, wider)
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = 'rgba(168,85,247,0.4)';
-            ctx.stroke();
-
-            // Crisp solid core line layer
+            // Crisp core line
             ctx.shadowBlur = 0;
             ctx.stroke();
-
-            frameId = requestAnimationFrame(render);
         };
 
         frameId = requestAnimationFrame(render);
@@ -232,12 +231,11 @@ const BorderFrame = () => {
             window.removeEventListener('resize', resize);
             window.removeEventListener('mousemove', handleMouseMove);
             document.body.removeEventListener('mouseleave', handleMouseLeave);
+            document.removeEventListener('visibilitychange', handleVisibility);
             cancelAnimationFrame(frameId);
         };
     }, []);
 
-    // Perfectly aligned explicit corner paths (no rotation transforms needed)
-    // Mirrors the basic 2-line structure: M12 6 L24 6, M6 12 L6 24 to all 4 corners
     const corners = [
         {
             position: { top: 0, left: 0 },
@@ -263,16 +261,17 @@ const BorderFrame = () => {
 
     return (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
-            {/* Very subtle inner vignette to make the neon edge pop */}
+            {/* Subtle inner vignette */}
             <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(168,85,247,0.08)] pointer-events-none" />
 
-            {/* Elastic tracking line canvas */}
+            {/* Elastic tracking line canvas - simplified to prevent flickering */}
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full pointer-events-none"
+                style={{ willChange: 'opacity' }}
             />
 
-            {/* Premium Tech Corner Brackets */}
+            {/* Tech Corner Brackets - static without animations */}
             {corners.map((c, i) => (
                 <div
                     key={i}
@@ -284,24 +283,20 @@ const BorderFrame = () => {
                         filter: `drop-shadow(0 0 10px ${c.color})`
                     }}
                 >
-                    <motion.svg
+                    <svg
                         width="40" height="40"
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: i * 0.15 }}
                     >
-                        {/* Only the internal accent ticks perfectly positioned to the true corner */}
                         {c.paths.map((d, pathIdx) => (
                             <path key={`c-${pathIdx}`} d={d} stroke={c.color} strokeWidth="2" strokeOpacity="0.8" strokeLinecap="round" />
                         ))}
-                    </motion.svg>
+                    </svg>
                 </div>
             ))}
         </div>
     );
 };
 
-export default BorderFrame;
+export default memo(BorderFrame);

@@ -13,10 +13,10 @@ const tabsData = [
         icon: Code2,
         title: 'Web Development',
         subtitle: 'Design & Build',
-        gradient: 'from-blue-600 to-cyan-500',
-        textGradient: 'from-blue-400 to-cyan-300',
-        neonColor: '#3b82f6',
-        accentRgb: '59,130,246',
+        gradient: 'from-cyan-600 to-blue-600',
+        textGradient: 'from-cyan-400 to-blue-400',
+        neonColor: '#06b6d4',
+        accentRgb: '6,182,212',
         headingLine1: 'Websites built to bring',
         headingLine2: 'more customers',
         description: 'Your website is your hardest working employee. We build fast, mobile-friendly sites that turn visitors into paying customers.',
@@ -42,10 +42,10 @@ const tabsData = [
         icon: Cpu,
         title: 'Smart Features',
         subtitle: 'Automate & Scale',
-        gradient: 'from-emerald-500 to-green-500',
-        textGradient: 'from-emerald-400 to-green-400',
-        neonColor: '#10b981',
-        accentRgb: '16,185,129',
+        gradient: 'from-violet-600 to-purple-600',
+        textGradient: 'from-violet-400 to-purple-400',
+        neonColor: '#8b5cf6',
+        accentRgb: '139,92,246',
         headingLine1: 'Smart tools for',
         headingLine2: 'modern businesses',
         description: 'Automate tasks, improve customer experience, and save time with custom features built for your specific needs.',
@@ -71,10 +71,10 @@ const tabsData = [
         icon: MapPin,
         title: 'Local Marketing',
         subtitle: 'Reach & Grow',
-        gradient: 'from-purple-600 to-pink-500',
-        textGradient: 'from-purple-400 to-pink-400',
-        neonColor: '#a855f7',
-        accentRgb: '168,85,247',
+        gradient: 'from-pink-600 to-rose-600',
+        textGradient: 'from-pink-400 to-rose-400',
+        neonColor: '#ec4899',
+        accentRgb: '236,72,153',
         headingLine1: 'Help customers',
         headingLine2: 'find you online',
         description: 'Get found when customers search for businesses like yours. We optimize your presence for local searches and build your reputation.',
@@ -106,7 +106,8 @@ const StatPill = ({ stat, index, accentRgb }) => (
         className="relative flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-lg group transition-all duration-300"
         style={{
             background: `rgba(${accentRgb}, 0.25)`,
-            borderColor: `rgba(${accentRgb}, 0.4)`
+            borderColor: `rgba(${accentRgb}, 0.4)`,
+            boxShadow: `0 4px 20px -2px rgba(${accentRgb}, 0.2), inset 0 1px 0px rgba(255,255,255,0.05)`
         }}
     >
         <div
@@ -151,7 +152,8 @@ const FeatureCard = ({ card, index, gradient, neonColor, accentRgb }) => (
             className="relative h-full p-5 rounded-2xl border shadow-lg backdrop-blur-md overflow-hidden"
             style={{
                 background: `rgba(${accentRgb}, 0.25)`,
-                borderColor: `rgba(${accentRgb}, 0.4)`
+                borderColor: `rgba(${accentRgb}, 0.4)`,
+                boxShadow: `0 4px 24px -1px rgba(${accentRgb}, 0.15), inset 0 1px 0px rgba(255,255,255,0.05)`
             }}
         >
             {/* Shimmer sweep */}
@@ -184,8 +186,8 @@ const FeatureCard = ({ card, index, gradient, neonColor, accentRgb }) => (
                     </span>
                 </div>
 
-                <h4 className="text-base font-bold text-white mb-1.5">{card.title}</h4>
-                <p className="text-sm text-white/45 leading-relaxed">{card.desc}</p>
+                <h4 className="text-base font-bold mb-1.5" style={{ color: neonColor, textShadow: `0 0 20px ${neonColor}40` }}>{card.title}</h4>
+                <p className="text-sm leading-relaxed" style={{ color: '#e2e8f0', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{card.desc}</p>
             </div>
         </div>
     </motion.div>
@@ -207,15 +209,27 @@ const ServicesShowcase = () => {
             }
         };
 
+        // Handle custom event from Footer links
+        const handleCustomEvent = (e) => {
+            const tabId = e.detail.tab;
+            if (tabsData.find(t => t.id === tabId)) {
+                setActiveTabId(tabId);
+            }
+        };
+
         // Check on initial load
         handleHashChange();
 
         window.addEventListener('hashchange', handleHashChange);
-        return () => window.removeEventListener('hashchange', handleHashChange);
+        window.addEventListener('changeServiceTab', handleCustomEvent);
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+            window.removeEventListener('changeServiceTab', handleCustomEvent);
+        };
     }, []);
 
     return (
-        <section id="what-we-do" className="relative pt-24 lg:pt-32 pb-12 lg:pb-16 overflow-hidden flex items-center">
+        <section id="services-tabs" className="relative pt-24 lg:pt-32 pb-12 lg:pb-16 overflow-hidden flex items-center">
 
             {/* Interactive Particle Background */}
             <ParticlesBackground />
@@ -227,18 +241,18 @@ const ServicesShowcase = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1 }}
-                    className="absolute top-1/4 left-[10%] w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none will-change-transform"
-                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.15) 0%, transparent 65%)` }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute top-1/4 left-[10%] w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none"
+                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.15) 0%, transparent 65%)`, transform: 'translateZ(0)' }}
                 />
                 <motion.div
                     key={activeData.id + '-orb2'}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1 }}
-                    className="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none will-change-transform"
-                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.1) 0%, transparent 65%)` }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none"
+                    style={{ background: `radial-gradient(circle at center, rgba(${activeData.accentRgb}, 0.1) 0%, transparent 65%)`, transform: 'translateZ(0)' }}
                 />
             </AnimatePresence>
 
@@ -283,26 +297,21 @@ const ServicesShowcase = () => {
                                             }`}
                                     >
                                         {isActive && (
-                                            <motion.div
-                                                layoutId="activeTabBg"
+                                            <div
                                                 className={`absolute inset-0 bg-gradient-to-br ${tab.gradient} rounded-2xl -z-10`}
                                                 style={{ boxShadow: `0 0 30px rgba(${tab.accentRgb}, 0.35), 0 0 60px rgba(${tab.accentRgb}, 0.15)` }}
-                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                             />
                                         )}
-                                        {/* Shimmer on active */}
+                                        {/* Static glow on active */}
                                         {isActive && (
-                                            <motion.div
+                                            <div
                                                 className="absolute inset-0 rounded-2xl overflow-hidden -z-[5]"
-                                                initial={false}
                                             >
-                                                <motion.div
-                                                    className="absolute inset-0 -translate-x-full"
-                                                    animate={{ translateX: ['- 100%', '200%'] }}
-                                                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
-                                                    style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)', width: '50%' }}
+                                                <div
+                                                    className="absolute inset-0 opacity-30"
+                                                    style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', width: '50%' }}
                                                 />
-                                            </motion.div>
+                                            </div>
                                         )}
                                         <div className="flex items-center gap-3">
                                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive
@@ -329,11 +338,12 @@ const ServicesShowcase = () => {
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeData.id}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.15, ease: 'easeOut' }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.05 }}
                             className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
+                            style={{ minHeight: 'inherit' }}
                         >
                             {/* ─── Left: Text + Stats ─── */}
                             <div className="lg:col-span-5 order-2 lg:order-1 space-y-8">
