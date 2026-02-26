@@ -584,7 +584,7 @@ const ContactSection = () => {
 
                             {/* Contact Details */}
                             <motion.a
-                                href="mailto:ventureforbusiness@gmail.com"
+                                href="mailto:hello@creative-webflow.site"
                                 whileHover={{ x: 8, borderColor: 'rgba(0,240,255,0.3)' }}
                                 className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-900/80 hover:bg-cyan-900/40 transition-all duration-300 group"
                             >
@@ -597,7 +597,7 @@ const ContactSection = () => {
                                         <span
                                             className="group/link inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
                                         >
-                                            ventureforbusiness@gmail.com
+                                            hello@creative-webflow.site
                                         </span>
                                     </address>
                                 </div>
