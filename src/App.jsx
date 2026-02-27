@@ -56,7 +56,7 @@ function App() {
     };
 
     const initialMobile = detectMobile();
-    const [loading, setLoading] = useState(!initialMobile);
+    const [loading, setLoading] = useState(true);
     const [gameActive, setGameActive] = useState(false);
     const [isMobileDevice, setIsMobileDevice] = useState(initialMobile);
     const [isLowPowerDevice, setIsLowPowerDevice] = useState(detectLowPower(initialMobile));
@@ -74,12 +74,6 @@ function App() {
         window.addEventListener('resize', checkDevice);
         return () => window.removeEventListener('resize', checkDevice);
     }, []);
-
-    // Skip heavy preloader on mobile for faster first interaction
-    useEffect(() => {
-        if (!isMobileDevice) return;
-        setLoading(false);
-    }, [isMobileDevice]);
 
     // Initialize Lenis smooth scrolling only on non-mobile devices
     useEffect(() => {
@@ -155,11 +149,9 @@ function App() {
             <DigitalRain lowPower={isLowPowerDevice} paused={gameActive} />
 
             {/* Preloader */}
-            {!isMobileDevice && (
-                <AnimatePresence mode="wait">
-                    {loading && <Preloader onComplete={() => setLoading(false)} />}
-                </AnimatePresence>
-            )}
+            <AnimatePresence mode="wait">
+                {loading && <Preloader onComplete={() => setLoading(false)} />}
+            </AnimatePresence>
 
             {/* Main Content */}
             {!loading && (
